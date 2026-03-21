@@ -48,6 +48,15 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       notes: "Enter via the Pyramid entrance. Adults: V26078476101. Kids: V26078476163.",
       sort_order: 2,
     }),
+    item("activity", "Mus\u00e9e d\u2019Orsay", {
+      start_time: "2026-04-03T13:30:00",
+      location_name: "Mus\u00e9e d\u2019Orsay",
+      address: "1 Rue de la L\u00e9gion d\u2019Honneur, 75007 Paris",
+      booking_ref: "194197039",
+      description: "4 tickets (full price) \u2014 \u20ac64 total. Home of Van Gogh, Monet, Renoir.",
+      notes: "Tickets are non-refundable. Show PDF on phone at entrance. Arrive at 1:30 PM sharp.",
+      sort_order: 3,
+    }),
   ],
 
   "2026-04-04": [
