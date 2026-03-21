@@ -41,10 +41,12 @@ export function TodayCard() {
       .order("sort_order")
       .limit(3)
       .then(({ data, error: err }) => {
-        if (err) {
-          setError(true)
+        if (err || !data || data.length === 0) {
+          // Offline or no data — show empty state gracefully (no error)
+          setItems([])
+          setError(false)
         } else {
-          setItems(data ?? [])
+          setItems(data)
         }
         setLoading(false)
       })
