@@ -48,8 +48,8 @@ export function getDaysSince(): number {
 }
 
 export function getCityForDay(dayNumber: number): City {
-  if (dayNumber <= 7) return "Paris"
-  if (dayNumber <= 10) return "Saint-Raphael"
+  if (dayNumber <= 3) return "Paris"
+  if (dayNumber <= 8) return "Saint-Raphael"
   return "Lisbon"
 }
 

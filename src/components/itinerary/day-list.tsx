@@ -50,7 +50,7 @@ function CitySectionHeader({ city, dayCount }: { city: City; dayCount: number })
     Lisbon: "🇵🇹",
   }
   const taglines: Record<City, string> = {
-    Paris: "7 days in the City of Light",
+    Paris: "4 days in the City of Light",
     "Saint-Raphael": "3 days on the Riviera",
     Lisbon: "3 days in the City of Seven Hills",
   }

@@ -31,9 +31,9 @@ function CityProgress() {
   const currentDay = status === "during" ? getCurrentDayNumber() : status === "before" ? 0 : 13
 
   const cities = [
-    { name: "Paris" as const, days: [1, 2, 3, 4, 5, 6, 7] },
-    { name: "Saint-Raphael" as const, days: [8, 9, 10] },
-    { name: "Lisbon" as const, days: [11, 12, 13] },
+    { name: "Paris" as const, days: [1, 2, 3] },
+    { name: "Saint-Raphael" as const, days: [4, 5, 6, 7, 8] },
+    { name: "Lisbon" as const, days: [9, 10, 11, 12, 13] },
   ]
 
   if (!tripDays.length) return null

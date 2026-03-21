@@ -124,19 +124,19 @@ export const STATIC_MEMBERS: Member[] = MEMBERS_SEED.map((m, i) => ({
 }));
 
 export const TRIP_DAYS_SEED = [
-  { day_number: 1, date: '2026-04-03', city: 'Paris' as const, title: 'Arrival in Paris', summary: 'Welcome to France!' },
-  { day_number: 2, date: '2026-04-04', city: 'Paris' as const, title: 'Paris Day 1', summary: 'Exploring the City of Light' },
-  { day_number: 3, date: '2026-04-05', city: 'Paris' as const, title: 'Paris Day 2', summary: 'Art and culture' },
-  { day_number: 4, date: '2026-04-06', city: 'Paris' as const, title: 'Paris Day 3', summary: 'More adventures' },
-  { day_number: 5, date: '2026-04-07', city: 'Paris' as const, title: 'Paris Day 4', summary: 'Hidden gems' },
-  { day_number: 6, date: '2026-04-08', city: 'Paris' as const, title: 'Paris Day 5', summary: 'Last full day in Paris' },
-  { day_number: 7, date: '2026-04-09', city: 'Paris' as const, title: 'Paris Day 6', summary: 'Au revoir Paris' },
-  { day_number: 8, date: '2026-04-10', city: 'Saint-Raphael' as const, title: 'Travel to the Coast', summary: 'TGV to the Riviera' },
-  { day_number: 9, date: '2026-04-11', city: 'Saint-Raphael' as const, title: 'Riviera Day 1', summary: 'Sun and sea' },
-  { day_number: 10, date: '2026-04-12', city: 'Saint-Raphael' as const, title: 'Riviera Day 2', summary: 'Coastal exploration' },
-  { day_number: 11, date: '2026-04-13', city: 'Lisbon' as const, title: 'Travel to Lisbon', summary: 'Hello Portugal!' },
-  { day_number: 12, date: '2026-04-14', city: 'Lisbon' as const, title: 'Lisbon Day 1', summary: 'Tiles, hills, and pasteis' },
-  { day_number: 13, date: '2026-04-15', city: 'Lisbon' as const, title: 'Departure Day', summary: 'Until next time' },
+  { day_number: 1, date: '2026-04-03', city: 'Paris' as const, title: 'Arrival in Paris 🗼', summary: 'Fly in, check in to Maison Galante, Louvre + Orsay!' },
+  { day_number: 2, date: '2026-04-04', city: 'Paris' as const, title: 'Paris — Brasserie Bellanger 🍽', summary: 'Dinner for 10 at Brasserie Bellanger, 7 PM' },
+  { day_number: 3, date: '2026-04-05', city: 'Paris' as const, title: 'Paris — Louvre Return 🎨', summary: 'Louvre at 11:30 AM — second visit, new wings!' },
+  { day_number: 4, date: '2026-04-06', city: 'Saint-Raphael' as const, title: "Edwin's Birthday + TGV 🎂🚄", summary: 'Happy Birthday Edwin! TGV to Saint-Raphaël at 11:22 AM' },
+  { day_number: 5, date: '2026-04-07', city: 'Saint-Raphael' as const, title: 'Riviera Days 🌊', summary: 'Villa Eleanor, sun, sea, and the French Riviera' },
+  { day_number: 6, date: '2026-04-08', city: 'Saint-Raphael' as const, title: 'Riviera Days 🌊', summary: 'Explore the coast, beaches, and Saint-Raphaël' },
+  { day_number: 7, date: '2026-04-09', city: 'Saint-Raphael' as const, title: 'Riviera Days 🌊', summary: 'Another beautiful day on the Mediterranean' },
+  { day_number: 8, date: '2026-04-10', city: 'Saint-Raphael' as const, title: 'Last Day on the Riviera 🌅', summary: 'Final full day at Villa Eleanor — pack for Lisbon!' },
+  { day_number: 9, date: '2026-04-11', city: 'Lisbon' as const, title: 'Fly to Lisbon 🇵🇹✈️', summary: 'Ryanair MRS→LIS 3:25 PM. Check in to João\'s apartment.' },
+  { day_number: 10, date: '2026-04-12', city: 'Lisbon' as const, title: 'Lisbon 🇵🇹', summary: 'Tiles, hills, pastéis de nata, and adventure' },
+  { day_number: 11, date: '2026-04-13', city: 'Lisbon' as const, title: 'Lisbon 🇵🇹', summary: 'Explore the city of seven hills' },
+  { day_number: 12, date: '2026-04-14', city: 'Lisbon' as const, title: 'Last Day in Lisbon 🌇', summary: 'Final day in Portugal — enjoy every moment' },
+  { day_number: 13, date: '2026-04-15', city: 'Lisbon' as const, title: 'Fly Home ✈️', summary: 'AA259 LIS→PHL→GRR. Until next adventure!' },
 ];
 
 export const STATIC_TRIP_DAYS: TripDay[] = TRIP_DAYS_SEED.map((d, i) => ({
