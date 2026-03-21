@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState } from "react"
 import {
   Plane,
   Train,
@@ -12,6 +12,9 @@ import {
   Check,
   MapPin,
   ExternalLink,
+  Bus,
+  Calendar,
+  AlertTriangle,
 } from "lucide-react"
 import { PageHeader } from "@/components/layout/page-header"
 import {
@@ -21,10 +24,13 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
-import { useTrip } from "@/lib/hooks/use-trip"
-import { getSupabaseClient } from "@/lib/supabase/client"
-import { CATEGORY_LABELS } from "@/lib/constants"
-import type { ItineraryItem } from "@/types"
+import {
+  FLIGHTS,
+  TRANSFERS,
+  ACCOMMODATIONS,
+  TRAIN,
+  ACTIVITIES,
+} from "@/lib/trip-data"
 
 // ── Static emergency / tips content ──────────────────────────────────────────
 
@@ -54,22 +60,22 @@ const TRAVEL_TIPS = [
       "Buy a carnet of 10 tickets or use a Navigo Easy card (contactless).",
       "Kids under 4 ride free; under 10 ride at half price.",
       "Download the RATP app for live journey planning.",
-      "Validate your ticket BEFORE boarding — inspectors are common.",
+      "Validate your ticket BEFORE boarding \u2014 inspectors are common.",
     ],
   },
   {
     heading: "Tipping",
     tips: [
-      "France: Service is included. Round up or leave 1–2 EUR for great service.",
-      "Portugal: 5–10% appreciated but not mandatory. Round up in cafes.",
+      "France: Service is included. Round up or leave 1\u20132 EUR for great service.",
+      "Portugal: 5\u201310% appreciated but not mandatory. Round up in cafes.",
     ],
   },
   {
     heading: "Useful Phrases",
     tips: [
-      "Bonjour (Hello) / Merci (Thank you) / S'il vous plaît (Please)",
-      "Excusez-moi (Excuse me) / L'addition, s'il vous plaît (The bill, please)",
-      "Obrigado/a (Thank you in Portuguese) / Com licença (Excuse me)",
+      "Bonjour (Hello) / Merci (Thank you) / S\u2019il vous pla\u00eet (Please)",
+      "Excusez-moi (Excuse me) / L\u2019addition, s\u2019il vous pla\u00eet (The bill, please)",
+      "Obrigado/a (Thank you in Portuguese) / Com licen\u00e7a (Excuse me)",
       "Onde fica...? (Where is...? in Portuguese)",
     ],
   },
@@ -77,7 +83,7 @@ const TRAVEL_TIPS = [
 
 // ── Copyable booking ref ──────────────────────────────────────────────────────
 
-function BookingRef({ value }: { value: string }) {
+function CopyableText({ value, label }: { value: string; label?: string }) {
   const [copied, setCopied] = useState(false)
 
   async function copy() {
@@ -90,7 +96,7 @@ function BookingRef({ value }: { value: string }) {
     <button
       onClick={copy}
       className="inline-flex items-center gap-1.5 font-mono text-xs bg-muted px-2 py-1 rounded-md hover:bg-muted/80 transition-colors"
-      title="Copy booking reference"
+      title={`Copy ${label || value}`}
     >
       <span>{value}</span>
       {copied ? (
@@ -121,54 +127,137 @@ function AddressLink({ address }: { address: string }) {
   )
 }
 
-// ── Dynamic itinerary section ─────────────────────────────────────────────────
+// ── Section: Flights ─────────────────────────────────────────────────────────
 
-function ItinerarySection({
-  items,
-  category,
-}: {
-  items: ItineraryItem[]
-  category: string
-}) {
-  const filtered = items.filter((i) => i.category === category)
-  if (filtered.length === 0) {
-    return (
-      <p className="text-sm text-muted-foreground italic">
-        No {(CATEGORY_LABELS[category] ?? category).toLowerCase()} bookings added yet.
-      </p>
-    )
-  }
-
+function FlightsSection() {
   return (
     <div className="space-y-4">
-      {filtered.map((item) => (
-        <div
-          key={item.id}
-          className="space-y-1.5 pb-4 border-b border-border last:border-0 last:pb-0"
-        >
+      {FLIGHTS.map((f, i) => (
+        <div key={i} className="space-y-1.5 pb-4 border-b border-border last:border-0 last:pb-0">
           <div className="flex items-start gap-2 flex-wrap">
-            <span className="font-medium text-sm">{item.title}</span>
-            {item.booking_ref && <BookingRef value={item.booking_ref} />}
+            <Badge variant="outline" className="text-xs shrink-0">{f.date}</Badge>
+            <span className="font-medium text-sm">{f.flight}</span>
+            {f.confirmation && <CopyableText value={f.confirmation} label="confirmation" />}
           </div>
-          {item.description && (
-            <p className="text-sm text-muted-foreground">{item.description}</p>
-          )}
-          {item.address && <AddressLink address={item.address} />}
-          {item.notes && (
+          <p className="text-sm text-muted-foreground">
+            {f.route}{f.departs ? ` \u2014 Departs ${f.departs}` : ""}
+          </p>
+          {f.notes && (
             <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
-              {item.notes}
+              {f.notes}
             </p>
           )}
-          {item.url && (
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline"
-            >
-              <ExternalLink className="h-3 w-3" />
-              View booking
-            </a>
+        </div>
+      ))}
+
+      <div className="pt-2">
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Transfers</h4>
+        {TRANSFERS.map((t, i) => (
+          <div key={i} className="space-y-1 pb-3 border-b border-border last:border-0 last:pb-0">
+            <div className="flex items-start gap-2">
+              <Badge variant="outline" className="text-xs shrink-0">{t.date}</Badge>
+              <span className="text-sm">{t.description}</span>
+            </div>
+            {t.notes && (
+              <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
+                <AlertTriangle className="h-3 w-3 inline mr-1" />
+                {t.notes}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ── Section: Train ───────────────────────────────────────────────────────────
+
+function TrainSection() {
+  return (
+    <div className="space-y-3">
+      <div className="flex items-start gap-2 flex-wrap">
+        <Badge variant="outline" className="text-xs">{TRAIN.date}</Badge>
+        <span className="font-medium text-sm">{TRAIN.train}</span>
+        <Badge variant="secondary" className="text-xs">{TRAIN.class}</Badge>
+      </div>
+      <p className="text-sm text-muted-foreground">{TRAIN.route}</p>
+      <p className="text-sm text-muted-foreground">
+        Departs {TRAIN.departs} \u2192 Arrives {TRAIN.arrives}
+      </p>
+
+      <div className="space-y-2 pt-2">
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Bookings</h4>
+        {TRAIN.bookings.map((b) => (
+          <div key={b.ref} className="flex items-start gap-2 flex-wrap bg-muted/40 rounded-xl px-3 py-2">
+            <CopyableText value={b.ref} label="booking ref" />
+            <div className="text-sm">
+              <span>{b.passengers}</span>
+              <span className="text-muted-foreground ml-2">({b.cost})</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {TRAIN.notes && (
+        <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
+          <AlertTriangle className="h-3 w-3 inline mr-1" />
+          {TRAIN.notes}
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ── Section: Hotels ──────────────────────────────────────────────────────────
+
+function HotelsSection() {
+  return (
+    <div className="space-y-4">
+      {ACCOMMODATIONS.map((a, i) => (
+        <div key={i} className="space-y-1.5 pb-4 border-b border-border last:border-0 last:pb-0">
+          <div className="flex items-start gap-2 flex-wrap">
+            <Badge variant="outline" className="text-xs shrink-0">{a.dates}</Badge>
+            <span className="font-medium text-sm">{a.name}</span>
+          </div>
+          <p className="text-xs text-muted-foreground">{a.city}</p>
+          <AddressLink address={a.address} />
+          {a.notes && (
+            <p className="text-xs text-muted-foreground italic">{a.notes}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+// ── Section: Activities ──────────────────────────────────────────────────────
+
+function ActivitiesSection() {
+  return (
+    <div className="space-y-4">
+      {ACTIVITIES.map((a, i) => (
+        <div key={i} className="space-y-1.5 pb-4 border-b border-border last:border-0 last:pb-0">
+          <div className="flex items-start gap-2 flex-wrap">
+            <Badge variant="outline" className="text-xs shrink-0">{a.date}</Badge>
+            <span className="font-medium text-sm">{a.title}</span>
+            <span className="text-xs text-muted-foreground">{a.time}</span>
+          </div>
+          {a.description && (
+            <p className="text-sm text-muted-foreground">{a.description}</p>
+          )}
+          {a.partySize && (
+            <p className="text-sm text-muted-foreground">{a.partySize}</p>
+          )}
+          {a.confirmation && <CopyableText value={a.confirmation} label="confirmation" />}
+          {a.address && <AddressLink address={a.address} />}
+          {a.cost && (
+            <p className="text-xs text-muted-foreground">{a.cost}</p>
+          )}
+          {a.notes && (
+            <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
+              {a.notes}
+            </p>
           )}
         </div>
       ))}
@@ -179,56 +268,34 @@ function ItinerarySection({
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function InfoPage() {
-  const { trip } = useTrip()
-  const [items, setItems] = useState<ItineraryItem[]>([])
-  const [loading, setLoading] = useState(true)
-
-  const fetchItems = useCallback(async () => {
-    if (!trip) return
-    const supabase = getSupabaseClient()
-    const { data } = await supabase
-      .from("itinerary_items")
-      .select("*")
-      .eq("trip_id", trip.id)
-      .order("sort_order")
-    if (data) setItems(data as ItineraryItem[])
-    setLoading(false)
-  }, [trip])
-
-  useEffect(() => {
-    fetchItems()
-  }, [fetchItems])
-
-  const countByCategory = (cat: string) => items.filter((i) => i.category === cat).length
-
   const sections = [
     {
       id: "flights",
       icon: Plane,
-      title: "Flights",
-      badge: countByCategory("flight"),
-      content: <ItinerarySection items={items} category="flight" />,
+      title: "Flights & Transfers",
+      badge: FLIGHTS.length + TRANSFERS.length,
+      content: <FlightsSection />,
     },
     {
       id: "trains",
       icon: Train,
-      title: "Trains",
-      badge: countByCategory("train"),
-      content: <ItinerarySection items={items} category="train" />,
+      title: "Train",
+      badge: 1,
+      content: <TrainSection />,
     },
     {
       id: "hotels",
       icon: Hotel,
-      title: "Hotels",
-      badge: countByCategory("hotel"),
-      content: <ItinerarySection items={items} category="hotel" />,
+      title: "Accommodations",
+      badge: ACCOMMODATIONS.length,
+      content: <HotelsSection />,
     },
     {
-      id: "restaurants",
-      icon: UtensilsCrossed,
-      title: "Restaurant Reservations",
-      badge: countByCategory("restaurant"),
-      content: <ItinerarySection items={items} category="restaurant" />,
+      id: "activities",
+      icon: Calendar,
+      title: "Activities & Reservations",
+      badge: ACTIVITIES.length,
+      content: <ActivitiesSection />,
     },
     {
       id: "emergency",
@@ -298,41 +365,33 @@ export default function InfoPage() {
       <PageHeader title="Info & Logistics" subtitle="Everything you need to know" />
 
       <div className="p-4 max-w-lg mx-auto pb-24">
-        {loading ? (
-          <div className="space-y-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />
-            ))}
-          </div>
-        ) : (
-          <Accordion type="multiple" className="space-y-2">
-            {sections.map((section) => (
-              <AccordionItem
-                key={section.id}
-                value={section.id}
-                className="border border-border rounded-xl px-4 overflow-hidden bg-card"
-              >
-                <AccordionTrigger className="text-sm font-medium hover:no-underline py-4">
-                  <div className="flex items-center gap-2.5 flex-1 text-left">
-                    <section.icon className="h-4 w-4 text-muted-foreground shrink-0" />
-                    <span className="flex-1">{section.title}</span>
-                    {section.badge > 0 && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-auto mr-2 text-xs tabular-nums"
-                      >
-                        {section.badge}
-                      </Badge>
-                    )}
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="pb-4">
-                  <div className="border-t border-border pt-4">{section.content}</div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        )}
+        <Accordion type="multiple" defaultValue={["flights", "trains", "hotels", "activities"]} className="space-y-2">
+          {sections.map((section) => (
+            <AccordionItem
+              key={section.id}
+              value={section.id}
+              className="border border-border rounded-xl px-4 overflow-hidden bg-card"
+            >
+              <AccordionTrigger className="text-sm font-medium hover:no-underline py-4">
+                <div className="flex items-center gap-2.5 flex-1 text-left">
+                  <section.icon className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="flex-1">{section.title}</span>
+                  {section.badge > 0 && (
+                    <Badge
+                      variant="secondary"
+                      className="ml-auto mr-2 text-xs tabular-nums"
+                    >
+                      {section.badge}
+                    </Badge>
+                  )}
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="pb-4">
+                <div className="border-t border-border pt-4">{section.content}</div>
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
       </div>
     </div>
   )
