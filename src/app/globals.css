@@ -152,3 +152,37 @@
 .animate-shake {
   animation: shake 0.3s ease-in-out;
 }
+
+/* Weather icon animations */
+@keyframes sun-pulse {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.4)); transform: scale(1); }
+  50% { filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.7)); transform: scale(1.1); }
+}
+
+@keyframes rain-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes cloud-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
+}
+
+@keyframes snow-fall {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(2px) rotate(10deg); }
+}
+
+@keyframes storm-flash {
+  0%, 90%, 100% { opacity: 1; }
+  95% { opacity: 0.7; }
+}
+
+.weather-icon[data-type="clear"] { animation: sun-pulse 3s ease-in-out infinite; display: inline-block; }
+.weather-icon[data-type="rain"],
+.weather-icon[data-type="drizzle"] { animation: rain-bounce 1.5s ease-in-out infinite; display: inline-block; }
+.weather-icon[data-type="cloudy"],
+.weather-icon[data-type="fog"] { animation: cloud-drift 4s ease-in-out infinite; display: inline-block; }
+.weather-icon[data-type="snow"] { animation: snow-fall 2s ease-in-out infinite; display: inline-block; }
+.weather-icon[data-type="storm"] { animation: storm-flash 2s ease-in-out infinite; display: inline-block; }

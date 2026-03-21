@@ -14,6 +14,7 @@ import {
   Smile,
   Info,
   TrendingUp,
+  CloudSun,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -28,6 +29,7 @@ const tabs = [
 ];
 
 const moreItems = [
+  { icon: CloudSun, label: 'Weather', href: '/trip/weather' },
   { icon: ListChecks, label: 'Wish List', href: '/trip/wishlist' },
   { icon: BarChart3, label: 'Polls', href: '/trip/polls' },
   { icon: Star, label: 'Highlights', href: '/trip/highlights' },
