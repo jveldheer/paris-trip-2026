@@ -26,7 +26,7 @@ interface DayHighlightData {
 }
 
 export default function HighlightsPage() {
-  const { trip, tripDays, currentMember } = useTrip()
+  const { trip, tripDays, currentMember, isOffline } = useTrip()
   const [dayData, setDayData] = useState<DayHighlightData[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -34,6 +34,12 @@ export default function HighlightsPage() {
 
   const fetchData = useCallback(async () => {
     if (!trip || tripDays.length === 0) return
+
+    if (isOffline) {
+      setLoading(false)
+      return
+    }
+
     const supabase = getSupabaseClient()
 
     const [momentsRes, photosRes, votesRes] = await Promise.all([

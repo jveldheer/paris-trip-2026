@@ -10,6 +10,7 @@ import { LoadingSkeleton } from "@/components/shared/loading-skeleton"
 import { useTrip } from "@/lib/hooks/use-trip"
 import { useRealtime } from "@/lib/hooks/use-realtime"
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { getLocalItems, setLocalItems } from "@/lib/offline-storage"
 import type { Poll, PollOption, PollVote, Member } from "@/types"
 
 type FullPoll = Poll & {
@@ -17,14 +18,23 @@ type FullPoll = Poll & {
   member?: Member
 }
 
+const STORAGE_KEY = "offline_polls"
+
 export default function PollsPage() {
-  const { trip, currentMember } = useTrip()
+  const { trip, currentMember, isOffline } = useTrip()
   const [polls, setPolls] = useState<FullPoll[]>([])
   const [loading, setLoading] = useState(true)
   const [showClosed, setShowClosed] = useState(false)
 
   const fetchPolls = useCallback(async () => {
     if (!trip) return
+
+    if (isOffline) {
+      setPolls(getLocalItems<FullPoll>(STORAGE_KEY))
+      setLoading(false)
+      return
+    }
+
     const supabase = getSupabaseClient()
     const { data } = await supabase
       .from("polls")
@@ -44,13 +54,12 @@ export default function PollsPage() {
 
     if (data) setPolls(data as FullPoll[])
     setLoading(false)
-  }, [trip])
+  }, [trip, isOffline])
 
   useEffect(() => {
     fetchPolls()
   }, [fetchPolls])
 
-  // Live vote updates
   useRealtime<PollVote & { id: string }>(
     "poll_votes",
     () => fetchPolls(),
@@ -60,13 +69,54 @@ export default function PollsPage() {
 
   async function handleVote(pollId: string, pollOptionId: string) {
     if (!currentMember) return
-    const supabase = getSupabaseClient()
 
+    if (isOffline) {
+      setPolls((prev) => {
+        const next = prev.map((p) => {
+          if (p.id !== pollId) return p
+          return {
+            ...p,
+            poll_options: p.poll_options.map((opt) => {
+              if (opt.id !== pollOptionId) return opt
+              return {
+                ...opt,
+                poll_votes: [
+                  ...opt.poll_votes,
+                  {
+                    id: `local-vote-${Date.now()}`,
+                    poll_option_id: pollOptionId,
+                    member_id: currentMember.id,
+                    member: currentMember,
+                  },
+                ],
+              }
+            }),
+          }
+        }) as FullPoll[]
+        setLocalItems(STORAGE_KEY, next)
+        return next
+      })
+      return
+    }
+
+    const supabase = getSupabaseClient()
     await supabase
       .from("poll_votes")
       .insert({ poll_option_id: pollOptionId, member_id: currentMember.id })
 
     fetchPolls()
+  }
+
+  function handleCreated(newPoll?: FullPoll) {
+    if (isOffline && newPoll) {
+      setPolls((prev) => {
+        const next = [newPoll, ...prev]
+        setLocalItems(STORAGE_KEY, next)
+        return next
+      })
+    } else {
+      fetchPolls()
+    }
   }
 
   const isEffectivelyClosed = (p: FullPoll) =>
@@ -82,7 +132,8 @@ export default function PollsPage() {
           <CreatePoll
             tripId={trip.id}
             memberId={currentMember.id}
-            onCreated={fetchPolls}
+            onCreated={handleCreated}
+            isOffline={isOffline}
           />
         )}
       </PageHeader>
@@ -98,7 +149,6 @@ export default function PollsPage() {
           />
         ) : (
           <>
-            {/* Active polls */}
             {activePolls.length > 0 && (
               <div className="space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -121,7 +171,6 @@ export default function PollsPage() {
               </p>
             )}
 
-            {/* Closed polls collapsible */}
             {closedPolls.length > 0 && (
               <div className="pt-2 border-t border-border">
                 <button

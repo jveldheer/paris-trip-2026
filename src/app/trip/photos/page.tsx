@@ -14,18 +14,23 @@ import { getSupabaseClient } from '@/lib/supabase/client'
 import { Photo } from '@/types'
 import { cn } from '@/lib/utils'
 
-type FilterType = 'all' | string // 'all' | tripDayId | 'member:<memberId>'
+type FilterType = 'all' | string
 
 export default function PhotosPage() {
-  const { trip, members, tripDays, currentMember } = useTrip()
+  const { trip, members, tripDays, currentMember, isOffline } = useTrip()
   const [photos, setPhotos] = useState<Photo[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null)
   const [filter, setFilter] = useState<FilterType>('all')
 
-  // Fetch photos on mount / trip change
   useEffect(() => {
     if (!trip) return
+
+    if (isOffline) {
+      setPhotos([])
+      setLoading(false)
+      return
+    }
 
     const supabase = getSupabaseClient()
     supabase
@@ -37,13 +42,11 @@ export default function PhotosPage() {
         setPhotos((data as Photo[]) ?? [])
         setLoading(false)
       })
-  }, [trip?.id])
+  }, [trip?.id, isOffline])
 
-  // Realtime — new photos appear live for everyone
   useRealtime<Photo>(
     'photos',
     useCallback((newPhoto) => {
-      // Fetch with member join so the avatar renders correctly
       getSupabaseClient()
         .from('photos')
         .select('*, member:members(*)')
@@ -67,7 +70,6 @@ export default function PhotosPage() {
     })
   }
 
-  // Build filter logic
   const filteredPhotos = photos.filter((p) => {
     if (filter === 'all') return true
     if (filter.startsWith('member:')) return p.member_id === filter.slice(7)
@@ -100,9 +102,7 @@ export default function PhotosPage() {
     <div className="flex flex-col min-h-screen">
       <PageHeader title="Photos" />
 
-      {/* Filter bars — sticky under the page header */}
       <div className="sticky top-[53px] z-10 bg-background/95 backdrop-blur-sm border-b border-border">
-        {/* Day filter */}
         <div className="flex gap-1.5 px-3 py-2 overflow-x-auto scrollbar-hide">
           {dayTabs.map((tab) => (
             <button
@@ -120,7 +120,6 @@ export default function PhotosPage() {
           ))}
         </div>
 
-        {/* Member filter */}
         {memberFilters.length > 0 && (
           <div className="flex gap-1.5 px-3 pb-2 overflow-x-auto scrollbar-hide">
             {memberFilters.map((m) => (
@@ -143,14 +142,15 @@ export default function PhotosPage() {
         )}
       </div>
 
-      {/* Photo grid */}
       <div className="flex-1 p-1 pb-32">
         {filteredPhotos.length === 0 ? (
           <EmptyState
             icon={Images}
             title="No photos yet"
             description={
-              filter === 'all'
+              isOffline
+                ? 'Photos require a database connection. Connect Supabase to enable uploads.'
+                : filter === 'all'
                 ? 'Be the first to upload a photo from the trip!'
                 : 'No photos match this filter.'
             }
@@ -160,15 +160,13 @@ export default function PhotosPage() {
         )}
       </div>
 
-      {/* Lightbox */}
       <PhotoViewer
         photo={selectedPhoto}
         onClose={() => setSelectedPhoto(null)}
         members={members}
       />
 
-      {/* Upload FAB — only when a member is selected */}
-      {currentMember && trip && (
+      {currentMember && trip && !isOffline && (
         <PhotoUpload
           tripId={trip.id}
           memberId={currentMember.id}

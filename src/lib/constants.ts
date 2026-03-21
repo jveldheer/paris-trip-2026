@@ -123,16 +123,6 @@ export const STATIC_MEMBERS: Member[] = MEMBERS_SEED.map((m, i) => ({
   sort_order: m.sort_order,
 }));
 
-export const STATIC_TRIP_DAYS: TripDay[] = TRIP_DAYS_SEED.map((d, i) => ({
-  id: `day-${i + 1}`,
-  trip_id: 'static-trip',
-  date: d.date,
-  city: d.city,
-  title: d.title,
-  summary: d.summary,
-  day_number: d.day_number,
-}));
-
 export const TRIP_DAYS_SEED = [
   { day_number: 1, date: '2026-04-03', city: 'Paris' as const, title: 'Arrival in Paris', summary: 'Welcome to France!' },
   { day_number: 2, date: '2026-04-04', city: 'Paris' as const, title: 'Paris Day 1', summary: 'Exploring the City of Light' },
@@ -148,3 +138,13 @@ export const TRIP_DAYS_SEED = [
   { day_number: 12, date: '2026-04-14', city: 'Lisbon' as const, title: 'Lisbon Day 1', summary: 'Tiles, hills, and pasteis' },
   { day_number: 13, date: '2026-04-15', city: 'Lisbon' as const, title: 'Departure Day', summary: 'Until next time' },
 ];
+
+export const STATIC_TRIP_DAYS: TripDay[] = TRIP_DAYS_SEED.map((d, i) => ({
+  id: `day-${i + 1}`,
+  trip_id: 'static-trip',
+  date: d.date,
+  city: d.city,
+  title: d.title,
+  summary: d.summary,
+  day_number: d.day_number,
+}));

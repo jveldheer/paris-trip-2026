@@ -87,7 +87,7 @@ function CityProgress() {
 // ── Recent Activity ───────────────────────────────────────────────────────────
 
 function RecentActivity() {
-  const { supabase, trip, members } = useTrip()
+  const { supabase, trip, members, isOffline } = useTrip()
   const [moments, setMoments] = useState<MomentWithMember[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -95,6 +95,23 @@ function RecentActivity() {
   useEffect(() => {
     if (!trip) return
     setLoading(true)
+
+    if (isOffline) {
+      // Load from localStorage in offline mode
+      try {
+        const raw = localStorage.getItem("offline_moments")
+        const local = raw ? JSON.parse(raw) : []
+        const enriched: MomentWithMember[] = local.slice(0, 5).map((m: any) => ({
+          ...m,
+          member: members.find((mb) => mb.id === m.member_id),
+        }))
+        setMoments(enriched)
+      } catch {
+        setMoments([])
+      }
+      setLoading(false)
+      return
+    }
 
     supabase
       .from("moments")
@@ -108,7 +125,6 @@ function RecentActivity() {
           setLoading(false)
           return
         }
-        // Join member data client-side from context
         const enriched: MomentWithMember[] = (data ?? []).map((m) => ({
           ...m,
           member: members.find((mb) => mb.id === m.member_id),
@@ -116,7 +132,7 @@ function RecentActivity() {
         setMoments(enriched)
         setLoading(false)
       })
-  }, [trip?.id, members.length]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [trip?.id, members.length, isOffline]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const momentTypeEmoji: Record<string, string> = {
     note: "📝",

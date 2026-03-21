@@ -8,12 +8,15 @@ import { MemoryReveal } from "@/components/memory-jar/memory-reveal"
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton"
 import { useTrip } from "@/lib/hooks/use-trip"
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { getLocalItems, setLocalItems } from "@/lib/offline-storage"
 import { TRIP_END } from "@/lib/constants"
 import type { MemoryJarItem } from "@/types"
 import { format } from "date-fns"
 
+const STORAGE_KEY = "offline_memory_jar"
+
 export default function MemoryJarPage() {
-  const { trip, currentMember } = useTrip()
+  const { trip, currentMember, isOffline } = useTrip()
   const [memories, setMemories] = useState<MemoryJarItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -22,6 +25,13 @@ export default function MemoryJarPage() {
 
   const fetchMemories = useCallback(async () => {
     if (!trip) return
+
+    if (isOffline) {
+      setMemories(getLocalItems<MemoryJarItem>(STORAGE_KEY))
+      setLoading(false)
+      return
+    }
+
     const supabase = getSupabaseClient()
     const { data } = await supabase
       .from("memory_jar")
@@ -30,11 +40,19 @@ export default function MemoryJarPage() {
       .order("created_at", { ascending: true })
     if (data) setMemories(data as MemoryJarItem[])
     setLoading(false)
-  }, [trip])
+  }, [trip, isOffline])
 
   useEffect(() => {
     fetchMemories()
   }, [fetchMemories])
+
+  function handleAdded() {
+    if (isOffline) {
+      setMemories(getLocalItems<MemoryJarItem>(STORAGE_KEY))
+    } else {
+      fetchMemories()
+    }
+  }
 
   const sealedCount = memories.length
 
@@ -46,7 +64,6 @@ export default function MemoryJarPage() {
         {loading ? (
           <LoadingSkeleton count={2} />
         ) : tripEnded ? (
-          /* --- POST-TRIP: Reveal mode --- */
           <div className="space-y-4">
             <div className="rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 p-5 text-white text-center shadow-lg">
               <div className="text-4xl mb-2 select-none">🏺</div>
@@ -58,9 +75,7 @@ export default function MemoryJarPage() {
             <MemoryReveal memories={memories} />
           </div>
         ) : (
-          /* --- PRE/DURING-TRIP: Add mode --- */
           <div className="space-y-4">
-            {/* Jar status card */}
             <div className="rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/20 border border-amber-200 dark:border-amber-800 p-5 text-center">
               <div className="text-5xl mb-3 select-none">🏺</div>
               <div className="flex items-center justify-center gap-2 mb-1">
@@ -74,16 +89,15 @@ export default function MemoryJarPage() {
               </p>
             </div>
 
-            {/* Add memory form */}
             {trip && (
               <AddMemory
                 tripId={trip.id}
                 memberId={currentMember?.id ?? null}
-                onAdded={fetchMemories}
+                onAdded={handleAdded}
+                isOffline={isOffline}
               />
             )}
 
-            {/* Info blurb */}
             <div className="rounded-xl bg-muted/50 px-4 py-3 flex items-start gap-3">
               <Archive className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">

@@ -29,12 +29,38 @@ interface Stats {
 }
 
 export default function StatsPage() {
-  const { trip, members } = useTrip()
+  const { trip, members, isOffline } = useTrip()
   const [stats, setStats] = useState<Stats | null>(null)
   const [loading, setLoading] = useState(true)
 
   const fetchStats = useCallback(async () => {
     if (!trip) return
+
+    if (isOffline) {
+      // Build stats from localStorage
+      const moments = JSON.parse(localStorage.getItem("offline_moments") || "[]")
+      const wishlist = JSON.parse(localStorage.getItem("offline_wishlist") || "[]")
+      const polls = JSON.parse(localStorage.getItem("offline_polls") || "[]")
+      const memories = JSON.parse(localStorage.getItem("offline_memory_jar") || "[]")
+
+      const momentsByMember: Record<string, number> = {}
+      for (const m of moments) {
+        momentsByMember[m.member_id] = (momentsByMember[m.member_id] ?? 0) + 1
+      }
+
+      setStats({
+        photos: 0,
+        moments: moments.length,
+        wishlistDone: wishlist.filter((w: any) => w.checked).length,
+        polls: polls.length,
+        memories: memories.length,
+        photosByMember: {},
+        momentsByMember,
+      })
+      setLoading(false)
+      return
+    }
+
     const supabase = getSupabaseClient()
 
     const [photosRes, momentsRes, wishlistRes, pollsRes, memoryRes] = await Promise.all([

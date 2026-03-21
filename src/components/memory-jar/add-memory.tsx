@@ -5,14 +5,18 @@ import { Lock, Send } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { addLocalItem, generateId } from "@/lib/offline-storage"
 
 interface AddMemoryProps {
   tripId: string
   memberId: string | null
   onAdded?: () => void
+  isOffline?: boolean
 }
 
-export function AddMemory({ tripId, memberId, onAdded }: AddMemoryProps) {
+const STORAGE_KEY = "offline_memory_jar"
+
+export function AddMemory({ tripId, memberId, onAdded, isOffline }: AddMemoryProps) {
   const [content, setContent] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
@@ -24,6 +28,23 @@ export function AddMemory({ tripId, memberId, onAdded }: AddMemoryProps) {
     if (!text) return
     setSubmitting(true)
     setError(null)
+
+    if (isOffline) {
+      addLocalItem(STORAGE_KEY, {
+        id: generateId(),
+        trip_id: tripId,
+        member_id: memberId ?? null,
+        content: text,
+        revealed: false,
+        created_at: new Date().toISOString(),
+      })
+      setContent("")
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+      setSubmitting(false)
+      onAdded?.()
+      return
+    }
 
     try {
       const supabase = getSupabaseClient()

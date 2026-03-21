@@ -12,11 +12,13 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { generateId } from "@/lib/offline-storage"
 
 interface CreatePollProps {
   tripId: string
   memberId: string
-  onCreated?: () => void
+  onCreated?: (poll?: any) => void
+  isOffline?: boolean
 }
 
 const CLOSE_OPTIONS = [
@@ -27,7 +29,7 @@ const CLOSE_OPTIONS = [
   { label: "Tomorrow", value: 1440 },
 ]
 
-export function CreatePoll({ tripId, memberId, onCreated }: CreatePollProps) {
+export function CreatePoll({ tripId, memberId, onCreated, isOffline }: CreatePollProps) {
   const [open, setOpen] = useState(false)
   const [question, setQuestion] = useState("")
   const [options, setOptions] = useState(["", ""])
@@ -61,6 +63,39 @@ export function CreatePoll({ tripId, memberId, onCreated }: CreatePollProps) {
     if (validOptions.length < 2) { setError("Need at least 2 options."); return }
 
     setSubmitting(true)
+
+    if (isOffline) {
+      const pollId = generateId()
+      const closesAt = closeIn
+        ? new Date(Date.now() + closeIn * 60 * 1000).toISOString()
+        : null
+
+      const localPoll = {
+        id: pollId,
+        trip_id: tripId,
+        member_id: memberId,
+        question: q,
+        is_active: true,
+        closes_at: closesAt,
+        created_at: new Date().toISOString(),
+        poll_options: validOptions.map((text, i) => ({
+          id: generateId(),
+          poll_id: pollId,
+          text,
+          sort_order: i,
+          poll_votes: [],
+        })),
+      }
+
+      setQuestion("")
+      setOptions(["", ""])
+      setCloseIn(null)
+      setOpen(false)
+      setSubmitting(false)
+      onCreated?.(localPoll)
+      return
+    }
+
     try {
       const supabase = getSupabaseClient()
 
@@ -85,7 +120,6 @@ export function CreatePoll({ tripId, memberId, onCreated }: CreatePollProps) {
       const { error: optErr } = await supabase.from("poll_options").insert(optionRows)
       if (optErr) throw optErr
 
-      // Reset
       setQuestion("")
       setOptions(["", ""])
       setCloseIn(null)
@@ -109,7 +143,6 @@ export function CreatePoll({ tripId, memberId, onCreated }: CreatePollProps) {
           <DialogTitle>Create a Poll</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-1">
-          {/* Question */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Question</label>
             <Input
@@ -121,7 +154,6 @@ export function CreatePoll({ tripId, memberId, onCreated }: CreatePollProps) {
             />
           </div>
 
-          {/* Options */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-foreground">
               Options <span className="text-muted-foreground font-normal">({options.length}/6)</span>
@@ -159,7 +191,6 @@ export function CreatePoll({ tripId, memberId, onCreated }: CreatePollProps) {
             )}
           </div>
 
-          {/* Close time */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Close poll</label>
             <div className="relative">
