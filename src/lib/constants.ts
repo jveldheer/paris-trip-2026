@@ -91,17 +91,47 @@ export const MOMENT_TYPES: { value: MomentType; label: string; emoji: string }[]
 ];
 
 export const MEMBERS_SEED = [
-  { name: 'Jared', emoji: '👨', is_kid: false, sort_order: 1 },
-  { name: 'Morgan', emoji: '👩', is_kid: false, sort_order: 2 },
-  { name: 'Aaron', emoji: '🧔', is_kid: false, sort_order: 3 },
-  { name: 'Jodi', emoji: '👩‍🦰', is_kid: false, sort_order: 4 },
-  { name: 'Eden', emoji: '👧', is_kid: true, sort_order: 5 },
-  { name: 'Edwin II', emoji: '👦', is_kid: true, sort_order: 6 },
-  { name: 'Eva', emoji: '🧒', is_kid: true, sort_order: 7 },
-  { name: 'Lennox', emoji: '👶', is_kid: true, sort_order: 8 },
-  { name: 'James', emoji: '🧒', is_kid: true, sort_order: 9 },
-  { name: 'Beau', emoji: '👶', is_kid: true, sort_order: 10 },
+  { name: 'Jared', emoji: '🏈', is_kid: false, sort_order: 1 },
+  { name: 'Morgan', emoji: '🌸', is_kid: false, sort_order: 2 },
+  { name: 'Aaron', emoji: '💪', is_kid: false, sort_order: 3 },
+  { name: 'Jodi', emoji: '✨', is_kid: false, sort_order: 4 },
+  { name: 'Eden', emoji: '🌟', is_kid: true, sort_order: 5 },
+  { name: 'Edwin', emoji: '🎂', is_kid: true, sort_order: 6 },
+  { name: 'Eva', emoji: '🦋', is_kid: true, sort_order: 7 },
+  { name: 'Lennox', emoji: '⚡', is_kid: true, sort_order: 8 },
+  { name: 'James', emoji: '🚀', is_kid: true, sort_order: 9 },
+  { name: 'Beau', emoji: '🐾', is_kid: true, sort_order: 10 },
 ];
+
+import type { Member, TripDay, Trip } from '@/types';
+
+export const STATIC_TRIP: Trip = {
+  id: 'static-trip',
+  code: TRIP_CODE,
+  name: 'Veldheer Europe 2026',
+  start_date: TRIP_START,
+  end_date: TRIP_END,
+  created_at: '2026-01-01T00:00:00Z',
+};
+
+export const STATIC_MEMBERS: Member[] = MEMBERS_SEED.map((m, i) => ({
+  id: `member-${i + 1}`,
+  trip_id: 'static-trip',
+  name: m.name,
+  emoji: m.emoji,
+  is_kid: m.is_kid,
+  sort_order: m.sort_order,
+}));
+
+export const STATIC_TRIP_DAYS: TripDay[] = TRIP_DAYS_SEED.map((d, i) => ({
+  id: `day-${i + 1}`,
+  trip_id: 'static-trip',
+  date: d.date,
+  city: d.city,
+  title: d.title,
+  summary: d.summary,
+  day_number: d.day_number,
+}));
 
 export const TRIP_DAYS_SEED = [
   { day_number: 1, date: '2026-04-03', city: 'Paris' as const, title: 'Arrival in Paris', summary: 'Welcome to France!' },

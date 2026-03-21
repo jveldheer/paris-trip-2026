@@ -23,10 +23,11 @@ export default function PasswordPage() {
   const [checking, setChecking] = useState(false)
 
   // If already authed, redirect immediately
-  if (typeof window !== "undefined" && hasAuthCookie()) {
-    router.replace("/trip")
-    return null
-  }
+  useState(() => {
+    if (typeof window !== "undefined" && hasAuthCookie()) {
+      router.replace("/trip")
+    }
+  })
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -45,7 +46,7 @@ export default function PasswordPage() {
       <div className="w-full max-w-xs animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="text-center mb-8">
           <div className="text-5xl mb-4" aria-hidden="true">
-            🇫🇷
+            🇫🇷✈️🌊🇵🇹
           </div>
           <h1 className="text-2xl font-bold mb-1">Veldheer Europe 2026</h1>
           <p className="text-muted-foreground text-sm">Enter the password to continue</p>

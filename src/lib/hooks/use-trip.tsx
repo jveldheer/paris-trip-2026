@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { Trip, Member, TripDay } from "@/types"
 import { getSupabaseClient } from "@/lib/supabase/client"
-import { TRIP_CODE } from "@/lib/constants"
+import { TRIP_CODE, STATIC_TRIP, STATIC_MEMBERS, STATIC_TRIP_DAYS } from "@/lib/constants"
 
 interface TripContextValue {
   trip: Trip | null
@@ -13,6 +13,7 @@ interface TripContextValue {
   setCurrentMember: (member: Member) => void
   supabase: ReturnType<typeof getSupabaseClient>
   loading: boolean
+  isOffline: boolean
 }
 
 const TripContext = createContext<TripContextValue | null>(null)
@@ -34,20 +35,43 @@ export function TripProvider({ children }: { children: ReactNode }) {
   const [currentMember, setCurrentMemberState] = useState<Member | null>(null)
   const [tripDays, setTripDays] = useState<TripDay[]>([])
   const [loading, setLoading] = useState(true)
+  const [isOffline, setIsOffline] = useState(false)
 
   const supabase = getSupabaseClient()
 
   useEffect(() => {
     async function loadTrip() {
-      const client = getSupabaseClient()
+      // Skip Supabase entirely if using placeholder credentials
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
+      const isPlaceholder = !supabaseUrl || supabaseUrl.includes("placeholder") || supabaseUrl.includes("your-project")
 
-      const { data: tripData } = await client
-        .from("trips")
-        .select("*")
-        .eq("code", TRIP_CODE)
-        .single()
+      if (isPlaceholder) {
+        setIsOffline(true)
+        setTrip(STATIC_TRIP)
+        setMembers(STATIC_MEMBERS)
+        setTripDays(STATIC_TRIP_DAYS)
+        const memberId = getCookie("member_id")
+        if (memberId) {
+          const found = STATIC_MEMBERS.find((m) => m.id === memberId)
+          if (found) setCurrentMemberState(found)
+        }
+        setLoading(false)
+        return
+      }
 
-      if (tripData) {
+      try {
+        const client = getSupabaseClient()
+
+        const { data: tripData, error: tripError } = await client
+          .from("trips")
+          .select("*")
+          .eq("code", TRIP_CODE)
+          .single()
+
+        if (tripError || !tripData) {
+          throw new Error("Supabase unavailable")
+        }
+
         setTrip(tripData)
 
         const [membersRes, daysRes] = await Promise.all([
@@ -55,12 +79,31 @@ export function TripProvider({ children }: { children: ReactNode }) {
           client.from("trip_days").select("*").eq("trip_id", tripData.id).order("day_number"),
         ])
 
-        setMembers(membersRes.data || [])
-        setTripDays(daysRes.data || [])
+        const loadedMembers = membersRes.data && membersRes.data.length > 0
+          ? membersRes.data
+          : STATIC_MEMBERS
+        const loadedDays = daysRes.data && daysRes.data.length > 0
+          ? daysRes.data
+          : STATIC_TRIP_DAYS
+
+        setMembers(loadedMembers)
+        setTripDays(loadedDays)
 
         const memberId = getCookie("member_id")
-        if (memberId && membersRes.data) {
-          const found = membersRes.data.find((m: Member) => m.id === memberId)
+        if (memberId) {
+          const found = loadedMembers.find((m: Member) => m.id === memberId)
+          if (found) setCurrentMemberState(found)
+        }
+      } catch {
+        // Supabase unavailable — use static data
+        setIsOffline(true)
+        setTrip(STATIC_TRIP)
+        setMembers(STATIC_MEMBERS)
+        setTripDays(STATIC_TRIP_DAYS)
+
+        const memberId = getCookie("member_id")
+        if (memberId) {
+          const found = STATIC_MEMBERS.find((m) => m.id === memberId)
           if (found) setCurrentMemberState(found)
         }
       }
@@ -77,7 +120,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
   return (
     <TripContext.Provider
-      value={{ trip, members, currentMember, tripDays, setCurrentMember, supabase, loading }}
+      value={{ trip, members, currentMember, tripDays, setCurrentMember, supabase, loading, isOffline }}
     >
       {children}
     </TripContext.Provider>

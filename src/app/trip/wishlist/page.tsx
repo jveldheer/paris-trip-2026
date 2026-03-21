@@ -6,7 +6,6 @@ import {
   Eye,
   Zap,
   ShoppingBag,
-  ListChecks,
   type LucideIcon,
 } from 'lucide-react'
 import { PageHeader } from '@/components/shared/page-header'
@@ -18,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useTrip } from '@/lib/hooks/use-trip'
 import { useRealtime } from '@/lib/hooks/use-realtime'
 import { getSupabaseClient } from '@/lib/supabase/client'
+import { getLocalItems, setLocalItems, updateLocalItem } from '@/lib/offline-storage'
 import { WishlistItem, WishlistCategory } from '@/types'
 import { WISHLIST_CATEGORY_LABELS } from '@/lib/constants'
 
@@ -32,15 +32,22 @@ const CATEGORY_TABS: {
   { value: 'buy', label: 'Buy', icon: ShoppingBag },
 ]
 
+const STORAGE_KEY = 'offline_wishlist'
+
 export default function WishlistPage() {
-  const { trip, members, currentMember } = useTrip()
+  const { trip, members, currentMember, isOffline } = useTrip()
   const [items, setItems] = useState<WishlistItem[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<WishlistCategory>('eat')
 
-  // Initial fetch
   useEffect(() => {
     if (!trip) return
+
+    if (isOffline) {
+      setItems(getLocalItems<WishlistItem>(STORAGE_KEY))
+      setLoading(false)
+      return
+    }
 
     const supabase = getSupabaseClient()
     supabase
@@ -54,14 +61,11 @@ export default function WishlistPage() {
         setItems((data as WishlistItem[]) ?? [])
         setLoading(false)
       })
-  }, [trip?.id])
+  }, [trip?.id, isOffline])
 
-  // Realtime — live inserts and updates
   useRealtime<WishlistItem>(
     'wishlist_items',
-    // onInsert
     useCallback((newItem) => {
-      // Re-fetch with joins
       getSupabaseClient()
         .from('wishlist_items')
         .select(
@@ -78,7 +82,6 @@ export default function WishlistPage() {
           }
         })
     }, []),
-    // onUpdate
     useCallback((updatedItem: WishlistItem) => {
       getSupabaseClient()
         .from('wishlist_items')
@@ -103,9 +106,8 @@ export default function WishlistPage() {
     const newChecked = !item.checked
     const newCheckedBy = newChecked ? currentMember.id : null
 
-    // Optimistic update
-    setItems((prev) =>
-      prev.map((i) =>
+    setItems((prev) => {
+      const next = prev.map((i) =>
         i.id === item.id
           ? {
               ...i,
@@ -115,36 +117,40 @@ export default function WishlistPage() {
             }
           : i
       )
-    )
+      if (isOffline) setLocalItems(STORAGE_KEY, next)
+      return next
+    })
 
-    const supabase = getSupabaseClient()
-    const { error } = await supabase
-      .from('wishlist_items')
-      .update({ checked: newChecked, checked_by: newCheckedBy })
-      .eq('id', item.id)
+    if (!isOffline) {
+      const supabase = getSupabaseClient()
+      const { error } = await supabase
+        .from('wishlist_items')
+        .update({ checked: newChecked, checked_by: newCheckedBy })
+        .eq('id', item.id)
 
-    if (error) {
-      // Rollback on error
-      setItems((prev) =>
-        prev.map((i) =>
-          i.id === item.id
-            ? {
-                ...i,
-                checked: item.checked,
-                checked_by: item.checked_by,
-                checked_by_member: item.checked_by_member,
-              }
-            : i
+      if (error) {
+        setItems((prev) =>
+          prev.map((i) =>
+            i.id === item.id
+              ? {
+                  ...i,
+                  checked: item.checked,
+                  checked_by: item.checked_by,
+                  checked_by_member: item.checked_by_member,
+                }
+              : i
+          )
         )
-      )
-      console.error('Toggle failed:', error)
+        console.error('Toggle failed:', error)
+      }
     }
   }
 
   function handleAdd(newItem: WishlistItem) {
     setItems((prev) => {
-      if (prev.some((i) => i.id === newItem.id)) return prev
-      return [...prev, newItem]
+      const next = prev.some((i) => i.id === newItem.id) ? prev : [...prev, newItem]
+      if (isOffline) setLocalItems(STORAGE_KEY, next)
+      return next
     })
   }
 
@@ -157,7 +163,6 @@ export default function WishlistPage() {
         onValueChange={(v) => setActiveTab(v as WishlistCategory)}
         className="flex-1 flex flex-col"
       >
-        {/* Tab bar */}
         <div className="sticky top-[53px] z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 pt-3 pb-0">
           <TabsList className="w-full grid grid-cols-4">
             {CATEGORY_TABS.map((cat) => {
@@ -176,7 +181,6 @@ export default function WishlistPage() {
           </TabsList>
         </div>
 
-        {/* Tab content */}
         {CATEGORY_TABS.map((cat) => {
           const catItems = items.filter((i) => i.category === cat.value)
           const Icon = cat.icon
@@ -209,13 +213,13 @@ export default function WishlistPage() {
         })}
       </Tabs>
 
-      {/* Floating add button — only when a member is selected */}
       {currentMember && trip && (
         <AddWishlistItem
           tripId={trip.id}
           memberId={currentMember.id}
           category={activeTab}
           onAdd={handleAdd}
+          isOffline={isOffline}
         />
       )}
     </div>

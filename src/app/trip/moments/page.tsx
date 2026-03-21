@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/shared/empty-state'
 import { useTrip } from '@/lib/hooks/use-trip'
 import { useRealtime } from '@/lib/hooks/use-realtime'
 import { getSupabaseClient } from '@/lib/supabase/client'
+import { getLocalItems, setLocalItems } from '@/lib/offline-storage'
 import { Moment, MomentType } from '@/types'
 import { MOMENT_TYPES } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -21,15 +22,22 @@ const FILTER_TABS: { label: string; value: FilterType; emoji: string }[] = [
   ...MOMENT_TYPES.map((t) => ({ label: t.label, value: t.value as FilterType, emoji: t.emoji })),
 ]
 
+const STORAGE_KEY = 'offline_moments'
+
 export default function MomentsPage() {
-  const { trip, currentMember, tripDays } = useTrip()
+  const { trip, currentMember, tripDays, isOffline } = useTrip()
   const [moments, setMoments] = useState<Moment[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<FilterType>('all')
 
-  // Initial fetch
   useEffect(() => {
     if (!trip) return
+
+    if (isOffline) {
+      setMoments(getLocalItems<Moment>(STORAGE_KEY))
+      setLoading(false)
+      return
+    }
 
     const supabase = getSupabaseClient()
     supabase
@@ -41,13 +49,11 @@ export default function MomentsPage() {
         setMoments((data as Moment[]) ?? [])
         setLoading(false)
       })
-  }, [trip?.id])
+  }, [trip?.id, isOffline])
 
-  // Realtime — new moments appear live
   useRealtime<Moment>(
     'moments',
     useCallback((newMoment) => {
-      // Re-fetch with joins for complete data
       getSupabaseClient()
         .from('moments')
         .select('*, member:members(*), trip_day:trip_days(*)')
@@ -66,8 +72,9 @@ export default function MomentsPage() {
 
   function handleAdd(moment: Moment) {
     setMoments((prev) => {
-      if (prev.some((m) => m.id === moment.id)) return prev
-      return [moment, ...prev]
+      const next = prev.some((m) => m.id === moment.id) ? prev : [moment, ...prev]
+      if (isOffline) setLocalItems(STORAGE_KEY, next)
+      return next
     })
   }
 
@@ -78,7 +85,6 @@ export default function MomentsPage() {
     <div className="flex flex-col min-h-screen">
       <PageHeader title="Moments" />
 
-      {/* Filter tabs — sticky */}
       <div className="sticky top-[53px] z-10 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex gap-1.5 px-3 py-2 overflow-x-auto scrollbar-hide">
           {FILTER_TABS.map((tab) => (
@@ -98,7 +104,6 @@ export default function MomentsPage() {
         </div>
       </div>
 
-      {/* Feed */}
       <div className="flex-1 p-4 pb-32">
         {loading ? (
           <LoadingSkeleton variant="card" count={4} />
@@ -117,13 +122,13 @@ export default function MomentsPage() {
         )}
       </div>
 
-      {/* Add FAB — only when a member is selected */}
       {currentMember && trip && (
         <AddMoment
           tripId={trip.id}
           memberId={currentMember.id}
           tripDays={tripDays}
           onAdd={handleAdd}
+          isOffline={isOffline}
         />
       )}
     </div>

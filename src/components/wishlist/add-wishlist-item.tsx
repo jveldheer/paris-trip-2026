@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { getSupabaseClient } from '@/lib/supabase/client'
+import { generateId } from '@/lib/offline-storage'
 import { WishlistCategory, WishlistItem } from '@/types'
 import { WISHLIST_CATEGORY_LABELS } from '@/lib/constants'
 
@@ -20,9 +21,10 @@ interface AddWishlistItemProps {
   memberId: string
   category: WishlistCategory
   onAdd: (item: WishlistItem) => void
+  isOffline?: boolean
 }
 
-export function AddWishlistItem({ tripId, memberId, category, onAdd }: AddWishlistItemProps) {
+export function AddWishlistItem({ tripId, memberId, category, onAdd, isOffline }: AddWishlistItemProps) {
   const [open, setOpen] = useState(false)
   const [title, setTitle] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -35,6 +37,24 @@ export function AddWishlistItem({ tripId, memberId, category, onAdd }: AddWishli
 
     setSubmitting(true)
     setError(null)
+
+    if (isOffline) {
+      const localItem: WishlistItem = {
+        id: generateId(),
+        trip_id: tripId,
+        member_id: memberId,
+        title: trimmed,
+        category,
+        checked: false,
+        checked_by: null,
+        created_at: new Date().toISOString(),
+      }
+      onAdd(localItem)
+      setTitle('')
+      setOpen(false)
+      setSubmitting(false)
+      return
+    }
 
     try {
       const supabase = getSupabaseClient()

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { getSupabaseClient } from '@/lib/supabase/client'
+import { generateId } from '@/lib/offline-storage'
 import { Moment, MomentType, TripDay } from '@/types'
 import { MOMENT_TYPES } from '@/lib/constants'
 
@@ -27,9 +28,10 @@ interface AddMomentProps {
   memberId: string
   tripDays: TripDay[]
   onAdd?: (moment: Moment) => void
+  isOffline?: boolean
 }
 
-export function AddMoment({ tripId, memberId, tripDays, onAdd }: AddMomentProps) {
+export function AddMoment({ tripId, memberId, tripDays, onAdd, isOffline }: AddMomentProps) {
   const [open, setOpen] = useState(false)
   const [content, setContent] = useState('')
   const [momentType, setMomentType] = useState<MomentType>('note')
@@ -51,6 +53,23 @@ export function AddMoment({ tripId, memberId, tripDays, onAdd }: AddMomentProps)
 
     setSubmitting(true)
     setError(null)
+
+    if (isOffline) {
+      const localMoment: Moment = {
+        id: generateId(),
+        trip_id: tripId,
+        member_id: memberId,
+        content: trimmed,
+        moment_type: momentType,
+        trip_day_id: dayId === 'none' ? null : dayId,
+        created_at: new Date().toISOString(),
+      }
+      onAdd?.(localMoment)
+      resetForm()
+      setOpen(false)
+      setSubmitting(false)
+      return
+    }
 
     try {
       const supabase = getSupabaseClient()
@@ -102,7 +121,6 @@ export function AddMoment({ tripId, memberId, tripDays, onAdd }: AddMomentProps)
         </SheetHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Content textarea */}
           <Textarea
             placeholder="What happened? A quote, a funny moment, a highlight…"
             value={content}
@@ -114,7 +132,6 @@ export function AddMoment({ tripId, memberId, tripDays, onAdd }: AddMomentProps)
             maxLength={1000}
           />
 
-          {/* Type selector */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">Type</label>
             <Select
@@ -136,7 +153,6 @@ export function AddMoment({ tripId, memberId, tripDays, onAdd }: AddMomentProps)
             </Select>
           </div>
 
-          {/* Day selector (optional) */}
           {tripDays.length > 0 && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground">
