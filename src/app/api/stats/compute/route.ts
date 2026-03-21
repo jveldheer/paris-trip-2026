@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
+import { TRIP_CODE } from "@/lib/constants"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co"
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder"
 
 export async function GET(req: NextRequest) {
-  const tripCode = req.headers.get("x-trip-code") || ""
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
   const { data: trip } = await supabase
     .from("trips")
     .select("id")
-    .eq("code", tripCode)
+    .eq("code", TRIP_CODE)
     .single()
 
   if (!trip) {

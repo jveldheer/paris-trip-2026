@@ -3,9 +3,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { Trip, Member, TripDay } from "@/types"
 import { getSupabaseClient } from "@/lib/supabase/client"
+import { TRIP_CODE } from "@/lib/constants"
 
 interface TripContextValue {
-  tripCode: string | null
   trip: Trip | null
   members: Member[]
   currentMember: Member | null
@@ -29,34 +29,22 @@ function setCookie(name: string, value: string, days: number) {
 }
 
 export function TripProvider({ children }: { children: ReactNode }) {
-  const [tripCode, setTripCode] = useState<string | null>(null)
   const [trip, setTrip] = useState<Trip | null>(null)
   const [members, setMembers] = useState<Member[]>([])
   const [currentMember, setCurrentMemberState] = useState<Member | null>(null)
   const [tripDays, setTripDays] = useState<TripDay[]>([])
   const [loading, setLoading] = useState(true)
 
-  const supabase = getSupabaseClient(tripCode || undefined)
+  const supabase = getSupabaseClient()
 
   useEffect(() => {
-    const code = getCookie("trip_access")
-    if (code) {
-      setTripCode(code)
-    } else {
-      setLoading(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!tripCode) return
-
     async function loadTrip() {
-      const client = getSupabaseClient(tripCode!)
+      const client = getSupabaseClient()
 
       const { data: tripData } = await client
         .from("trips")
         .select("*")
-        .eq("code", tripCode!)
+        .eq("code", TRIP_CODE)
         .single()
 
       if (tripData) {
@@ -80,7 +68,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
     }
 
     loadTrip()
-  }, [tripCode])
+  }, [])
 
   function setCurrentMember(member: Member) {
     setCurrentMemberState(member)
@@ -89,7 +77,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
 
   return (
     <TripContext.Provider
-      value={{ tripCode, trip, members, currentMember, tripDays, setCurrentMember, supabase, loading }}
+      value={{ trip, members, currentMember, tripDays, setCurrentMember, supabase, loading }}
     >
       {children}
     </TripContext.Provider>
