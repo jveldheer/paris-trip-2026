@@ -35,6 +35,9 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
     item("hotel", "Check in: Maison Galante", {
       location_name: "Maison Galante",
       address: "8 Rue de l\u2019Arcade, 75008 Paris",
+      start_time: "2026-04-03T15:00:00",
+      description: "Host: Maison Galante. Check-in: 3:00 PM. Checkout: Mon Apr 6 at 11:00 AM.",
+      notes: "3 nights in Paris. Checkout Apr 6 by 11:00 AM — TGV departs 11:22 AM!",
       sort_order: 1,
     }),
     item("activity", "Louvre Museum", {
@@ -88,7 +91,9 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
     item("hotel", "Check in: Villa Eleanor", {
       location_name: "Villa Eleanor",
       address: "135 Avenue du Ch\u00e2teau d\u2019Eau, Saint-Rapha\u00ebl, France",
-      notes: "Arriving after TGV ~4:15 PM.",
+      start_time: "2026-04-06T17:00:00",
+      description: "Host: Laurence. Check-in: 5:00 PM. Checkout: Sat Apr 11 at 10:00 AM.",
+      notes: "Arriving after TGV ~4:15 PM. Check-in from 5:00 PM. 5 nights on the French Riviera.",
       sort_order: 3,
     }),
   ],
@@ -148,6 +153,9 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
     item("hotel", "Check in: Jo\u00e3o\u2019s Apartment", {
       location_name: "Jo\u00e3o\u2019s Apartment",
       address: "Cal\u00e7ada de Salvador Correia de S\u00e1 4, Lisbon, Portugal",
+      start_time: "2026-04-11T16:00:00",
+      description: "Host: Jo\u00e3o. Check-in: 4:00 PM. Checkout: Wed Apr 15 at 11:00 AM.",
+      notes: "4 nights in Lisbon. Jared\u2019s family only (5 people). Checkout Apr 15 by 11:00 AM.",
       sort_order: 3,
     }),
   ],
