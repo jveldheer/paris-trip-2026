@@ -5,16 +5,17 @@ import {
   Plane,
   Train,
   Hotel,
-  UtensilsCrossed,
   Phone,
   Lightbulb,
   Copy,
   Check,
   MapPin,
   ExternalLink,
-  Bus,
   Calendar,
   AlertTriangle,
+  Car,
+  UtensilsCrossed,
+  Info,
 } from "lucide-react"
 import { PageHeader } from "@/components/layout/page-header"
 import {
@@ -26,10 +27,12 @@ import {
 import { Badge } from "@/components/ui/badge"
 import {
   FLIGHTS,
-  TRANSFERS,
-  ACCOMMODATIONS,
   TRAIN,
+  ACCOMMODATIONS,
+  RESTAURANTS,
   ACTIVITIES,
+  GROUND_TRANSPORT,
+  IMPORTANT_NOTES,
 } from "@/lib/trip-data"
 
 // ── Static emergency / tips content ──────────────────────────────────────────
@@ -60,28 +63,28 @@ const TRAVEL_TIPS = [
       "Buy a carnet of 10 tickets or use a Navigo Easy card (contactless).",
       "Kids under 4 ride free; under 10 ride at half price.",
       "Download the RATP app for live journey planning.",
-      "Validate your ticket BEFORE boarding \u2014 inspectors are common.",
+      "Validate your ticket BEFORE boarding — inspectors are common.",
     ],
   },
   {
     heading: "Tipping",
     tips: [
-      "France: Service is included. Round up or leave 1\u20132 EUR for great service.",
-      "Portugal: 5\u201310% appreciated but not mandatory. Round up in cafes.",
+      "France: Service is included. Round up or leave 1–2 EUR for great service.",
+      "Portugal: 5–10% appreciated but not mandatory. Round up in cafes.",
     ],
   },
   {
     heading: "Useful Phrases",
     tips: [
-      "Bonjour (Hello) / Merci (Thank you) / S\u2019il vous pla\u00eet (Please)",
-      "Excusez-moi (Excuse me) / L\u2019addition, s\u2019il vous pla\u00eet (The bill, please)",
-      "Obrigado/a (Thank you in Portuguese) / Com licen\u00e7a (Excuse me)",
+      "Bonjour (Hello) / Merci (Thank you) / S'il vous plaît (Please)",
+      "Excusez-moi (Excuse me) / L'addition, s'il vous plaît (The bill, please)",
+      "Obrigado/a (Thank you in Portuguese) / Com licença (Excuse me)",
       "Onde fica...? (Where is...? in Portuguese)",
     ],
   },
 ]
 
-// ── Copyable booking ref ──────────────────────────────────────────────────────
+// ── Copyable text ────────────────────────────────────────────────────────────
 
 function CopyableText({ value, label }: { value: string; label?: string }) {
   const [copied, setCopied] = useState(false)
@@ -108,7 +111,7 @@ function CopyableText({ value, label }: { value: string; label?: string }) {
   )
 }
 
-// ── Address link ──────────────────────────────────────────────────────────────
+// ── Address link ─────────────────────────────────────────────────────────────
 
 function AddressLink({ address }: { address: string }) {
   const encoded = encodeURIComponent(address)
@@ -140,7 +143,7 @@ function FlightsSection() {
             {f.confirmation && <CopyableText value={f.confirmation} label="confirmation" />}
           </div>
           <p className="text-sm text-muted-foreground">
-            {f.route}{f.departs ? ` \u2014 Departs ${f.departs}` : ""}
+            {f.route}{f.time ? ` — ${f.time}` : ""}
           </p>
           {f.notes && (
             <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
@@ -149,24 +152,24 @@ function FlightsSection() {
           )}
         </div>
       ))}
+    </div>
+  )
+}
 
-      <div className="pt-2">
-        <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Transfers</h4>
-        {TRANSFERS.map((t, i) => (
-          <div key={i} className="space-y-1 pb-3 border-b border-border last:border-0 last:pb-0">
-            <div className="flex items-start gap-2">
-              <Badge variant="outline" className="text-xs shrink-0">{t.date}</Badge>
-              <span className="text-sm">{t.description}</span>
-            </div>
-            {t.notes && (
-              <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
-                <AlertTriangle className="h-3 w-3 inline mr-1" />
-                {t.notes}
-              </p>
-            )}
+// ── Section: Ground Transport ────────────────────────────────────────────────
+
+function GroundTransportSection() {
+  return (
+    <div className="space-y-3">
+      {GROUND_TRANSPORT.map((t, i) => (
+        <div key={i} className="space-y-1 pb-3 border-b border-border last:border-0 last:pb-0">
+          <div className="flex items-start gap-2">
+            <Badge variant="outline" className="text-xs shrink-0">{t.date}</Badge>
+            <span className="font-medium text-sm">{t.title}</span>
           </div>
-        ))}
-      </div>
+          <p className="text-sm text-muted-foreground">{t.description}</p>
+        </div>
+      ))}
     </div>
   )
 }
@@ -178,13 +181,14 @@ function TrainSection() {
     <div className="space-y-3">
       <div className="flex items-start gap-2 flex-wrap">
         <Badge variant="outline" className="text-xs">{TRAIN.date}</Badge>
-        <span className="font-medium text-sm">{TRAIN.train}</span>
+        <span className="font-medium text-sm">{TRAIN.name}</span>
         <Badge variant="secondary" className="text-xs">{TRAIN.class}</Badge>
       </div>
       <p className="text-sm text-muted-foreground">{TRAIN.route}</p>
       <p className="text-sm text-muted-foreground">
-        Departs {TRAIN.departs} \u2192 Arrives {TRAIN.arrives}
+        Departs {TRAIN.departs} → Arrives {TRAIN.arrives}
       </p>
+      <AddressLink address={TRAIN.stationAddress} />
 
       <div className="space-y-2 pt-2">
         <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Bookings</h4>
@@ -231,6 +235,29 @@ function HotelsSection() {
   )
 }
 
+// ── Section: Restaurants ─────────────────────────────────────────────────────
+
+function RestaurantsSection() {
+  return (
+    <div className="space-y-4">
+      {RESTAURANTS.map((r, i) => (
+        <div key={i} className="space-y-1.5 pb-4 border-b border-border last:border-0 last:pb-0">
+          <div className="flex items-start gap-2 flex-wrap">
+            <Badge variant="outline" className="text-xs shrink-0">{r.date}</Badge>
+            <span className="font-medium text-sm">{r.name}</span>
+            <span className="text-xs text-muted-foreground">{r.time}</span>
+          </div>
+          {r.confirmation && <CopyableText value={r.confirmation} label="confirmation" />}
+          <AddressLink address={r.address} />
+          {r.notes && (
+            <p className="text-xs text-muted-foreground">{r.notes}</p>
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // ── Section: Activities ──────────────────────────────────────────────────────
 
 function ActivitiesSection() {
@@ -240,25 +267,21 @@ function ActivitiesSection() {
         <div key={i} className="space-y-1.5 pb-4 border-b border-border last:border-0 last:pb-0">
           <div className="flex items-start gap-2 flex-wrap">
             <Badge variant="outline" className="text-xs shrink-0">{a.date}</Badge>
-            <span className="font-medium text-sm">{a.title}</span>
+            <span className="font-medium text-sm">{a.name}</span>
             <span className="text-xs text-muted-foreground">{a.time}</span>
           </div>
-          {a.description && (
-            <p className="text-sm text-muted-foreground">{a.description}</p>
+          {a.entrance && (
+            <p className="text-sm text-muted-foreground">{a.entrance}</p>
           )}
-          {a.partySize && (
-            <p className="text-sm text-muted-foreground">{a.partySize}</p>
-          )}
-          {a.confirmation && <CopyableText value={a.confirmation} label="confirmation" />}
-          {a.address && <AddressLink address={a.address} />}
-          {a.cost && (
-            <p className="text-xs text-muted-foreground">{a.cost}</p>
-          )}
-          {a.notes && (
-            <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-1.5">
-              {a.notes}
-            </p>
-          )}
+          <div className="flex flex-wrap gap-1.5">
+            {a.confirmations.map((c) => (
+              <div key={c.ref} className="flex items-center gap-1">
+                <span className="text-xs text-muted-foreground">{c.label}:</span>
+                <CopyableText value={c.ref} label={c.label} />
+              </div>
+            ))}
+          </div>
+          <AddressLink address={a.address} />
         </div>
       ))}
     </div>
@@ -270,11 +293,33 @@ function ActivitiesSection() {
 export default function InfoPage() {
   const sections = [
     {
+      id: "important",
+      icon: AlertTriangle,
+      title: "Important Notes",
+      badge: IMPORTANT_NOTES.length,
+      content: (
+        <div className="space-y-2">
+          {IMPORTANT_NOTES.map((note, i) => (
+            <p key={i} className="text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 rounded-lg px-3 py-2">
+              {note}
+            </p>
+          ))}
+        </div>
+      ),
+    },
+    {
       id: "flights",
       icon: Plane,
-      title: "Flights & Transfers",
-      badge: FLIGHTS.length + TRANSFERS.length,
+      title: "Flights",
+      badge: FLIGHTS.length,
       content: <FlightsSection />,
+    },
+    {
+      id: "transport",
+      icon: Car,
+      title: "Ground Transport",
+      badge: GROUND_TRANSPORT.length,
+      content: <GroundTransportSection />,
     },
     {
       id: "trains",
@@ -291,9 +336,16 @@ export default function InfoPage() {
       content: <HotelsSection />,
     },
     {
+      id: "restaurants",
+      icon: UtensilsCrossed,
+      title: "Restaurants",
+      badge: RESTAURANTS.length,
+      content: <RestaurantsSection />,
+    },
+    {
       id: "activities",
       icon: Calendar,
-      title: "Activities & Reservations",
+      title: "Activities",
       badge: ACTIVITIES.length,
       content: <ActivitiesSection />,
     },
@@ -365,7 +417,7 @@ export default function InfoPage() {
       <PageHeader title="Info & Logistics" subtitle="Everything you need to know" />
 
       <div className="p-4 max-w-lg mx-auto pb-24">
-        <Accordion type="multiple" defaultValue={["flights", "trains", "hotels", "activities"]} className="space-y-2">
+        <Accordion type="multiple" defaultValue={["important", "flights", "transport", "trains", "hotels", "restaurants", "activities"]} className="space-y-2">
           {sections.map((section) => (
             <AccordionItem
               key={section.id}
