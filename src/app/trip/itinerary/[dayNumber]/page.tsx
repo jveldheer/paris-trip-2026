@@ -13,6 +13,7 @@ import { DayMap } from "@/components/itinerary/day-map"
 import { Button } from "@/components/ui/button"
 import { formatDate } from "@/lib/trip-utils"
 import { CITY_COLORS } from "@/lib/constants"
+import { STATIC_ITINERARY } from "@/lib/trip-data"
 import type { ItineraryItem } from "@/types"
 import type { CityName } from "@/lib/constants"
 
@@ -44,10 +45,13 @@ export default function DayDetailPage({
       .eq("trip_day_id", day.id)
       .order("sort_order")
       .then(({ data, error }) => {
-        if (error) {
-          setItemsError(true)
+        if (error || !data || data.length === 0) {
+          // Fall back to static itinerary data
+          const staticItems = STATIC_ITINERARY[day.date] ?? []
+          setItems(staticItems)
+          setItemsError(false)
         } else {
-          setItems(data ?? [])
+          setItems(data)
         }
         setItemsLoading(false)
       })

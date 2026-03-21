@@ -80,6 +80,5 @@ export async function resizeImage(file: File, maxWidth: number): Promise<Blob> {
 
 export function getMapUrl(address: string): string {
   const encoded = encodeURIComponent(address)
-  const isIOS = typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent)
-  return isIOS ? `maps://maps.apple.com/?q=${encoded}` : `https://maps.google.com/?q=${encoded}`
+  return `https://maps.apple.com/?q=${encoded}`
 }
