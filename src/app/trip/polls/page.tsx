@@ -81,7 +81,7 @@ export default function PollsPage() {
               return {
                 ...opt,
                 poll_votes: [
-                  ...opt.poll_votes,
+                  ...(opt.poll_votes ?? []),
                   {
                     id: `local-vote-${Date.now()}`,
                     poll_option_id: pollOptionId,
