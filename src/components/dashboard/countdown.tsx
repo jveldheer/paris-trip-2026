@@ -78,7 +78,7 @@ export function Countdown() {
           <p className="text-blue-200 text-xs uppercase tracking-[0.2em] font-semibold mb-1">
             Veldheer Europe 2026
           </p>
-          <h2 className="text-white text-xl font-bold mb-5">Countdown to Paris</h2>
+          <h2 className="text-white text-xl font-bold mb-5">Countdown to Takeoff</h2>
         </div>
         <div className="flex items-end justify-center gap-2 pb-6 px-4">
           <FlipUnit value={countdown.days} label="Days" />
@@ -90,7 +90,7 @@ export function Countdown() {
           <FlipUnit value={countdown.seconds} label="Sec" />
         </div>
         <div className="bg-white/10 px-6 py-3 text-center">
-          <p className="text-blue-100 text-xs">April 3 – 15, 2026 &middot; Paris &rarr; Saint-Raphaël &rarr; Lisbon</p>
+          <p className="text-blue-100 text-xs">April 1 – 15, 2026 &middot; NYC &rarr; Paris &rarr; Saint-Raphaël &rarr; Lisbon</p>
         </div>
       </div>
     )
@@ -103,7 +103,8 @@ export function Countdown() {
     const tripStart = parseISO(TRIP_START)
     const tripEnd = parseISO(TRIP_END)
     const totalDays = differenceInDays(tripEnd, tripStart) + 1
-    const progressPct = Math.round(((dayNumber - 1) / (totalDays - 1)) * 100)
+    const displayDay = dayNumber + 2
+    const progressPct = Math.round(((displayDay - 1) / (totalDays - 1)) * 100)
 
     return (
       <div
@@ -120,13 +121,13 @@ export function Countdown() {
             animate={{ scale: 1, opacity: 1 }}
             className="text-white text-4xl font-bold"
           >
-            Day {dayNumber}
-            <span className="text-white/60 text-2xl font-normal"> of 13</span>
+            Day {dayNumber + 2}
+            <span className="text-white/60 text-2xl font-normal"> of 15</span>
           </motion.h2>
         </div>
         <div className="px-6 pb-5">
           <div className="flex items-center justify-between text-white/70 text-xs mb-1.5">
-            <span>Apr 3</span>
+            <span>Apr 1</span>
             <span>{Math.round(progressPct)}% through</span>
             <span>Apr 15</span>
           </div>

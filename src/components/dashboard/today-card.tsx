@@ -20,12 +20,12 @@ export function TodayCard() {
   const [error, setError] = useState(false)
 
   const status = getTripStatus()
-  // Before trip: show Day 1 as a preview. During trip: show today. After: show Day 13.
+  // Before trip: show NYC (day_number -1) as preview. During trip: show today. After: show Day 13.
   const dayNumber =
     status === "during"
       ? getCurrentDayNumber()
       : status === "before"
-      ? 1
+      ? -1
       : 13
 
   const tripDay = tripDays.find((d) => d.day_number === dayNumber)

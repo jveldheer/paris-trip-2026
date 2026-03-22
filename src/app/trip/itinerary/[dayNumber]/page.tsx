@@ -17,7 +17,7 @@ import { STATIC_ITINERARY } from "@/lib/trip-data"
 import type { ItineraryItem } from "@/types"
 import type { CityName } from "@/lib/constants"
 
-const TOTAL_DAYS = 13
+const TOTAL_DAYS = 15
 
 export default function DayDetailPage({
   params,
@@ -99,7 +99,7 @@ export default function DayDetailPage({
       {/* City hero bar */}
       <div className={`bg-gradient-to-r ${colors.gradient} px-4 py-3`}>
         <p className="text-white/80 text-xs font-medium">
-          Day {day.day_number} of {TOTAL_DAYS}&nbsp;&bull;&nbsp;{formatDate(day.date)}
+          Day {day.day_number + 2} of {TOTAL_DAYS}&nbsp;&bull;&nbsp;{formatDate(day.date)}
         </p>
         {day.summary && (
           <p className="text-white text-sm mt-0.5 leading-snug">{day.summary}</p>
@@ -131,12 +131,12 @@ export default function DayDetailPage({
 
       {/* Prev / Next day navigation */}
       <div className="flex items-center justify-between px-4 mt-6">
-        {dayNumber > 1 ? (
+        {dayNumber > -1 ? (
           <Link href={`/trip/itinerary/${dayNumber - 1}`}>
             <Button variant="outline" size="sm" className="gap-1.5 max-w-[160px]">
               <ChevronLeft className="h-4 w-4 shrink-0" />
               <span className="truncate">
-                {prevDay ? prevDay.title : `Day ${dayNumber - 1}`}
+                {prevDay ? prevDay.title : `Day ${dayNumber + 1}`}
               </span>
             </Button>
           </Link>
@@ -144,11 +144,11 @@ export default function DayDetailPage({
           <div />
         )}
 
-        {dayNumber < TOTAL_DAYS ? (
+        {dayNumber < 13 ? (
           <Link href={`/trip/itinerary/${dayNumber + 1}`}>
             <Button variant="outline" size="sm" className="gap-1.5 max-w-[160px]">
               <span className="truncate">
-                {nextDay ? nextDay.title : `Day ${dayNumber + 1}`}
+                {nextDay ? nextDay.title : `Day ${dayNumber + 3}`}
               </span>
               <ChevronRight className="h-4 w-4 shrink-0" />
             </Button>

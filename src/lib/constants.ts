@@ -1,7 +1,7 @@
 import type { City, ItemCategory, WishlistCategory, MomentType } from '@/types';
 
 export const TRIP_CODE = 'veldheer2026';
-export const TRIP_START = '2026-04-03';
+export const TRIP_START = '2026-04-01';
 export const TRIP_END = '2026-04-15';
 
 export const CITY_COLORS = {

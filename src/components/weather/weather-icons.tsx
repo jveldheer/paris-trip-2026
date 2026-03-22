@@ -232,19 +232,18 @@ export function getWeatherType(code: number): "clear" | "partly-cloudy" | "cloud
 export function getWeatherGradient(code: number): string {
   const type = getWeatherType(code)
   switch (type) {
-    case "clear": return "from-amber-300 via-orange-200 to-sky-400"
-    case "partly-cloudy": return "from-sky-400 via-sky-300 to-blue-200"
-    case "cloudy": return "from-slate-400 via-gray-300 to-slate-200"
-    case "rain": return "from-slate-600 via-slate-500 to-blue-400"
-    case "drizzle": return "from-slate-500 via-blue-400 to-slate-300"
-    case "storm": return "from-gray-800 via-slate-700 to-gray-600"
-    case "fog": return "from-gray-400 via-slate-300 to-gray-200"
-    default: return "from-sky-400 via-sky-300 to-blue-200"
+    case "clear": return "from-amber-500 via-orange-400 to-sky-500"
+    case "partly-cloudy": return "from-sky-600 via-sky-500 to-blue-400"
+    case "cloudy": return "from-slate-700 via-slate-600 to-slate-500"
+    case "rain": return "from-slate-800 via-blue-900 to-slate-700"
+    case "drizzle": return "from-blue-800 via-blue-700 to-slate-600"
+    case "storm": return "from-gray-900 via-slate-800 to-indigo-900"
+    case "fog": return "from-slate-600 via-slate-500 to-zinc-500"
+    default: return "from-sky-600 via-sky-500 to-blue-400"
   }
 }
 
 // Whether text should be light on a given weather gradient
 export function isLightText(code: number): boolean {
-  const type = getWeatherType(code)
-  return type === "rain" || type === "storm"
+  return true
 }

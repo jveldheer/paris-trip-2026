@@ -39,7 +39,8 @@ export function getCurrentDayNumber(): number {
   const now = new Date()
   const start = parseISO(TRIP_START)
   const diff = differenceInDays(now, start)
-  return Math.max(1, Math.min(13, diff + 1))
+  // day_number uses TRIP_DAYS_SEED scheme: Apr 1 = -1, Apr 2 = 0, Apr 3 = 1, etc.
+  return Math.max(-1, Math.min(13, diff - 1))
 }
 
 export function getDaysSince(): number {
@@ -48,7 +49,7 @@ export function getDaysSince(): number {
 }
 
 export function getCityForDay(dayNumber: number): City {
-  if (dayNumber < 1) return "NYC"
+  if (dayNumber <= 0) return "NYC"
   if (dayNumber <= 3) return "Paris"
   if (dayNumber <= 8) return "Saint-Raphael"
   if (dayNumber <= 13) return "Lisbon"

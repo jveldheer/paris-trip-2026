@@ -183,7 +183,7 @@ export function WeatherWidget() {
 
               {/* 3-day strip */}
               {upcoming.length > 0 && (
-                <div className="grid grid-cols-3 divide-x divide-white/20 border-t border-white/15 relative z-10">
+                <div className="grid grid-cols-3 divide-x divide-white/20 border-t border-white/25 relative z-10">
                   {upcoming.map((day) => {
                     const d = new Date(day.date + "T12:00:00")
                     const label = d.toLocaleDateString("en-US", { weekday: "short" })
@@ -194,7 +194,7 @@ export function WeatherWidget() {
                         <span className="text-xs font-semibold text-white">
                           {toF(day.max)}
                           {"\u00B0"}{" "}
-                          <span className="font-normal text-white/70">
+                          <span className="font-normal text-white/80">
                             {toF(day.min)}
                             {"\u00B0"}
                           </span>
