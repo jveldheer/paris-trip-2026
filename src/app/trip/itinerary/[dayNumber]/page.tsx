@@ -97,12 +97,13 @@ export default function DayDetailPage({
       </PageHeader>
 
       {/* City hero bar */}
-      <div className={`bg-gradient-to-r ${colors.gradient} px-4 py-3`}>
-        <p className="text-white/80 text-xs font-medium">
+      <div className={`bg-gradient-to-r ${colors.gradient} px-4 py-4`}>
+        <h2 className="font-serif text-3xl font-medium italic text-white">{city}</h2>
+        <p className="text-xs tracking-[0.18em] uppercase text-white/70 mt-1">
           Day {day.day_number + 2} of {TOTAL_DAYS}&nbsp;&bull;&nbsp;{formatDate(day.date)}
         </p>
         {day.summary && (
-          <p className="text-white text-sm mt-0.5 leading-snug">{day.summary}</p>
+          <p className="text-white/90 text-sm mt-1.5 leading-snug">{day.summary}</p>
         )}
       </div>
 

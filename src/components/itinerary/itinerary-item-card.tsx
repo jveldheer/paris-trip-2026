@@ -216,7 +216,7 @@ export function ItineraryItemCard({
   return (
     <div
       className={cn(
-        "bg-card rounded-2xl border border-border shadow-sm px-4 py-3",
+        "bg-card rounded-lg border border-border/60 shadow-sm p-4",
         "transition-all duration-150",
         hasDetails && "cursor-pointer hover:shadow-md active:scale-[0.99]",
         expanded && "ring-1 ring-inset ring-border/60",
@@ -235,7 +235,7 @@ export function ItineraryItemCard({
 
         {/* Title + sub-details */}
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-sm leading-snug">{item.title}</p>
+          <p className="font-medium text-foreground text-sm leading-snug">{item.title}</p>
 
           {item.location_name && (
             <div className="flex items-center gap-1 mt-0.5 text-muted-foreground">
@@ -257,7 +257,7 @@ export function ItineraryItemCard({
 
         {/* Right side: badge + toggle chevron */}
         <div className="flex flex-col items-end gap-1.5 shrink-0">
-          <Badge variant="secondary" className="text-[10px] px-1.5 h-4">
+          <Badge variant="secondary" className="text-xs tracking-wide text-muted-foreground px-1.5 h-4">
             {CATEGORY_LABELS[item.category] ?? item.category}
           </Badge>
           {hasDetails && (

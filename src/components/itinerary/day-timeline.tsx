@@ -63,7 +63,7 @@ function TimelineItem({
         {/* Dot */}
         <div
           className="mt-1.5 flex items-center justify-center w-8 h-8 rounded-full border-2 border-background shadow-sm shrink-0 z-10"
-          style={{ backgroundColor: accentColor }}
+          style={{ backgroundColor: 'oklch(0.70 0.085 78)' }}
         >
           <Icon className="h-3.5 w-3.5 text-white" />
         </div>

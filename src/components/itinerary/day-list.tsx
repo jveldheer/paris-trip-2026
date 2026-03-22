@@ -6,7 +6,6 @@ import { ChevronRight, CalendarDays } from "lucide-react"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { CityBadge } from "@/components/shared/city-badge"
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton"
 import { useTrip } from "@/lib/hooks/use-trip"
 import { formatDate } from "@/lib/trip-utils"
@@ -102,28 +101,25 @@ function DayCard({
       <Link href={`/trip/itinerary/${day.day_number}`}>
         <Card
           className={`
-            hover:shadow-md active:scale-[0.99] transition-all duration-150 border
-            ${isToday ? `border-2 shadow-md` : "border-border"}
+            hover:shadow-md active:scale-[0.99] transition-all duration-150 border-l-2
+            ${isToday ? `border-2 shadow-md` : "border border-border"}
           `}
-          style={isToday ? { borderColor: colors.accent } : undefined}
+          style={{
+            borderLeftColor: 'oklch(0.70 0.085 78)',
+            ...(isToday ? { borderColor: colors.accent } : {}),
+          }}
         >
           <CardContent className="flex items-center gap-3 py-3 px-4">
-            {/* Day number bubble */}
-            <div
-              className="flex items-center justify-center w-11 h-11 rounded-xl shrink-0 font-bold text-lg"
-              style={
-                isToday
-                  ? { backgroundColor: colors.accent, color: "#fff" }
-                  : { backgroundColor: colors.bg, color: colors.primary }
-              }
-            >
+            {/* Day number */}
+            <span className="text-muted-foreground tabular-nums text-sm shrink-0 w-6 text-center">
               {day.day_number}
-            </div>
+            </span>
 
             {/* Text */}
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-0.5">
-                <p className="font-semibold text-sm leading-snug truncate">{day.title}</p>
+              <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{day.city}</span>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="font-serif text-lg font-medium leading-snug truncate">{day.title}</p>
                 {isToday && (
                   <Badge
                     className="text-[10px] px-1.5 py-0 h-4 shrink-0"
@@ -133,15 +129,14 @@ function DayCard({
                   </Badge>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-muted-foreground mt-0.5">
                 <CalendarDays className="h-3 w-3 shrink-0" />
                 <span className="text-xs">{formatDate(day.date)}</span>
               </div>
             </div>
 
-            {/* Right side: city badge + item count + chevron */}
+            {/* Right side: item count + chevron */}
             <div className="flex flex-col items-end gap-1 shrink-0">
-              <CityBadge city={day.city} size="sm" />
               {itemCount > 0 && (
                 <span className="text-xs text-muted-foreground">
                   {itemCount} item{itemCount !== 1 ? "s" : ""}

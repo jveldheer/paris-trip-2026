@@ -285,7 +285,7 @@ export default function FoodMapPage() {
             <ChevronLeft className="h-5 w-5" />
           </button>
           <div className="ml-3">
-            <h1 className="text-white font-semibold text-lg leading-tight">Food Map</h1>
+            <h1 className="text-white font-serif text-lg font-medium leading-tight">Food Map</h1>
             <p className="text-white/40 text-[10px] uppercase tracking-widest">Award-Winning Eats & Drinks</p>
           </div>
         </div>
@@ -306,8 +306,8 @@ export default function FoodMapPage() {
                   }}
                   className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-white text-gray-900 shadow-lg'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      ? 'bg-primary text-primary-foreground shadow-lg'
+                      : 'border border-border text-foreground/70 bg-transparent hover:text-foreground hover:bg-white/10'
                   }`}
                 >
                   <span className="text-sm">{c.flag}</span>
@@ -326,10 +326,10 @@ export default function FoodMapPage() {
         >
           <button
             onClick={() => setActiveFilter('all')}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all tracking-[0.12em] border ${
               activeFilter === 'all'
-                ? 'bg-white text-[#1a1a3e] border-white'
-                : 'bg-transparent text-white/70 border-white/20 hover:border-white/40'
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-transparent text-foreground/60 border-border/60 hover:border-border'
             }`}
           >
             All
@@ -338,10 +338,10 @@ export default function FoodMapPage() {
             <button
               key={cat.key}
               onClick={() => setActiveFilter(activeFilter === cat.key ? 'all' : cat.key)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
+              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all tracking-[0.12em] border ${
                 activeFilter === cat.key
-                  ? 'bg-white text-[#1a1a3e] border-white'
-                  : 'bg-transparent text-white/70 border-white/20 hover:border-white/40'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-transparent text-foreground/60 border-border/60 hover:border-border'
               }`}
             >
               <span>{cat.emoji}</span>
@@ -385,34 +385,32 @@ export default function FoodMapPage() {
                 <X className="h-4 w-4 text-[#1a1a3e]/60" />
               </button>
 
-              {/* Category + Award badge */}
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold"
-                  style={{
-                    backgroundColor: CATEGORY_MAP[selectedVenue.category].colorBg,
-                    color: CATEGORY_MAP[selectedVenue.category].color,
-                  }}
-                >
-                  {CATEGORY_MAP[selectedVenue.category].emoji} {CATEGORY_MAP[selectedVenue.category].label}
-                </span>
+              {/* Name */}
+              <h3 className="font-serif text-2xl font-medium text-foreground mb-1">{selectedVenue.name}</h3>
+
+              {/* Category + Award on one line */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>{CATEGORY_MAP[selectedVenue.category].emoji} {CATEGORY_MAP[selectedVenue.category].label}</span>
                 {selectedVenue.award && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800">
-                    {selectedVenue.award}
-                  </span>
+                  <span>&middot; {selectedVenue.award}</span>
                 )}
               </div>
 
-              {/* Name */}
-              <h3 className="text-xl font-bold text-[#1a1a3e] mb-1">{selectedVenue.name}</h3>
+              {/* Divider */}
+              <div className="h-px bg-border my-3" />
 
-              {/* Tagline */}
-              <p className="text-sm font-medium text-[#1a1a3e]/60 mb-2">{selectedVenue.tagline}</p>
+              {/* Description */}
+              <p className="text-sm leading-relaxed text-foreground/80 mb-2">{selectedVenue.desc}</p>
+
+              {/* Reservations note if applicable */}
+              {selectedVenue.desc.includes('Reservations essential') && (
+                <span className="text-xs text-amber-700 bg-amber-50 rounded px-2 py-1 inline-block mt-2">Reservations essential</span>
+              )}
 
               {/* Tags */}
-              <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 mt-3 mb-4">
                 {selectedVenue.kidFriendly && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-green-100 text-green-700">
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200">
                     {'\u{1F9D2}'} Kid-friendly
                   </span>
                 )}
@@ -424,19 +422,16 @@ export default function FoodMapPage() {
                   </span>
                 )}
                 {selectedVenue.bibGourmand && (
-                  <span className="text-[11px] font-semibold text-green-600">Bib Gourmand</span>
+                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">Bib Gourmand</span>
                 )}
               </div>
 
-              {/* Description */}
-              <p className="text-sm text-[#1a1a3e]/70 leading-relaxed mb-4">{selectedVenue.desc}</p>
-
-              {/* Google Maps button */}
+              {/* Google Maps button — outlined */}
               <a
                 href={googleMapsUrl(selectedVenue)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#1a1a3e] text-white text-sm font-medium hover:bg-[#1a1a3e]/90 transition-colors"
+                className="inline-flex items-center gap-2 border border-primary text-primary text-sm px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors"
               >
                 <MapPin className="h-4 w-4" />
                 Open in Google Maps
@@ -473,7 +468,7 @@ export default function FoodMapPage() {
           {city.city} &middot; {filteredVenues.length} {activeFilter === 'all' ? 'spots' : CATEGORY_MAP[activeFilter]?.label.toLowerCase() + ' spots'}
         </h2>
 
-        <div ref={listRef} className="space-y-2">
+        <div ref={listRef} className="divide-y divide-border/50">
           {filteredVenues.map((venue) => {
             const cat = CATEGORY_MAP[venue.category];
             const isSelected = selectedVenue?.name === venue.name;
@@ -482,10 +477,10 @@ export default function FoodMapPage() {
                 key={venue.name}
                 data-venue={venue.name}
                 onClick={() => handleSelectVenue(venue)}
-                className={`w-full text-left rounded-xl p-3.5 transition-all border ${
+                className={`w-full text-left py-3.5 px-1 transition-all ${
                   isSelected
-                    ? 'bg-[#1a1a3e]/5 border-[#1a1a3e]/20 shadow-md'
-                    : 'bg-white border-[#1a1a3e]/8 hover:border-[#1a1a3e]/15'
+                    ? 'bg-primary/5'
+                    : 'hover:bg-primary/[0.02]'
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -496,26 +491,27 @@ export default function FoodMapPage() {
                     {cat.emoji}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-[#1a1a3e]">{venue.name}</span>
-                      {venue.kidFriendly && (
-                        <span className="text-[10px] text-green-600 font-medium">{'\u{1F9D2}'} Kids</span>
-                      )}
+                    <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{cat.label}</span>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="font-serif text-base font-medium text-foreground">{venue.name}</span>
                     </div>
-                    <div className="text-xs text-[#1a1a3e]/50 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                      {venue.award && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-amber-50 text-amber-800 border border-amber-200">{venue.award}</span>
+                      )}
+                      {venue.kidFriendly && (
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200">{'\u{1F9D2}'} Kid-friendly</span>
+                      )}
                       {venue.category === 'michelin' && venue.stars && venue.stars > 0 && (
-                        <span className="text-amber-600 font-medium">
+                        <span className="text-amber-600 text-sm">
                           {Array.from({ length: venue.stars }).map((_, i) => '\u2B50').join('')}
                         </span>
                       )}
                       {venue.bibGourmand && (
-                        <span className="text-green-600 font-medium">Bib Gourmand</span>
-                      )}
-                      {venue.award && (
-                        <span className="text-amber-700 font-medium">{venue.award}</span>
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">Bib Gourmand</span>
                       )}
                     </div>
-                    <p className="text-xs text-[#1a1a3e]/50 mt-1 leading-relaxed line-clamp-2">{venue.tagline}</p>
+                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{venue.tagline}</p>
                   </div>
                 </div>
               </button>
