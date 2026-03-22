@@ -32,7 +32,7 @@ export function formatDate(dateStr: string): string {
 /**
  * Returns the city name for a given date based on the trip itinerary.
  */
-export function getCityForDate(date: Date): "Paris" | "Saint-Raphael" | "Lisbon" | null {
+export function getCityForDate(date: Date): "Paris" | "Saint-Raphael" | "Lisbon" | "NYC" | null {
   const dateStr = format(date, "yyyy-MM-dd")
   const day = TRIP_DAYS_SEED.find((d) => d.date === dateStr)
   return day ? day.city : null

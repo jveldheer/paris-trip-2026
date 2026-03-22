@@ -10,6 +10,7 @@ import { LoadingSkeleton } from "@/components/shared/loading-skeleton"
 import { useTrip } from "@/lib/hooks/use-trip"
 import { getTripStatus, getCurrentDayNumber, formatTime } from "@/lib/trip-utils"
 import { CITY_COLORS, CATEGORY_LABELS } from "@/lib/constants"
+import { STATIC_ITINERARY } from "@/lib/trip-data"
 import type { ItineraryItem } from "@/types"
 
 export function TodayCard() {
@@ -42,8 +43,9 @@ export function TodayCard() {
       .limit(3)
       .then(({ data, error: err }) => {
         if (err || !data || data.length === 0) {
-          // Offline or no data — show empty state gracefully (no error)
-          setItems([])
+          // Fall back to static itinerary data
+          const staticItems = STATIC_ITINERARY[tripDay.date] ?? []
+          setItems(staticItems.slice(0, 3))
           setError(false)
         } else {
           setItems(data)

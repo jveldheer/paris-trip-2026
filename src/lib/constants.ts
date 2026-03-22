@@ -32,6 +32,15 @@ export const CITY_COLORS = {
     badge: 'bg-teal-100 text-teal-800',
     border: 'border-teal-200',
   },
+  NYC: {
+    primary: '#1f2937',
+    accent: '#6b7280',
+    bg: '#f9fafb',
+    gradient: 'from-gray-800 to-gray-600',
+    light: 'bg-gray-50',
+    badge: 'bg-gray-100 text-gray-800',
+    border: 'border-gray-200',
+  },
 } as const;
 
 export type CityName = keyof typeof CITY_COLORS;
@@ -41,12 +50,14 @@ export const CITY_CONFIG: Record<City, { color: string; light: string; bg: strin
   Paris: { color: '#1e3a5f', light: '#3b82f6', bg: '#eff6ff', flag: '🇫🇷' },
   'Saint-Raphael': { color: '#c2410c', light: '#f59e0b', bg: '#fffbeb', flag: '🇫🇷' },
   Lisbon: { color: '#0d9488', light: '#14b8a6', bg: '#f0fdfa', flag: '🇵🇹' },
+  NYC: { color: '#1f2937', light: '#6b7280', bg: '#f9fafb', flag: '🇺🇸' },
 };
 
 export const CITY_TAILWIND: Record<City, { bg: string; text: string; border: string; lightBg: string }> = {
   Paris: { bg: 'bg-paris', text: 'text-paris', border: 'border-paris-light', lightBg: 'bg-paris-bg' },
   'Saint-Raphael': { bg: 'bg-saintraphael', text: 'text-saintraphael', border: 'border-saintraphael-light', lightBg: 'bg-saintraphael-bg' },
   Lisbon: { bg: 'bg-lisbon', text: 'text-lisbon', border: 'border-lisbon-light', lightBg: 'bg-lisbon-bg' },
+  NYC: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-200', lightBg: 'bg-gray-50' },
 };
 
 export const CATEGORY_ICONS: Record<ItemCategory, string> = {
@@ -124,6 +135,8 @@ export const STATIC_MEMBERS: Member[] = MEMBERS_SEED.map((m, i) => ({
 }));
 
 export const TRIP_DAYS_SEED = [
+  { day_number: -1, date: '2026-04-01', city: 'NYC' as const, title: 'Travel Day ✈️ GRR → NYC', summary: 'Fly GRR→EWR, Go Airlink shuttle to Hyatt Grand Central NYC' },
+  { day_number: 0, date: '2026-04-02', city: 'NYC' as const, title: 'Fly to Paris 🇫🇷✈️', summary: 'Go Airlink to EWR, Air France A350 to CDG — au revoir America!' },
   { day_number: 1, date: '2026-04-03', city: 'Paris' as const, title: 'Arrival in Paris 🗼', summary: 'Fly in, check in to Maison Galante, Louvre + Orsay!' },
   { day_number: 2, date: '2026-04-04', city: 'Paris' as const, title: 'Paris — Brasserie Bellanger 🍽', summary: 'Dinner for 10 at Brasserie Bellanger, 7 PM' },
   { day_number: 3, date: '2026-04-05', city: 'Paris' as const, title: 'Paris — Louvre Return 🎨', summary: 'Louvre at 11:30 AM — second visit, new wings!' },

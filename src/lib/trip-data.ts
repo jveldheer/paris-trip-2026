@@ -31,6 +31,49 @@ function item(
 // ── Static itinerary items by date (shown in day detail pages) ──────────────
 
 export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
+  "2026-04-01": [
+    item("flight", "UA3639 — GRR \u2192 EWR", {
+      start_time: "2026-04-01T13:39:00",
+      location_name: "Gerald R. Ford International Airport (GRR)",
+      address: "5500 44th St SE, Grand Rapids, MI 49512",
+      description: "United Airlines UA3639. Departs 1:39 PM.",
+      notes: "Arrive at airport by 11:30 AM. Check bags.",
+      sort_order: 1,
+    }),
+    item("transport", "Go Airlink Shuttle — EWR \u2192 NYC", {
+      location_name: "Newark Airport (EWR) \u2192 Hyatt Grand Central",
+      address: "Newark Liberty International Airport",
+      description: "Go Airlink shuttle from EWR to Hyatt Grand Central New York.",
+      notes: "Book or confirm Go Airlink reservation. ~45 min ride.",
+      sort_order: 2,
+    }),
+    item("hotel", "Check in: Hyatt Grand Central New York", {
+      start_time: "2026-04-01T15:00:00",
+      location_name: "Hyatt Grand Central New York",
+      address: "109 E 42nd St, New York, NY 10017",
+      description: "One night in NYC before the Paris flight. Check-in 3 PM.",
+      notes: "Steps from Grand Central Terminal. Checkout Apr 2 by 12 PM.",
+      sort_order: 3,
+    }),
+  ],
+  "2026-04-02": [
+    item("transport", "Go Airlink Shuttle — NYC \u2192 EWR", {
+      start_time: "2026-04-02T13:30:00",
+      location_name: "Hyatt Grand Central \u2192 Newark Airport (EWR)",
+      address: "109 E 42nd St, New York, NY 10017",
+      description: "Go Airlink shuttle back to Newark. Allow 1.5 hrs + arrive 3 hrs early.",
+      notes: "Depart hotel ~1:30 PM for 5 PM flight. International check-in requires 3 hours.",
+      sort_order: 1,
+    }),
+    item("flight", "DL8758 \u2014 EWR \u2192 CDG (Air France A350)", {
+      start_time: "2026-04-02T17:00:00",
+      location_name: "Newark Liberty International Airport (EWR)",
+      address: "Newark Liberty International Airport, Newark, NJ",
+      description: "Delta/Air France A350 Premium Economy. EWR \u2192 Paris Charles de Gaulle. Overnight flight.",
+      notes: "Arrive CDG early morning Apr 3. Premium Economy \u2014 enjoy the flight!",
+      sort_order: 2,
+    }),
+  ],
   "2026-04-03": [
     item("hotel", "Check in: Maison Galante", {
       location_name: "Maison Galante",

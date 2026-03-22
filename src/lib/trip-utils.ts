@@ -48,8 +48,10 @@ export function getDaysSince(): number {
 }
 
 export function getCityForDay(dayNumber: number): City {
+  if (dayNumber < 1) return "NYC"
   if (dayNumber <= 3) return "Paris"
   if (dayNumber <= 8) return "Saint-Raphael"
+  if (dayNumber <= 13) return "Lisbon"
   return "Lisbon"
 }
 
@@ -58,6 +60,7 @@ export function getCityColor(city: City): string {
     Paris: "#1e3a5f",
     "Saint-Raphael": "#c2410c",
     Lisbon: "#0d9488",
+    NYC: "#1f2937",
   }
   return colors[city]
 }

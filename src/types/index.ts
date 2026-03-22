@@ -20,7 +20,7 @@ export type TripDay = {
   id: string;
   trip_id: string;
   date: string;
-  city: 'Paris' | 'Saint-Raphael' | 'Lisbon';
+  city: City;
   title: string;
   summary: string;
   day_number: number;
@@ -153,5 +153,5 @@ export type KidDrawing = {
 };
 
 // Convenience aliases kept for compatibility
-export type City = 'Paris' | 'Saint-Raphael' | 'Lisbon';
+export type City = 'Paris' | 'Saint-Raphael' | 'Lisbon' | 'NYC';
 export type ItemCategory = ItineraryItemCategory;

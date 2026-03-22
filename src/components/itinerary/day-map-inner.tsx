@@ -25,6 +25,7 @@ const CITY_CENTERS: Record<CityName, [number, number]> = {
   Paris:           [48.8566,  2.3522],
   "Saint-Raphael": [43.4254,  6.7686],
   Lisbon:          [38.7223, -9.1393],
+  NYC:             [40.7527, -73.9772],
 }
 
 interface DayMapInnerProps {

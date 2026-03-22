@@ -5,6 +5,7 @@ import { formatDistanceToNow } from "date-fns"
 import { Countdown } from "@/components/dashboard/countdown"
 import { TodayCard } from "@/components/dashboard/today-card"
 import { QuickActions } from "@/components/dashboard/quick-actions"
+import { WeatherWidget } from "@/components/dashboard/weather-widget"
 import { CityBadge } from "@/components/shared/city-badge"
 import { MemberAvatar } from "@/components/shared/member-avatar"
 import { EmptyState } from "@/components/shared/empty-state"
@@ -196,6 +197,9 @@ export default function DashboardPage() {
 
       {/* Today's card */}
       <TodayCard />
+
+      {/* Weather widget */}
+      <WeatherWidget />
 
       {/* Quick action grid */}
       <QuickActions />
