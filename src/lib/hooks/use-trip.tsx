@@ -46,7 +46,6 @@ export function TripProvider({ children }: { children: ReactNode }) {
       const isPlaceholder = !supabaseUrl || supabaseUrl.includes("placeholder") || supabaseUrl.includes("your-project")
 
       if (isPlaceholder) {
-        setIsOffline(true)
         setTrip(STATIC_TRIP)
         setMembers(STATIC_MEMBERS)
         setTripDays(STATIC_TRIP_DAYS)
@@ -95,8 +94,7 @@ export function TripProvider({ children }: { children: ReactNode }) {
           if (found) setCurrentMemberState(found)
         }
       } catch {
-        // Supabase unavailable — use static data
-        setIsOffline(true)
+        // Supabase unavailable — silently use static data
         setTrip(STATIC_TRIP)
         setMembers(STATIC_MEMBERS)
         setTripDays(STATIC_TRIP_DAYS)

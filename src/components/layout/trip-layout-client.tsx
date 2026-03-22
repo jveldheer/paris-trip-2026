@@ -40,7 +40,6 @@ function TripContent({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <OfflineBanner />
       <main className="flex-1 pb-20">{children}</main>
       <NavBar />
     </>
