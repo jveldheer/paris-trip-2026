@@ -11,7 +11,6 @@ import { MemberAvatar } from "@/components/shared/member-avatar"
 import { EmptyState } from "@/components/shared/empty-state"
 import { LoadingSkeleton } from "@/components/shared/loading-skeleton"
 import { Progress } from "@/components/ui/progress"
-import { Separator } from "@/components/ui/separator"
 import { useTrip } from "@/lib/hooks/use-trip"
 import { getTripStatus, getCurrentDayNumber } from "@/lib/trip-utils"
 import { CITY_COLORS } from "@/lib/constants"
@@ -192,6 +191,13 @@ function RecentActivity() {
 export default function DashboardPage() {
   return (
     <div className="pb-24 space-y-6 pt-2">
+      {/* Top bar */}
+      <div className="px-4 pt-2 pb-1">
+        <span className="text-xs font-medium tracking-[0.25em] text-muted-foreground/70 uppercase">
+          Veldheer Europe · April 2026
+        </span>
+      </div>
+
       {/* Hero countdown / day indicator */}
       <Countdown />
 
@@ -204,12 +210,12 @@ export default function DashboardPage() {
       {/* Quick action grid */}
       <QuickActions />
 
-      <Separator className="mx-4" />
+      <div className="mx-4 h-px bg-border/60" />
 
       {/* City progress */}
       <CityProgress />
 
-      <Separator className="mx-4" />
+      <div className="mx-4 h-px bg-border/60" />
 
       {/* Recent activity */}
       <RecentActivity />

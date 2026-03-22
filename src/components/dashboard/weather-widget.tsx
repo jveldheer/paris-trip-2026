@@ -13,6 +13,13 @@ const CITIES = {
   Lisbon: { lat: 38.7167, lon: -9.1333, name: "Lisbon", dates: ["2026-04-11", "2026-04-12", "2026-04-13", "2026-04-14", "2026-04-15"] },
 }
 
+const CITY_FLAGS: Record<string, string> = {
+  "Paris": "\uD83D\uDDFC",
+  "Saint-Rapha\u00EBl": "\uD83C\uDF0A",
+  "New York": "\uD83D\uDDFD",
+}
+const DEFAULT_FLAG = "\uD83D\uDCCD"
+
 function getCurrentCity() {
   const today = new Date().toISOString().split("T")[0]
   for (const [, data] of Object.entries(CITIES)) {
@@ -59,16 +66,16 @@ export function WeatherWidget() {
 
   return (
     <div className="mx-4">
-      <div className={cn("rounded-2xl overflow-hidden bg-gradient-to-br", gradient, "relative")}>
+      <div className={cn("rounded-3xl overflow-hidden bg-gradient-to-br shadow-lg border border-white/20", gradient, "relative")}>
         {/* Ambient decoration */}
-        <div className="absolute top-2 right-2 opacity-20 pointer-events-none">
-          <WeatherIcon code={today?.code ?? 2} size={80} />
+        <div className="absolute top-2 right-2 opacity-[0.15] pointer-events-none">
+          <WeatherIcon code={today?.code ?? 2} size={96} />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between px-4 pt-4 pb-2 relative z-10">
           <span className="text-xs font-semibold text-white/80 uppercase tracking-wide">
-            Weather &middot; {currentCity.name}
+            Weather &middot; {CITY_FLAGS[currentCity.name] ?? DEFAULT_FLAG} {currentCity.name}
           </span>
           <Link href="/trip/weather" className="flex items-center gap-1 text-xs text-white/90 font-medium hover:text-white transition-colors">
             Full forecast <ChevronRight className="h-3 w-3" />
@@ -85,14 +92,14 @@ export function WeatherWidget() {
             <div className="flex items-center gap-4 px-4 pb-3 relative z-10">
               <WeatherIcon code={today.code} size={48} />
               <div>
-                <div className="text-3xl font-bold text-white">{toF(today.max)}{today.max != null ? "\u00B0F" : ""}</div>
-                <div className="text-xs text-white/70">{getWeatherLabel(today.code)} &middot; Low {toF(today.min)}{today.min != null ? "\u00B0F" : ""}</div>
+                <div className="text-4xl font-light text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.25)" }}>{toF(today.max)}{today.max != null ? "\u00B0F" : ""}</div>
+                <div className="text-xs text-white/90">{getWeatherLabel(today.code)} &middot; Low {toF(today.min)}{today.min != null ? "\u00B0F" : ""}</div>
               </div>
             </div>
 
             {/* 3-day strip */}
             {upcoming.length > 0 && (
-              <div className="grid grid-cols-3 border-t border-white/15 relative z-10">
+              <div className="grid grid-cols-3 divide-x divide-white/20 border-t border-white/15 relative z-10">
                 {upcoming.map((day) => {
                   const d = new Date(day.date + "T12:00:00")
                   const label = d.toLocaleDateString("en-US", { weekday: "short" })
@@ -101,7 +108,7 @@ export function WeatherWidget() {
                       <span className="text-xs text-white/60 font-medium">{label}</span>
                       <WeatherIcon code={day.code} size={24} />
                       <span className="text-xs font-semibold text-white">
-                        {toF(day.max)}{"\u00B0"} <span className="font-normal text-white/50">{toF(day.min)}{"\u00B0"}</span>
+                        {toF(day.max)}{"\u00B0"} <span className="font-normal text-white/70">{toF(day.min)}{"\u00B0"}</span>
                       </span>
                     </div>
                   )
