@@ -15,6 +15,7 @@ import {
   Info,
   TrendingUp,
   CloudSun,
+  MapPin,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -29,6 +30,7 @@ const tabs = [
 ];
 
 const moreItems = [
+  { icon: MapPin, label: 'Food Map', href: '/trip/food-map' },
   { icon: CloudSun, label: 'Weather', href: '/trip/weather' },
   { icon: ListChecks, label: 'Wish List', href: '/trip/wishlist' },
   { icon: BarChart3, label: 'Polls', href: '/trip/polls' },
