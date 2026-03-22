@@ -166,7 +166,7 @@ export function DayList() {
   const status = getTripStatus()
   const currentDayNumber = status === "during" ? getCurrentDayNumber() : null
 
-  const cityOrder: City[] = ["Paris", "Saint-Raphael", "Lisbon"]
+  const cityOrder: City[] = ["NYC", "Paris", "Saint-Raphael", "Lisbon"]
 
   const grouped = tripDays.reduce(
     (acc, day) => {
