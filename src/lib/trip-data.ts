@@ -100,6 +100,15 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       notes: "Tickets are non-refundable. Show PDF on phone at entrance. Arrive at 1:30 PM sharp.",
       sort_order: 3,
     }),
+    item("restaurant", "La Bastide \u2014 Dinner \ud83c\udf7d\ufe0f", {
+      start_time: "2026-04-03T18:00:00",
+      location_name: "La Bastide",
+      address: "94 Boulevard des Batignolles, 75017 Paris",
+      description: "Dinner for 10 \u2014 two tables booked (6 + 4). \u26a0\ufe0f Reservation request pending \u2014 watch for confirmation email/SMS.",
+      notes: "Table of 6 (Jared's booking) + separate table of 4. Same restaurant, same time. Confirm both before the trip.",
+      url: "https://maps.google.com/?q=La+Bastide+94+Boulevard+des+Batignolles+Paris",
+      sort_order: 4,
+    }),
   ],
 
   "2026-04-04": [
