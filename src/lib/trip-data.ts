@@ -47,6 +47,11 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       notes: "Book or confirm Go Airlink reservation. ~45 min ride.",
       sort_order: 2,
     }),
+    item("activity", "\ud83c\udf82 Aaron's Birthday!", {
+      description: "Happy Birthday Aaron! The trip kicks off on his big day \u2014 NYC first stop.",
+      notes: "Consider a birthday dinner in NYC tonight. Great excuse to celebrate before Paris.",
+      sort_order: 0,
+    }),
     item("hotel", "Check in: Hyatt Grand Central New York", {
       start_time: "2026-04-01T15:00:00",
       location_name: "Hyatt Grand Central New York",
