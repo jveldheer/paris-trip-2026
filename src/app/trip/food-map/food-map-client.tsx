@@ -9,7 +9,7 @@ import 'leaflet/dist/leaflet.css';
 
 // ── Custom SVG marker factory ───────────────────────────────────────────────
 
-function createSvgIcon(venue: Venue, isSelected: boolean): L.DivIcon {
+function createSvgIcon(venue: Venue, isSelected: boolean, isSaved: boolean): L.DivIcon {
   const cat = CATEGORY_MAP[venue.category];
   const size = getMarkerSize(venue);
   const px = isSelected ? size * 2.8 : size * 2.4;
@@ -17,12 +17,17 @@ function createSvgIcon(venue: Venue, isSelected: boolean): L.DivIcon {
   const emoji = cat.emoji;
   const fontSize = venue.category === 'michelin' && (venue.stars ?? 0) >= 3 ? 14 : 11;
 
+  const savedBadge = isSaved
+    ? `<div style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:#f59e0b;border:1.5px solid white;display:flex;align-items:center;justify-content:center;font-size:8px;line-height:1;">&#11088;</div>`
+    : '';
+
   return L.divIcon({
     className: 'food-map-marker',
     iconSize: [px, px],
     iconAnchor: [px / 2, px / 2],
     html: `
       <div style="
+        position: relative;
         width: ${px}px;
         height: ${px}px;
         border-radius: 50%;
@@ -38,7 +43,7 @@ function createSvgIcon(venue: Venue, isSelected: boolean): L.DivIcon {
         transform: ${isSelected ? 'scale(1.15)' : 'scale(1)'};
         cursor: pointer;
         z-index: ${isSelected ? 1000 : 1};
-      ">${emoji}</div>
+      ">${emoji}${savedBadge}</div>
     `,
   });
 }
@@ -70,13 +75,15 @@ function SelectedPanner({ venue }: { venue: Venue | null }) {
 function VenueMarker({
   venue,
   isSelected,
+  isSaved,
   onSelect,
 }: {
   venue: Venue;
   isSelected: boolean;
+  isSaved: boolean;
   onSelect: (venue: Venue) => void;
 }) {
-  const icon = createSvgIcon(venue, isSelected);
+  const icon = createSvgIcon(venue, isSelected, isSaved);
 
   return (
     <Marker
@@ -97,11 +104,13 @@ export default function FoodMapClient({
   venues,
   selectedVenue,
   onSelectVenue,
+  savedVenues = [],
 }: {
   city: CityData;
   venues: Venue[];
   selectedVenue: Venue | null;
   onSelectVenue: (venue: Venue | null) => void;
+  savedVenues?: string[];
 }) {
   const handleSelect = useCallback(
     (venue: Venue) => {
@@ -126,6 +135,7 @@ export default function FoodMapClient({
           key={venue.name}
           venue={venue}
           isSelected={selectedVenue?.name === venue.name}
+          isSaved={savedVenues.includes(venue.name)}
           onSelect={handleSelect}
         />
       ))}

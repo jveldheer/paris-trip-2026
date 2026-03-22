@@ -7,7 +7,6 @@ import {
   Camera,
   MessageCircle,
   Menu,
-  ListChecks,
   BarChart3,
   Star,
   Heart,
@@ -25,15 +24,13 @@ import { Separator } from '@/components/ui/separator';
 const tabs = [
   { icon: House, label: 'Home', href: '/trip' },
   { icon: Calendar, label: 'Itinerary', href: '/trip/itinerary' },
-  { icon: Camera, label: 'Photos', href: '/trip/photos' },
   { icon: MapPin, label: 'Food Map', href: '/trip/food-map' },
 ];
 
 const moreItems = [
+  { icon: Camera, label: 'Photos', href: '/trip/photos' },
   { icon: MessageCircle, label: 'Moments', href: '/trip/moments' },
   { icon: CloudSun, label: 'Weather', href: '/trip/weather' },
-  { icon: ListChecks, label: 'Wish List', href: '/trip/wishlist' },
-  { icon: BarChart3, label: 'Polls', href: '/trip/polls' },
   { icon: Star, label: 'Highlights', href: '/trip/highlights' },
   { icon: Heart, label: 'Memory Jar', href: '/trip/memory-jar' },
   { icon: Smile, label: 'Kid Corner', href: '/trip/kids' },

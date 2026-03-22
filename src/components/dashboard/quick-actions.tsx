@@ -1,41 +1,41 @@
 "use client"
 
 import Link from "next/link"
-import { Camera, Edit3, Heart, BarChart3 } from "lucide-react"
+import { CalendarDays, MapPin, CloudSun, Info } from "lucide-react"
 import { motion } from "framer-motion"
 
 const actions = [
   {
-    icon: Camera,
-    label: "Add Photo",
-    href: "/trip/photos",
+    icon: CalendarDays,
+    label: "Today",
+    href: "/trip/itinerary",
     bgColor: "bg-blue-50",
     iconColor: "text-blue-600",
     ringColor: "ring-blue-200",
   },
   {
-    icon: Edit3,
-    label: "Moment",
-    href: "/trip/moments",
-    bgColor: "bg-purple-50",
-    iconColor: "text-purple-600",
-    ringColor: "ring-purple-200",
+    icon: MapPin,
+    label: "Food Map",
+    href: "/trip/food-map",
+    bgColor: "bg-amber-50",
+    iconColor: "text-amber-700",
+    ringColor: "ring-amber-200",
   },
   {
-    icon: Heart,
-    label: "Wish List",
-    href: "/trip/wishlist",
-    bgColor: "bg-rose-50",
-    iconColor: "text-rose-600",
-    ringColor: "ring-rose-200",
+    icon: CloudSun,
+    label: "Weather",
+    href: "/trip/weather",
+    bgColor: "bg-sky-50",
+    iconColor: "text-sky-600",
+    ringColor: "ring-sky-200",
   },
   {
-    icon: BarChart3,
-    label: "Polls",
-    href: "/trip/polls",
-    bgColor: "bg-emerald-50",
-    iconColor: "text-emerald-600",
-    ringColor: "ring-emerald-200",
+    icon: Info,
+    label: "Trip Info",
+    href: "/trip/info",
+    bgColor: "bg-stone-100",
+    iconColor: "text-stone-600",
+    ringColor: "ring-stone-200",
   },
 ] as const
 

@@ -37,6 +37,9 @@ Always use claude-opus-4-6. This project runs on Jared's Max plan.
 - Trip code validated server-side at `src/app/api/auth/verify/route.ts`
 - Trip code env var: `TRIP_CODE` (set in Vercel dashboard)
 
+## App Philosophy
+This is a focused family trip companion. Every feature should earn its place. No social features (polls, photo sharing) — just the essentials: countdown, itinerary, weather, food map (with integrated wish list), and trip info.
+
 ## DO NOT
 - Touch Supabase schema without being careful (dev + prod share one DB)
 - Use hardcoded color values — always use CSS custom properties

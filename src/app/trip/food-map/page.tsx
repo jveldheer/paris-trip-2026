@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useMemo, useEffect } from 'react';
-import { ChevronLeft, Search, X, MapPin, ExternalLink, List } from 'lucide-react';
+import { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import { ChevronLeft, Search, X, MapPin, ExternalLink, List, Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
@@ -237,16 +237,39 @@ export default function FoodMapPage() {
   const router = useRouter();
   const [selectedCityIdx, setSelectedCityIdx] = useState(0);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
-  const [activeFilter, setActiveFilter] = useState<Category | 'all'>('all');
+  const [activeFilter, setActiveFilter] = useState<Category | 'all' | 'saved'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showList, setShowList] = useState(false);
+  const [savedVenues, setSavedVenues] = useState<string[]>([]);
   const filterScrollRef = useRef<HTMLDivElement>(null);
+
+  // Load saved venues from localStorage
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('wishlist_venues');
+      if (raw) setSavedVenues(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const toggleSaved = useCallback((venueName: string) => {
+    setSavedVenues(prev => {
+      const next = prev.includes(venueName)
+        ? prev.filter(n => n !== venueName)
+        : [...prev, venueName];
+      localStorage.setItem('wishlist_venues', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const isVenueSaved = useCallback((venueName: string) => savedVenues.includes(venueName), [savedVenues]);
 
   const city = CITIES[selectedCityIdx];
 
   const filteredVenues = useMemo(() => {
     let venues = city.venues;
-    if (activeFilter !== 'all') {
+    if (activeFilter === 'saved') {
+      venues = venues.filter(v => savedVenues.includes(v.name));
+    } else if (activeFilter !== 'all') {
       venues = venues.filter(v => v.category === activeFilter);
     }
     if (searchQuery.trim()) {
@@ -258,7 +281,7 @@ export default function FoodMapPage() {
       );
     }
     return [...venues].sort((a, b) => venueSortRank(b) - venueSortRank(a));
-  }, [city, activeFilter, searchQuery]);
+  }, [city, activeFilter, searchQuery, savedVenues]);
 
   const handleSelectVenue = (venue: Venue | null) => {
     setSelectedVenue(prev => prev?.name === venue?.name ? null : venue);
@@ -334,6 +357,20 @@ export default function FoodMapPage() {
             >
               ✦ All
             </button>
+            <button
+              onClick={() => setActiveFilter(activeFilter === 'saved' ? 'all' : 'saved')}
+              className={`shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                activeFilter === 'saved'
+                  ? 'bg-primary text-primary-foreground border-primary'
+                  : 'bg-transparent text-white/40 border-white/15 hover:border-white/30'
+              }`}
+            >
+              <Heart className="h-3 w-3" />
+              <span>Saved</span>
+              {savedVenues.length > 0 && (
+                <span className="text-[10px] opacity-60">({savedVenues.filter(n => city.venues.some(v => v.name === n)).length})</span>
+              )}
+            </button>
             {CATEGORIES.map(cat => (
               <button
                 key={cat.key}
@@ -373,6 +410,7 @@ export default function FoodMapPage() {
           venues={filteredVenues}
           selectedVenue={selectedVenue}
           onSelectVenue={handleSelectVenue}
+          savedVenues={savedVenues}
         />
 
         {/* Floating List toggle button */}
@@ -444,12 +482,27 @@ export default function FoodMapPage() {
               <span className="text-xs text-amber-700 bg-amber-50 rounded px-2 py-1 inline-block">Reservations essential</span>
             )}
 
+            {/* Save / Wishlist button */}
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={() => toggleSaved(selectedVenue.name)}
+                className={`flex items-center justify-center gap-2 flex-1 text-sm px-4 py-2.5 rounded-lg transition-colors ${
+                  isVenueSaved(selectedVenue.name)
+                    ? 'bg-amber-50 text-amber-700 border border-amber-300'
+                    : 'bg-primary/5 text-primary border border-primary/20 hover:bg-primary/10'
+                }`}
+              >
+                <Heart className={`h-4 w-4 ${isVenueSaved(selectedVenue.name) ? 'fill-amber-500' : ''}`} />
+                {isVenueSaved(selectedVenue.name) ? 'Saved' : 'Save to Wish List'}
+              </button>
+            </div>
+
             {/* Google Maps button — full width outlined */}
             <a
               href={googleMapsUrl(selectedVenue)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full border border-primary text-primary text-sm px-4 py-2.5 rounded-lg hover:bg-primary/5 transition-colors mt-4"
+              className="flex items-center justify-center gap-2 w-full border border-primary text-primary text-sm px-4 py-2.5 rounded-lg hover:bg-primary/5 transition-colors mt-2"
             >
               <MapPin className="h-4 w-4" />
               Open in Google Maps
@@ -467,7 +520,7 @@ export default function FoodMapPage() {
             <div className="pt-4">
               <h2 className="font-serif text-lg font-medium text-foreground">{city.city} Venues</h2>
               <p className="text-[10px] uppercase tracking-[0.2em] text-primary/40">
-                {filteredVenues.length} {activeFilter === 'all' ? 'spots' : CATEGORY_MAP[activeFilter]?.label.toLowerCase() + ' spots'}
+                {filteredVenues.length} {activeFilter === 'all' ? 'spots' : activeFilter === 'saved' ? 'saved' : CATEGORY_MAP[activeFilter]?.label.toLowerCase() + ' spots'}
               </p>
             </div>
             <button
@@ -531,6 +584,7 @@ export default function FoodMapPage() {
                         <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{cat.label}</span>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="font-serif text-base font-medium text-foreground">{venue.name}</span>
+                          {isVenueSaved(venue.name) && <Heart className="h-3.5 w-3.5 fill-amber-500 text-amber-500 shrink-0" />}
                         </div>
                         <div className="flex items-center gap-1.5 mt-1 flex-wrap">
                           {venue.award && (
