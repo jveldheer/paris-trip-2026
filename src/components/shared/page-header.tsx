@@ -12,7 +12,7 @@ export function PageHeader({ title, backHref, children }: { title: string; backH
           <ChevronLeft className="h-5 w-5" />
         </button>
       )}
-      <h1 className="text-lg font-semibold flex-1">{title}</h1>
+      <h1 className="font-serif text-lg font-semibold flex-1">{title}</h1>
       {children}
     </div>
   )

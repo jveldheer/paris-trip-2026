@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion"
 import { parseISO, differenceInSeconds, differenceInDays } from "date-fns"
 import { TRIP_START, TRIP_END, CITY_CONFIG } from "@/lib/constants"
 import { getTripStatus, getCurrentDayNumber, getCityForDay, getDaysSince } from "@/lib/trip-utils"
-import { Progress } from "@/components/ui/progress"
 
 interface CountdownValues {
   days: number

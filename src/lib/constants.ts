@@ -1,4 +1,4 @@
-import type { City, ItemCategory, WishlistCategory, MomentType } from '@/types';
+import type { City, WishlistCategory, MomentType } from '@/types';
 
 export const TRIP_CODE = 'veldheer2026';
 export const TRIP_START = '2026-04-01';
@@ -51,23 +51,6 @@ export const CITY_CONFIG: Record<City, { color: string; light: string; bg: strin
   'Saint-Raphael': { color: '#c2410c', light: '#f59e0b', bg: '#fffbeb', flag: '🇫🇷' },
   Lisbon: { color: '#0d9488', light: '#14b8a6', bg: '#f0fdfa', flag: '🇵🇹' },
   NYC: { color: '#1f2937', light: '#6b7280', bg: '#f9fafb', flag: '🇺🇸' },
-};
-
-export const CITY_TAILWIND: Record<City, { bg: string; text: string; border: string; lightBg: string }> = {
-  Paris: { bg: 'bg-paris', text: 'text-paris', border: 'border-paris-light', lightBg: 'bg-paris-bg' },
-  'Saint-Raphael': { bg: 'bg-saintraphael', text: 'text-saintraphael', border: 'border-saintraphael-light', lightBg: 'bg-saintraphael-bg' },
-  Lisbon: { bg: 'bg-lisbon', text: 'text-lisbon', border: 'border-lisbon-light', lightBg: 'bg-lisbon-bg' },
-  NYC: { bg: 'bg-gray-100', text: 'text-gray-700', border: 'border-gray-200', lightBg: 'bg-gray-50' },
-};
-
-export const CATEGORY_ICONS: Record<ItemCategory, string> = {
-  flight: 'Plane',
-  train: 'Train',
-  hotel: 'Hotel',
-  restaurant: 'UtensilsCrossed',
-  activity: 'Ticket',
-  transport: 'Car',
-  free_time: 'Coffee',
 };
 
 export const CATEGORY_LABELS: Record<string, string> = {

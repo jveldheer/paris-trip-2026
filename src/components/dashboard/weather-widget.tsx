@@ -122,7 +122,7 @@ export function WeatherWidget() {
         {/* Left chevron */}
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); goPrev() }}
-          className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 p-1 text-white/50 hover:text-white/80 transition-colors"
+          className="absolute left-0.5 top-1/2 -translate-y-1/2 z-20 p-2.5 text-white/50 hover:text-white/80 transition-colors"
           aria-label="Previous city"
         >
           <ChevronLeft className="h-4 w-4" />
@@ -131,7 +131,7 @@ export function WeatherWidget() {
         {/* Right chevron */}
         <button
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); goNext() }}
-          className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 p-1 text-white/50 hover:text-white/80 transition-colors"
+          className="absolute right-0.5 top-1/2 -translate-y-1/2 z-20 p-2.5 text-white/50 hover:text-white/80 transition-colors"
           aria-label="Next city"
         >
           <ChevronRight className="h-4 w-4" />
@@ -214,14 +214,16 @@ export function WeatherWidget() {
               <button
                 key={i}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (i !== cityIndex) switchCity(i) }}
-                className={cn(
-                  "rounded-full transition-all duration-200",
-                  i === cityIndex
-                    ? "w-2 h-2 bg-[oklch(0.70_0.085_78)]"
-                    : "w-1.5 h-1.5 bg-white/40 hover:bg-white/60"
-                )}
+                className="flex items-center justify-center w-8 h-8"
                 aria-label={`Show ${SWIPE_CITIES[i].name} weather`}
-              />
+              >
+                <span className={cn(
+                  "rounded-full transition-all duration-200 block",
+                  i === cityIndex
+                    ? "w-2 h-2 bg-brass"
+                    : "w-1.5 h-1.5 bg-white/40 hover:bg-white/60"
+                )} />
+              </button>
             ))}
           </div>
           {!hasSwiped && (

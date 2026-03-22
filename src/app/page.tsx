@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, FormEvent } from "react"
+import { useState, useEffect, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 
 export default function PasswordPage() {
@@ -10,11 +10,11 @@ export default function PasswordPage() {
   const [checking, setChecking] = useState(false)
 
   // If already authed, redirect immediately
-  useState(() => {
-    if (typeof window !== "undefined" && document.cookie.includes("trip_auth=")) {
+  useEffect(() => {
+    if (document.cookie.includes("trip_auth=")) {
       router.replace("/trip")
     }
-  })
+  }, [router])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -50,14 +50,14 @@ export default function PasswordPage() {
           <div className="text-5xl mb-4" aria-hidden="true">
             🇫🇷✈️🌊🇵🇹
           </div>
-          <h1 className="text-2xl font-bold mb-1">Veldheer Europe 2026</h1>
+          <h1 className="font-serif text-2xl font-bold mb-1">Veldheer Europe 2026</h1>
           <p className="text-muted-foreground text-sm">Enter the password to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <input
-              type="text"
+              type="password"
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value)
@@ -68,10 +68,10 @@ export default function PasswordPage() {
               autoComplete="off"
               className={`w-full px-4 py-3 rounded-xl border bg-card text-center text-lg font-medium
                 focus:outline-none focus:ring-2 focus:ring-primary/50
-                ${error ? "border-red-400 shake" : "border-border"}`}
+                ${error ? "border-destructive shake" : "border-border"}`}
             />
             {error && (
-              <p className="text-red-500 text-xs text-center mt-2">
+              <p className="text-destructive text-xs text-center mt-2">
                 {error}
               </p>
             )}

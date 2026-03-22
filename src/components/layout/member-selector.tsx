@@ -13,7 +13,7 @@ export function MemberSelector() {
           <div className="text-4xl mb-3" aria-hidden="true">
             ✈️
           </div>
-          <h1 className="text-2xl font-bold mb-1">Who are you?</h1>
+          <h1 className="font-serif text-2xl font-bold mb-1">Who are you?</h1>
           <p className="text-muted-foreground text-sm">Pick your name to get started</p>
         </div>
 

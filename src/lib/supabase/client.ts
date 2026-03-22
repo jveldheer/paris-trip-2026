@@ -1,17 +1,22 @@
 "use client"
 
-import { createClient } from "@supabase/supabase-js"
+import { createClient, SupabaseClient } from "@supabase/supabase-js"
 import { TRIP_CODE } from "@/lib/constants"
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://placeholder.supabase.co"
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder"
 
+let _client: SupabaseClient | null = null
+
 export function getSupabaseClient() {
-  return createClient(supabaseUrl, supabaseAnonKey, {
-    global: {
-      headers: { "x-trip-code": TRIP_CODE },
-    },
-  })
+  if (!_client) {
+    _client = createClient(supabaseUrl, supabaseAnonKey, {
+      global: {
+        headers: { "x-trip-code": TRIP_CODE },
+      },
+    })
+  }
+  return _client
 }
 
 export function getStorageUrl(path: string): string {

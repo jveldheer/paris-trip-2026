@@ -265,14 +265,14 @@ export default function FoodMapPage() {
   };
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-[#FFFBF0] overflow-hidden">
+    <div className="h-[100dvh] flex flex-col bg-cream overflow-hidden">
       {/* Header — fixed at top */}
-      <div className="shrink-0 bg-[#1a1a3e] pt-safe" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+      <div className="shrink-0 bg-primary pt-safe" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
         {/* Title row — compact single line */}
         <div className="flex items-center px-4 pt-3 pb-2">
           <button
             onClick={() => router.back()}
-            className="p-1.5 -ml-1.5 rounded-lg bg-white/10 backdrop-blur-sm text-white border border-white/10"
+            className="p-2.5 -ml-1.5 rounded-lg bg-white/10 backdrop-blur-sm text-white border border-white/10"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
@@ -350,7 +350,7 @@ export default function FoodMapPage() {
             ))}
           </div>
           {/* Right fade gradient for scroll affordance */}
-          <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ maskImage: 'none', background: 'linear-gradient(to right, transparent, #1a1a3e)' }} />
+          <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ maskImage: 'none', background: 'linear-gradient(to right, transparent, oklch(0.20 0.055 258))' }} />
         </div>
       </div>
 
@@ -378,7 +378,7 @@ export default function FoodMapPage() {
         {/* Floating List toggle button */}
         <button
           onClick={() => setShowList(true)}
-          className="absolute bottom-4 right-4 z-[50] flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[#1a1a3e] text-white text-sm font-medium shadow-lg hover:bg-[#2a2a5e] transition-colors"
+          className="absolute bottom-4 right-4 z-[50] flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-primary text-white text-sm font-medium shadow-lg hover:bg-primary/80 transition-colors"
         >
           <List className="h-4 w-4" />
           List
@@ -394,7 +394,7 @@ export default function FoodMapPage() {
         />
       )}
       <div
-        className={`fixed bottom-0 left-0 right-0 z-[100] bg-[#FFFBF0] rounded-t-2xl shadow-[0_-4px_30px_rgba(0,0,0,0.15)] border-t border-[#1a1a3e]/10 max-h-[45vh] overflow-y-auto transition-transform duration-300 ease-out ${
+        className={`fixed bottom-0 left-0 right-0 z-[100] bg-cream rounded-t-2xl shadow-[0_-4px_30px_rgba(0,0,0,0.15)] border-t border-primary/10 max-h-[45vh] overflow-y-auto transition-transform duration-300 ease-out ${
           selectedVenue ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
@@ -408,9 +408,9 @@ export default function FoodMapPage() {
             {/* Close button */}
             <button
               onClick={() => setSelectedVenue(null)}
-              className="absolute top-4 right-4 p-1.5 rounded-full bg-[#1a1a3e]/5 hover:bg-[#1a1a3e]/10 transition-colors"
+              className="absolute top-4 right-4 p-2.5 rounded-full bg-primary/5 hover:bg-primary/10 transition-colors"
             >
-              <X className="h-4 w-4 text-[#1a1a3e]/60" />
+              <X className="h-4 w-4 text-primary/60" />
             </button>
 
             {/* Category emoji + award badge */}
@@ -461,40 +461,40 @@ export default function FoodMapPage() {
 
       {/* ── Full-screen venue list modal ───────────────────────────────────── */}
       {showList && (
-        <div className="fixed inset-0 z-[200] bg-[#FFFBF0] flex flex-col">
+        <div className="fixed inset-0 z-[200] bg-cream flex flex-col">
           {/* List header */}
-          <div className="shrink-0 flex items-center justify-between px-4 pt-safe pb-3 border-b border-border bg-[#FFFBF0]">
+          <div className="shrink-0 flex items-center justify-between px-4 pt-safe pb-3 border-b border-border bg-cream">
             <div className="pt-4">
               <h2 className="font-serif text-lg font-medium text-foreground">{city.city} Venues</h2>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-[#1a1a3e]/40">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-primary/40">
                 {filteredVenues.length} {activeFilter === 'all' ? 'spots' : CATEGORY_MAP[activeFilter]?.label.toLowerCase() + ' spots'}
               </p>
             </div>
             <button
               onClick={() => setShowList(false)}
-              className="p-2 rounded-full bg-[#1a1a3e]/5 hover:bg-[#1a1a3e]/10 transition-colors mt-4"
+              className="p-2.5 rounded-full bg-primary/5 hover:bg-primary/10 transition-colors mt-4"
             >
-              <X className="h-5 w-5 text-[#1a1a3e]/60" />
+              <X className="h-5 w-5 text-primary/60" />
             </button>
           </div>
 
           {/* Search */}
           <div className="shrink-0 px-4 pt-3 pb-2">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1a1a3e]/30" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary/30" />
               <input
                 type="text"
                 placeholder="Search venues..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-white rounded-xl border border-[#1a1a3e]/10 text-sm text-[#1a1a3e] placeholder:text-[#1a1a3e]/30 focus:outline-none focus:border-[#1a1a3e]/25 focus:ring-2 focus:ring-[#1a1a3e]/5"
+                className="w-full pl-9 pr-4 py-2.5 bg-white rounded-xl border border-primary/10 text-sm text-primary placeholder:text-primary/30 focus:outline-none focus:border-primary/25 focus:ring-2 focus:ring-primary/5"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5"
                 >
-                  <X className="h-4 w-4 text-[#1a1a3e]/30" />
+                  <X className="h-4 w-4 text-primary/30" />
                 </button>
               )}
             </div>
@@ -555,7 +555,7 @@ export default function FoodMapPage() {
                 );
               })}
               {filteredVenues.length === 0 && (
-                <div className="text-center py-8 text-[#1a1a3e]/40 text-sm">
+                <div className="text-center py-8 text-primary/40 text-sm">
                   No venues found
                 </div>
               )}

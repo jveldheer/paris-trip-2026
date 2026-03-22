@@ -56,16 +56,6 @@ export function getCityForDay(dayNumber: number): City {
   return "Lisbon"
 }
 
-export function getCityColor(city: City): string {
-  const colors: Record<City, string> = {
-    Paris: "#1e3a5f",
-    "Saint-Raphael": "#c2410c",
-    Lisbon: "#0d9488",
-    NYC: "#1f2937",
-  }
-  return colors[city]
-}
-
 export async function resizeImage(file: File, maxWidth: number): Promise<Blob> {
   return new Promise((resolve) => {
     const img = new window.Image()

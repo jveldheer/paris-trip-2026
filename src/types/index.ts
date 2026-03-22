@@ -152,6 +152,4 @@ export type KidDrawing = {
   member?: Member;
 };
 
-// Convenience aliases kept for compatibility
 export type City = 'Paris' | 'Saint-Raphael' | 'Lisbon' | 'NYC';
-export type ItemCategory = ItineraryItemCategory;

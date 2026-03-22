@@ -30,7 +30,7 @@ export function MapLink({ address, label }: MapLinkProps) {
       onClick={handleOpen}
       className="gap-1.5 text-xs h-8 px-3 rounded-full"
     >
-      <MapPin className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+      <MapPin className="w-3.5 h-3.5 text-accent shrink-0" />
       <span className="truncate max-w-[180px]">{label ?? address}</span>
     </Button>
   );

@@ -24,8 +24,8 @@ export function validateEnv() {
   }
 
   if (errors.length > 0) {
-    throw new Error(
-      `Environment variable validation failed:\n${errors.map((e) => `  - ${e}`).join("\n")}\n\nSee .env.example for required variables.`
+    console.warn(
+      `Environment variable warning:\n${errors.map((e) => `  - ${e}`).join("\n")}\n\nApp will run with static data. See .env.example for required variables.`
     )
   }
 }
