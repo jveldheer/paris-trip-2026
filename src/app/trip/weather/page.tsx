@@ -127,7 +127,10 @@ function getCityForDate(dateStr: string): string {
 // ── API fetching ─────────────────────────────────────────────────────────────
 
 async function fetchCityForecast(city: typeof CITIES[number]): Promise<CityForecast> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,windspeed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&start_date=2026-04-03&end_date=2026-04-15`
+  // Request from today + 16 days to capture as much trip data as possible
+  // Open-Meteo returns climatological averages for dates beyond the 16-day window
+  const today = new Date().toISOString().split("T")[0]
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,windspeed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&forecast_days=16`
 
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Failed to fetch weather for ${city.name}`)
@@ -163,7 +166,7 @@ export default function WeatherPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedDate, setSelectedDate] = useState("2026-04-03")
-  const [useFahrenheit, setUseFahrenheit] = useState(false)
+  const [useFahrenheit, setUseFahrenheit] = useState(true)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -172,7 +175,7 @@ export default function WeatherPage() {
       const results = await Promise.all(CITIES.map(fetchCityForecast))
       setForecasts(results)
     } catch {
-      setError("Could not load forecast. Check your connection and try again.")
+      setError("Weather data unavailable. Open-Meteo may not have forecast data this far out yet.")
     } finally {
       setLoading(false)
     }

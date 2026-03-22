@@ -71,6 +71,7 @@ export function WeatherWidget() {
 
   const today = forecast[0]
   const upcoming = forecast.slice(1, 4)
+  const toF = (c: number) => Math.round(c * 9/5 + 32)
 
   return (
     <div className="mx-4">
@@ -98,8 +99,8 @@ export function WeatherWidget() {
             <div className="flex items-center gap-4 px-4 pb-3">
               <span className="text-4xl">{WMO_ICONS[today.code] ?? "🌤"}</span>
               <div>
-                <div className="text-2xl font-bold text-foreground">{today.max}°C</div>
-                <div className="text-xs text-muted-foreground">{WMO_DESC[today.code] ?? "Partly cloudy"} · Low {today.min}°C</div>
+                <div className="text-2xl font-bold text-foreground">{toF(today.max)}°F</div>
+                <div className="text-xs text-muted-foreground">{WMO_DESC[today.code] ?? "Partly cloudy"} · Low {toF(today.min)}°F</div>
               </div>
             </div>
 
@@ -113,7 +114,7 @@ export function WeatherWidget() {
                     <div key={day.date} className="flex flex-col items-center py-3 gap-1">
                       <span className="text-xs text-muted-foreground font-medium">{label}</span>
                       <span className="text-lg">{WMO_ICONS[day.code] ?? "🌤"}</span>
-                      <span className="text-xs font-semibold">{day.max}° <span className="font-normal text-muted-foreground">{day.min}°</span></span>
+                      <span className="text-xs font-semibold">{toF(day.max)}° <span className="font-normal text-muted-foreground">{toF(day.min)}°</span></span>
                     </div>
                   )
                 })}
