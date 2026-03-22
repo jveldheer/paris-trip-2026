@@ -67,12 +67,12 @@ const WMO_DESC: Record<number, string> = {
 }
 
 function getGradient(code: number): string {
-  if (code === 0) return "from-amber-400 via-orange-300 to-sky-400"
-  if (code <= 2) return "from-sky-500 via-sky-400 to-blue-300"
-  if (code === 3) return "from-slate-500 via-gray-400 to-slate-300"
-  if (code <= 55) return "from-slate-600 via-blue-500 to-slate-400"
-  if (code <= 82) return "from-slate-700 via-blue-600 to-slate-500"
-  return "from-gray-800 via-slate-700 to-gray-600"
+  if (code === 0) return "from-amber-500 via-rose-400 to-sky-500"       // golden clear
+  if (code <= 2) return "from-blue-600 via-sky-400 to-cyan-300"          // partly cloudy
+  if (code === 3) return "from-slate-600 via-slate-400 to-gray-300"      // overcast
+  if (code <= 55) return "from-indigo-700 via-blue-500 to-slate-400"     // drizzle
+  if (code <= 82) return "from-slate-800 via-blue-700 to-indigo-500"     // rain
+  return "from-gray-900 via-slate-800 to-purple-900"                     // storm
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -153,8 +153,9 @@ function WeatherIcon({ code, size = 48 }: { code: number; size?: number }) {
     <span
       style={{ fontSize: size }}
       className={
-        code === 0 ? "animate-pulse" :
-        code <= 2 ? "animate-bounce" :
+        code === 0 ? "animate-pulse-sun" :
+        code <= 2 ? "animate-float" :
+        code >= 61 && code <= 82 ? "animate-rain" :
         ""
       }
     >
@@ -403,6 +404,20 @@ export default function WeatherPage() {
                   <div className="text-white/80 text-lg mt-1">{WMO_DESC[heroDay.code] ?? "Mixed"}</div>
                   <div className="text-white/60 text-sm mt-0.5">
                     {toF(heroDay.min)} low · {heroDay.precipProb}% rain
+                  </div>
+                  <div className="flex gap-3 mt-3">
+                    {[
+                      { icon: "💨", label: "Wind", value: `${Math.round((heroDay.windMax??0) * 0.621)} mph` },
+                      { icon: "🌅", label: "UV", value: `${heroDay.uvIndex ?? "--"}` },
+                    ].map(stat => (
+                      <div key={stat.label} className="bg-white/15 rounded-xl px-3 py-1.5 flex items-center gap-1.5">
+                        <span className="text-sm">{stat.icon}</span>
+                        <div>
+                          <div className="text-xs text-white/60">{stat.label}</div>
+                          <div className="text-sm font-semibold text-white">{stat.value}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
