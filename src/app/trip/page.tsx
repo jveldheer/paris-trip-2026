@@ -39,8 +39,8 @@ function CityProgress() {
   if (!tripDays.length) return null
 
   return (
-    <div className="px-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+    <div className="px-6">
+      <h3 className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-3">
         Trip Progress
       </h3>
       <div className="space-y-3">
@@ -48,7 +48,6 @@ function CityProgress() {
           const count = days.length
           const completedDays = days.filter((d) => d <= currentDay).length
           const pct = Math.round((count / 13) * 100)
-          const completedPct = Math.round((completedDays / 13) * 100)
           const colors = CITY_COLORS[name]
           const isActive = days.includes(currentDay)
 
@@ -58,12 +57,10 @@ function CityProgress() {
                 <CityBadge city={name} size="sm" />
               </div>
               <div className="flex-1 relative">
-                {/* background track (this city's allocation) */}
                 <div
                   className="h-2 rounded-full overflow-hidden"
                   style={{ backgroundColor: colors.bg, width: `${pct}%` }}
                 >
-                  {/* filled portion */}
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
@@ -97,7 +94,6 @@ function RecentActivity() {
     setLoading(true)
 
     if (isOffline) {
-      // Load from localStorage in offline mode
       try {
         const raw = localStorage.getItem("offline_moments")
         const local = raw ? JSON.parse(raw) : []
@@ -135,15 +131,15 @@ function RecentActivity() {
   }, [trip?.id, members.length, isOffline]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const momentTypeEmoji: Record<string, string> = {
-    note: "📝",
-    quote: "💬",
-    funny: "😂",
-    highlight: "⭐",
+    note: "\u{1F4DD}",
+    quote: "\u{1F4AC}",
+    funny: "\u{1F602}",
+    highlight: "\u2B50",
   }
 
   return (
-    <div className="px-4">
-      <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+    <div className="px-6">
+      <h3 className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-3">
         Recent Moments
       </h3>
 
@@ -158,11 +154,10 @@ function RecentActivity() {
           {moments.map((moment) => (
             <li
               key={moment.id}
-              className="flex items-start gap-3 bg-muted/40 rounded-2xl px-3 py-3"
+              className="flex items-start gap-3 bg-muted/40 rounded-lg px-4 py-3 border-l-2 border-brass/40"
             >
-              {/* Emoji type indicator */}
               <span className="text-xl shrink-0 mt-0.5" aria-hidden>
-                {momentTypeEmoji[moment.moment_type] ?? "📝"}
+                {momentTypeEmoji[moment.moment_type] ?? "\u{1F4DD}"}
               </span>
 
               <div className="flex-1 min-w-0">
@@ -191,11 +186,13 @@ function RecentActivity() {
 export default function DashboardPage() {
   return (
     <div className="pb-24 space-y-6 pt-2">
-      {/* Top bar */}
-      <div className="px-4 pt-2 pb-1">
-        <span className="text-xs font-medium tracking-[0.25em] text-muted-foreground/70 uppercase">
-          Veldheer Europe · April 2026
+      {/* Programme header */}
+      <div className="px-6 pt-4 pb-1 text-center">
+        <div className="h-px bg-brass/40 mb-3" />
+        <span className="font-serif italic text-sm text-muted-foreground tracking-wide">
+          Veldheer Europe &middot; Avril 2026
         </span>
+        <div className="h-px bg-brass/40 mt-3" />
       </div>
 
       {/* Hero countdown / day indicator */}
@@ -210,12 +207,12 @@ export default function DashboardPage() {
       {/* Quick action grid */}
       <QuickActions />
 
-      <div className="mx-4 h-px bg-border/60" />
+      <div className="mx-6 h-px bg-border" />
 
       {/* City progress */}
       <CityProgress />
 
-      <div className="mx-4 h-px bg-border/60" />
+      <div className="mx-6 h-px bg-border" />
 
       {/* Recent activity */}
       <RecentActivity />

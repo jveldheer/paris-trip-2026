@@ -88,7 +88,6 @@ export function WeatherWidget() {
     (e: React.PointerEvent) => {
       const deltaX = e.clientX - touchStartX.current
       const deltaY = e.clientY - touchStartY.current
-      // Only trigger horizontal swipe if it's more horizontal than vertical
       if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
         if (deltaX < 0) goNext()
         else goPrev()
@@ -107,7 +106,7 @@ export function WeatherWidget() {
     <div className="mx-4">
       <div
         className={cn(
-          "rounded-3xl overflow-hidden bg-gradient-to-br shadow-lg border border-white/20 relative transition-all duration-300",
+          "rounded-lg overflow-hidden bg-gradient-to-br shadow-lg border border-white/20 relative transition-all duration-300",
           gradient
         )}
         onPointerDown={handlePointerDown}
@@ -146,7 +145,7 @@ export function WeatherWidget() {
         >
           {/* Header */}
           <div className="flex items-center justify-between px-4 pt-4 pb-2 relative z-10">
-            <span className="text-base font-semibold text-white/90 tracking-wide">
+            <span className="font-serif text-base font-semibold text-white/90 tracking-wide">
               {city.flag} {city.name}
             </span>
             <Link
@@ -159,7 +158,7 @@ export function WeatherWidget() {
 
           {loading ? (
             <div className="px-4 pb-4">
-              <div className="h-12 bg-white/20 rounded-xl animate-pulse" />
+              <div className="h-12 bg-white/20 rounded-lg animate-pulse" />
             </div>
           ) : today ? (
             <>
@@ -220,7 +219,7 @@ export function WeatherWidget() {
                 className={cn(
                   "rounded-full transition-all duration-200",
                   i === cityIndex
-                    ? "w-2 h-2 bg-white"
+                    ? "w-2 h-2 bg-[oklch(0.70_0.085_78)]"
                     : "w-1.5 h-1.5 bg-white/40 hover:bg-white/60"
                 )}
                 aria-label={`Show ${SWIPE_CITIES[i].name} weather`}

@@ -61,12 +61,12 @@ export function NavBar() {
               key={tab.href}
               onClick={() => router.push(tab.href)}
               className={cn(
-                'flex flex-col items-center justify-center gap-0.5 flex-1 text-xs transition-colors',
-                active ? 'text-primary' : 'text-muted-foreground'
+                'flex flex-col items-center justify-center gap-0.5 flex-1 transition-colors',
+                active ? 'text-accent' : 'text-muted-foreground'
               )}
             >
-              <tab.icon className={cn('h-5 w-5', active && 'fill-primary/10')} />
-              <span>{tab.label}</span>
+              <tab.icon className={cn('h-5 w-5', active && 'fill-accent/10')} />
+              <span className="text-[10px] tracking-[0.08em]">{tab.label}</span>
             </button>
           );
         })}
@@ -75,15 +75,15 @@ export function NavBar() {
           <button
             onClick={() => setOpen(true)}
             className={cn(
-              'flex flex-col items-center justify-center gap-0.5 flex-1 text-xs transition-colors',
-              isMoreActive ? 'text-primary' : 'text-muted-foreground'
+              'flex flex-col items-center justify-center gap-0.5 flex-1 transition-colors',
+              isMoreActive ? 'text-accent' : 'text-muted-foreground'
             )}
           >
             <Menu className="h-5 w-5" />
-            <span>More</span>
+            <span className="text-[10px] tracking-[0.08em]">More</span>
           </button>
-          <SheetContent side="bottom" className="rounded-t-2xl px-4 pb-safe">
-            <SheetTitle className="text-base font-semibold pt-2 pb-1">More</SheetTitle>
+          <SheetContent side="bottom" className="rounded-t-lg px-4 pb-safe">
+            <SheetTitle className="font-serif text-base font-semibold pt-2 pb-1">More</SheetTitle>
             <Separator className="mb-4" />
             <div className="grid grid-cols-3 gap-3 pb-6">
               {moreItems.map((item) => {
@@ -96,12 +96,12 @@ export function NavBar() {
                       router.push(item.href);
                     }}
                     className={cn(
-                      'flex flex-col items-center gap-2 p-3 rounded-xl transition-colors',
-                      active ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'
+                      'flex flex-col items-center gap-2 p-3 rounded-lg transition-colors',
+                      active ? 'bg-accent/10 text-accent' : 'hover:bg-muted text-muted-foreground'
                     )}
                   >
                     <item.icon className="h-6 w-6" />
-                    <span className="text-xs font-medium">{item.label}</span>
+                    <span className="text-[10px] font-medium tracking-[0.08em]">{item.label}</span>
                   </button>
                 );
               })}

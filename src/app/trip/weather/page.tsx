@@ -266,14 +266,14 @@ function HourlyStrip({ hours, timezone }: { hours: HourForecast[]; timezone: str
           return (
             <div
               key={h.time}
-              className={`relative flex flex-col items-center gap-1 px-3 py-3 rounded-2xl shrink-0 min-w-[64px] transition-all ${
+              className={`relative flex flex-col items-center gap-1 px-3 py-3 rounded-lg shrink-0 min-w-[64px] transition-all ${
                 isNow
                   ? "bg-white/25 border border-white/50 shadow-lg shadow-white/10 backdrop-blur-md"
                   : "bg-white/10 border border-white/15 backdrop-blur-sm"
               }`}
             >
               {isNow && (
-                <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-2xl bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 animate-shimmer" />
+                <div className="absolute top-0 left-0 right-0 h-[2px] rounded-t-lg bg-gradient-to-r from-[oklch(0.70_0.085_78)] via-[oklch(0.75_0.07_78)] to-[oklch(0.70_0.085_78)] animate-shimmer" />
               )}
               <span className={`text-xs font-medium tabular-nums ${isNow ? "text-white" : "text-white/60"}`}>{label}</span>
               <span className="text-lg">{WMO_EMOJI[h.code] ?? "🌤"}</span>
@@ -346,7 +346,7 @@ function DayCard({ day, isSelected, onClick }: {
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left rounded-2xl p-4 transition-all border-l-[3px] ${accentBorder} ${
+      className={`w-full text-left rounded-lg p-4 transition-all border-l-[3px] ${accentBorder} ${
         isSelected
           ? "bg-white/20 border-y border-r border-white/30 shadow-xl scale-[1.01] backdrop-blur-md"
           : "bg-white/8 border-y border-r border-white/10 hover:bg-white/14 backdrop-blur-sm"
@@ -410,7 +410,7 @@ function DayCard({ day, isSelected, onClick }: {
           {/* Sun arc */}
           <SunArc sunrise={day.sunrise} sunset={day.sunset} />
           {/* Clothing */}
-          <div className="bg-white/8 rounded-xl p-3">
+          <div className="bg-white/8 rounded-lg p-3">
             <div className="text-base mb-1">{clothing.emoji}</div>
             <div className="text-xs font-medium text-white">{clothing.text}</div>
             {clothing.kids && <div className="text-xs text-white/50 mt-0.5">👦 {clothing.kids}</div>}
@@ -462,7 +462,7 @@ export default function WeatherPage() {
   const accentBorderClass = CITY_ACCENT_BORDER[cityName] ?? "border-white"
 
   return (
-    <div className="min-h-screen pb-24 bg-black">
+    <div className="min-h-screen pb-24 bg-[oklch(0.16_0.015_255)]">
       {/* Hero */}
       <div className={`relative bg-gradient-to-br ${gradient} transition-all duration-700 pt-safe overflow-hidden`}>
         {/* Clear-day shimmer overlay */}
@@ -502,12 +502,12 @@ export default function WeatherPage() {
                   onClick={() => { setSelectedCityIdx(i); setSelectedDate(null) }}
                   className={`relative flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
                     isActive
-                      ? "bg-white text-gray-900 shadow-lg"
+                      ? "bg-[oklch(0.20_0.055_258)] text-[oklch(0.982_0.008_85)] shadow-lg"
                       : "text-white/70 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {isActive && (
-                    <div className={`absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-3 h-1 rounded-full ${activeAccent}`} />
+                    <div className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 w-3 h-1 rounded-full bg-[oklch(0.70_0.085_78)]" />
                   )}
                   <span className="text-sm">{c.flag}</span>
                   <span>{c.city.split("-")[0]}</span>
@@ -519,12 +519,12 @@ export default function WeatherPage() {
 
         {loading ? (
           <div className="relative z-10 px-4 pb-8 space-y-4">
-            <div className="h-32 bg-white/10 rounded-2xl animate-pulse backdrop-blur-sm" />
-            <div className="h-20 bg-white/10 rounded-2xl animate-pulse backdrop-blur-sm" />
+            <div className="h-32 bg-white/10 rounded-lg animate-pulse backdrop-blur-sm" />
+            <div className="h-20 bg-white/10 rounded-lg animate-pulse backdrop-blur-sm" />
           </div>
         ) : error ? (
           <div className="relative z-10 px-4 pb-8">
-            <div className="bg-black/20 backdrop-blur-md rounded-2xl p-6 text-white text-center border border-white/10">
+            <div className="bg-black/20 backdrop-blur-md rounded-lg p-6 text-white text-center border border-white/10">
               <p className="text-sm mb-3 text-white/70">{error}</p>
               <button onClick={loadWeather} className="bg-white/15 hover:bg-white/25 px-5 py-2 rounded-xl text-sm font-medium transition-all">
                 Try again
@@ -538,7 +538,7 @@ export default function WeatherPage() {
               <div className="flex items-center gap-2">
                 <span className="text-3xl">{CITIES[selectedCityIdx]?.flag}</span>
                 <div>
-                  <h2 className="text-2xl font-bold text-white tracking-tight">{city?.city}</h2>
+                  <h2 className="font-serif text-2xl font-bold text-white tracking-tight">{city?.city}</h2>
                   <p className="text-white/40 text-xs tabular-nums">
                     {city?.startDate && formatDate(city.startDate).date} – {city?.endDate && formatDate(city.endDate).date}
                   </p>
@@ -616,7 +616,7 @@ export default function WeatherPage() {
             { city: "Saint-Raphaël", flag: "🌊", watermark: "☀️", desc: "Mediterranean warmth, 63–72°F. Sunshine and sea breeze — this is what the trip is for.", gradient: "from-[#BF360C] via-[#E65100] to-[#FB8C00]" },
             { city: "Lisbon", flag: "🇵🇹", watermark: "🌤", desc: "Warm and bright, 64–73°F. The most summer-like stop. Lightest packing needed.", gradient: "from-[#004D40] via-[#00695C] to-[#26A69A]" },
           ].map(c => (
-            <div key={c.city} className={`relative bg-gradient-to-br ${c.gradient} rounded-2xl p-5 text-white overflow-hidden border border-white/10`}>
+            <div key={c.city} className={`relative bg-gradient-to-br ${c.gradient} rounded-lg p-5 text-white overflow-hidden border border-white/10`}>
               {/* Watermark emoji */}
               <span className="absolute -right-3 -bottom-3 text-7xl opacity-10 pointer-events-none select-none">
                 {c.watermark}
@@ -624,7 +624,7 @@ export default function WeatherPage() {
               <div className="relative z-10">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-2xl">{c.flag}</span>
-                  <span className="font-bold text-lg">{c.city}</span>
+                  <span className="font-serif font-bold text-lg">{c.city}</span>
                 </div>
                 <p className="text-sm text-white/80 leading-relaxed">{c.desc}</p>
               </div>

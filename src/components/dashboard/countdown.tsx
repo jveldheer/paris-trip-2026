@@ -30,7 +30,7 @@ function FlipUnit({ value, label }: { value: number; label: string }) {
   const display = String(value).padStart(2, "0")
   return (
     <div className="flex flex-col items-center">
-      <div className="relative bg-white/15 backdrop-blur-sm border border-white/20 rounded-2xl px-4 py-3 min-w-[72px] shadow-lg">
+      <div className="relative bg-white/10 backdrop-blur-sm border border-white/15 rounded-lg px-4 py-3 min-w-[72px] shadow-lg">
         <AnimatePresence mode="popLayout">
           <motion.span
             key={display}
@@ -44,14 +44,14 @@ function FlipUnit({ value, label }: { value: number; label: string }) {
           </motion.span>
         </AnimatePresence>
       </div>
-      <span className="mt-1.5 text-xs font-medium text-white/70 uppercase tracking-widest">{label}</span>
+      <span className="mt-1.5 text-[10px] font-medium text-white/60 uppercase tracking-[0.18em]">{label}</span>
     </div>
   )
 }
 
 function Separator() {
   return (
-    <span className="text-2xl font-bold text-white/50 mb-5 select-none">:</span>
+    <span className="text-2xl font-bold text-white/40 mb-5 select-none">:</span>
   )
 }
 
@@ -73,9 +73,9 @@ export function Countdown() {
   // ── BEFORE TRIP ──────────────────────────────────────────────────────────
   if (status === "before") {
     return (
-      <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 rounded-3xl mx-4 overflow-hidden shadow-xl">
+      <div className="bg-gradient-to-br from-[oklch(0.20_0.055_258)] via-[oklch(0.22_0.05_255)] to-[oklch(0.25_0.04_250)] rounded-lg mx-4 overflow-hidden shadow-xl">
         <div className="px-6 pt-6 pb-2 text-center">
-          <p className="text-blue-200 text-xs uppercase tracking-[0.2em] font-semibold mb-1">
+          <p className="font-serif italic text-white/80 text-sm tracking-wide mb-1">
             Veldheer Europe 2026
           </p>
           <h2 className="text-white text-xl font-bold mb-5">Countdown to Takeoff</h2>
@@ -90,7 +90,7 @@ export function Countdown() {
           <FlipUnit value={countdown.seconds} label="Sec" />
         </div>
         <div className="bg-white/10 px-6 py-3 text-center">
-          <p className="text-blue-100 text-xs">April 1 – 15, 2026 &middot; NYC &rarr; Paris &rarr; Saint-Raphaël &rarr; Lisbon</p>
+          <p className="text-white/60 text-xs tracking-wide">April 1 &ndash; 15, 2026 &middot; NYC &middot; Paris &middot; Saint-Rapha&euml;l &middot; Lisbon</p>
         </div>
       </div>
     )
@@ -108,11 +108,11 @@ export function Countdown() {
 
     return (
       <div
-        className="mx-4 rounded-3xl overflow-hidden shadow-xl"
+        className="mx-4 rounded-lg overflow-hidden shadow-xl"
         style={{ background: `linear-gradient(135deg, ${config.color} 0%, ${config.light} 100%)` }}
       >
         <div className="px-6 pt-6 pb-4 text-center">
-          <p className="text-white/80 text-xs uppercase tracking-[0.2em] font-semibold mb-1">
+          <p className="text-white/80 text-[10px] uppercase tracking-[0.18em] font-medium mb-1">
             We're in {city}
           </p>
           <motion.h2
@@ -147,19 +147,19 @@ export function Countdown() {
   // ── AFTER TRIP ───────────────────────────────────────────────────────────
   const daysSince = getDaysSince()
   return (
-    <div className="mx-4 rounded-3xl overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900 shadow-xl text-center px-6 py-8">
+    <div className="mx-4 rounded-lg overflow-hidden bg-gradient-to-br from-[oklch(0.20_0.055_258)] to-[oklch(0.25_0.04_250)] shadow-xl text-center px-6 py-8">
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ type: "spring", stiffness: 200 }}
         className="text-5xl mb-3"
       >
-        ✈️
+        {"\u2708\uFE0F"}
       </motion.div>
-      <h2 className="text-white text-2xl font-bold">
+      <h2 className="font-serif text-white text-2xl font-bold">
         {daysSince} day{daysSince !== 1 ? "s" : ""} since our adventure
       </h2>
-      <p className="text-slate-300 text-sm mt-2">
+      <p className="text-white/60 text-sm mt-2">
         The memories live on forever. Check the memory jar!
       </p>
     </div>
