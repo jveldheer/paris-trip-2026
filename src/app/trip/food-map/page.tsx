@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 // ── Categories ──────────────────────────────────────────────────────────────
 
-export type Category = 'michelin' | 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets';
+export type Category = 'michelin' | 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets' | 'experience';
 
 export interface CategoryDef {
   key: Category;
@@ -28,6 +28,7 @@ export const CATEGORIES: CategoryDef[] = [
   { key: 'iconic',    emoji: '\u{1F36E}', label: 'Iconic',   color: '#ea580c', colorBg: '#ea580c20' },
   { key: 'chocolate', emoji: '\u{1F36B}', label: 'Chocolate', color: '#5c3317', colorBg: '#5c331720' },
   { key: 'sweets',    emoji: '\u{1F368}', label: 'Sweets',    color: '#db2777', colorBg: '#db277720' },
+  { key: 'experience', emoji: '\u{1F3B5}', label: 'Experience', color: '#4338ca', colorBg: '#4338ca20' },
 ];
 
 export const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c])) as Record<Category, CategoryDef>;
@@ -76,7 +77,7 @@ function googleMapsUrl(venue: Venue): string {
 
 function venueSortRank(v: Venue): number {
   if (v.category === 'michelin') return 100 + (v.stars ?? 0) * 10 + (v.bibGourmand ? 1 : 0);
-  const catOrder: Record<Category, number> = { michelin: 0, bakery: 80, iconic: 70, chocolate: 65, sweets: 63, coffee: 60, market: 50, wine: 40, specialty: 30 };
+  const catOrder: Record<Category, number> = { michelin: 0, bakery: 80, iconic: 70, chocolate: 65, sweets: 63, experience: 62, coffee: 60, market: 50, wine: 40, specialty: 30 };
   return catOrder[v.category] ?? 0;
 }
 
@@ -130,6 +131,14 @@ const CITIES: CityData[] = [
       { name: 'Jacques Genin', lat: 48.8628, lon: 2.3598, category: 'chocolate', award: 'World\u2019s Best Chocolatier (multiple)', tagline: "The reclusive genius. Caramels, \u00E9clairs, and mille-feuille.", desc: "The reclusive genius. His caramels, eclairs, and mille-feuille are so good chefs eat here. 133 Rue de Turenne, Marais. Closed Mondays.", kidFriendly: true },
       { name: 'Pierre Herm\u00E9', lat: 48.8515, lon: 2.3332, category: 'chocolate', award: 'World\u2019s Best Pastry Chef \u2014 Le Monde', tagline: "The Picasso of pastry. Ispahan is world-famous.", desc: "The Picasso of pastry. First chocolate boutique opened 2024 near Op\u00E9ra. His Ispahan (rose-lychee-raspberry macaron) is one of the most famous pastries in the world.", kidFriendly: true },
       { name: 'La Manufacture de Chocolat (Alain Ducasse)', lat: 48.8549, lon: 2.3725, category: 'chocolate', award: 'First bean-to-bar chocolate by a 3-star chef', tagline: "Alain Ducasse\u2019s revolutionary bean-to-bar atelier.", desc: "Alain Ducasse\u2019s revolutionary bean-to-bar atelier. All chocolate made on-site. Transparent factory you can watch. Unique in the world. 40 Rue de la Roquette, 11th." },
+
+      // SWEETS
+      { name: 'Berthillon', lat: 48.8520, lon: 2.3562, category: 'sweets', award: "Paris's most legendary ice cream since 1954", tagline: "Île Saint-Louis. The cassis sorbet and salted caramel are extraordinary.", desc: "On Île Saint-Louis. Every food writer agrees: if you get one ice cream cone in Paris, it's from Berthillon. The cassis sorbet and salted caramel are extraordinary. Steps from Notre-Dame.", kidFriendly: true },
+      { name: 'Angelina', lat: 48.8638, lon: 2.3310, category: 'sweets', award: 'Paris institution since 1903 — world-famous hot chocolate', tagline: "Rue de Rivoli. The L'Africain hot chocolate is legendary.", desc: "Rue de Rivoli. The L'Africain hot chocolate is so thick you eat it with a spoon. Belle Époque interior is stunning. Tourists come, locals come, everyone comes.", kidFriendly: true },
+
+      // BAKERY (additional)
+      { name: 'Poilâne', lat: 48.8516, lon: 2.3346, category: 'bakery', award: "World's most famous sourdough (since 1932)", tagline: "The miche au levain — baked identically since 1932.", desc: "The miche au levain has been baked identically since 1932. Lionel Poilâne was named one of the most influential food figures of the 20th century. Rue du Cherche-Midi, Saint-Germain. Buy a whole loaf to share — it's an event.", kidFriendly: true },
+      { name: 'Breizh Café', lat: 48.8571, lon: 2.3583, category: 'bakery', award: 'Condé Nast Traveler best crêpes in Paris', tagline: "Bertrand Larcher's Breton crêperie in the Marais.", desc: "Bertrand Larcher's Breton crêperie in the Marais. Buckwheat galettes and sweet crêpes using serious Brittany ingredients. Real Breton cider. The galette complète is a meal.", kidFriendly: true },
     ],
   },
   {
@@ -208,6 +217,13 @@ const CITIES: CityData[] = [
       // ICONIC
       { name: 'A Cevicheria', lat: 38.7213, lon: -9.1502, category: 'iconic', award: 'Time Out Lisbon #1 restaurant multiple years', tagline: "Chef Kiko\u2019s octopus ceviche is THE dish of modern Lisbon.", desc: "Chef Kiko\u2019s octopus ceviche is THE dish of modern Lisbon. Perpetual queue, no reservations. Pr\u00EDncipe Real. Come at opening.", kidFriendly: true },
       { name: 'Solar dos Presuntos', lat: 38.7174, lon: -9.1415, category: 'iconic', award: 'Lisbon institution since 1974', tagline: "The definitive bacalhau (salt cod) experience.", desc: "The definitive bacalhau (salt cod) experience. 50+ preparations. A living museum of Portuguese cuisine. Family-run for 50 years.", kidFriendly: true },
+
+      // EXPERIENCE (Fado)
+      { name: 'Tasca do Chico', lat: 38.7097, lon: -9.1358, category: 'experience', award: 'Condé Nast Traveler featured — most authentic fado house', tagline: "The most beloved fado house in Lisbon.", desc: "The most beloved fado house in Lisbon. Walls covered in old photos and football scarves. Amateur and professional singers perform nightly. ~€15-20/person for food + fado. Book ahead — tiny space, fills fast. Alfama. 📅 Reservations essential", kidFriendly: true },
+      { name: 'A Baiuca', lat: 38.7141, lon: -9.1313, category: 'experience', award: 'Legendary spontaneous fado — Alfama institution', tagline: "The most spontaneous, emotional fado experience in Lisbon.", desc: "The most spontaneous, emotional fado experience in Lisbon. Local singers perform between bites. No phones allowed during songs — pure, unrehearsed, extraordinary. Tiny. Book weeks ahead. Not to be missed. 📅 Reservations essential" },
+
+      // MARKET (additional)
+      { name: 'LX Factory Sunday Market', lat: 38.7010, lon: -9.1743, category: 'market', award: "Lisbon's best Sunday market — Time Out top pick", tagline: "Inside a stunning 19th-century factory complex.", desc: "Inside a stunning 19th-century factory complex. Sunday only. Street food, vintage clothing, ceramics, books, live music. The best single afternoon you can spend in Lisbon. Bring the kids — it's massive and fun.", kidFriendly: true },
     ],
   },
 ];
