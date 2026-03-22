@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { formatDistanceToNow } from "date-fns"
 import { Countdown } from "@/components/dashboard/countdown"
 import { TodayCard } from "@/components/dashboard/today-card"
@@ -40,9 +40,10 @@ function CityProgress() {
 
   return (
     <div className="px-6">
-      <h3 className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-3">
+      <h3 className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground mb-1">
         Trip Progress
       </h3>
+      <p className="text-[11px] text-muted-foreground/60 mb-3">Paris &middot; Saint-Rapha&euml;l &middot; Lisbon</p>
       <div className="space-y-3">
         {cities.map(({ name, days }) => {
           const count = days.length
@@ -57,21 +58,23 @@ function CityProgress() {
                 <CityBadge city={name} size="sm" />
               </div>
               <div className="flex-1 relative">
-                <div
-                  className="h-2 rounded-full overflow-hidden"
-                  style={{ backgroundColor: colors.bg, width: `${pct}%` }}
-                >
+                <div className="h-2 rounded-full bg-muted/40 w-full">
                   <div
-                    className="h-full rounded-full transition-all duration-700"
-                    style={{
-                      width: `${count > 0 ? (completedDays / count) * 100 : 0}%`,
-                      backgroundColor: isActive ? colors.accent : completedDays === count ? colors.primary : colors.accent + "80",
-                    }}
-                  />
+                    className="h-2 rounded-full overflow-hidden"
+                    style={{ backgroundColor: colors.bg, width: `${pct}%` }}
+                  >
+                    <div
+                      className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${count > 0 ? (completedDays / count) * 100 : 0}%`,
+                        backgroundColor: isActive ? colors.accent : completedDays === count ? colors.primary : colors.accent + "80",
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-              <span className="text-xs text-muted-foreground tabular-nums w-8 text-right">
-                {count}d
+              <span className="text-xs text-muted-foreground tabular-nums w-14 text-right">
+                {count} days
               </span>
             </div>
           )
@@ -89,9 +92,10 @@ function RecentActivity() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
-  useEffect(() => {
+  const loadActivity = useCallback(() => {
     if (!trip) return
     setLoading(true)
+    setError(false)
 
     if (isOffline) {
       try {
@@ -128,7 +132,11 @@ function RecentActivity() {
         setMoments(enriched)
         setLoading(false)
       })
-  }, [trip?.id, members.length, isOffline]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [trip?.id, members, isOffline, supabase]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    loadActivity()
+  }, [loadActivity])
 
   const momentTypeEmoji: Record<string, string> = {
     note: "\u{1F4DD}",
@@ -146,7 +154,15 @@ function RecentActivity() {
       {loading ? (
         <LoadingSkeleton count={3} />
       ) : error ? (
-        <p className="text-sm text-muted-foreground">Could not load activity.</p>
+        <div>
+          <p className="text-sm text-muted-foreground">Could not load activity.</p>
+          <button
+            onClick={loadActivity}
+            className="border border-border text-sm text-muted-foreground px-3 py-1.5 rounded-lg mt-2"
+          >
+            Retry
+          </button>
+        </div>
       ) : moments.length === 0 ? (
         <EmptyState title="No moments shared yet" description="Be the first to share a moment!" icon={MessageCircle} />
       ) : (
@@ -207,12 +223,12 @@ export default function DashboardPage() {
       {/* Quick action grid */}
       <QuickActions />
 
-      <div className="mx-6 h-px bg-border" />
+      <div className="mx-6 h-px bg-border/60" />
 
       {/* City progress */}
       <CityProgress />
 
-      <div className="mx-6 h-px bg-border" />
+      <div className="mx-6 h-px bg-border/60" />
 
       {/* Recent activity */}
       <RecentActivity />

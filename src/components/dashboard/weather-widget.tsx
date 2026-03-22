@@ -104,6 +104,7 @@ export function WeatherWidget() {
 
   return (
     <div className="mx-4">
+      <Link href="/trip/weather" className="block">
       <div
         className={cn(
           "rounded-lg overflow-hidden bg-gradient-to-br shadow-lg border border-white/20 relative transition-all duration-300",
@@ -114,13 +115,13 @@ export function WeatherWidget() {
         style={{ touchAction: "pan-y" }}
       >
         {/* Ambient decoration */}
-        <div className="absolute top-2 right-2 opacity-[0.15] pointer-events-none">
-          <WeatherIcon code={today?.code ?? 2} size={96} />
+        <div className="absolute inset-0 flex items-center justify-center opacity-[0.08] pointer-events-none">
+          <WeatherIcon code={today?.code ?? 2} size={120} />
         </div>
 
         {/* Left chevron */}
         <button
-          onClick={goPrev}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); goPrev() }}
           className="absolute left-1.5 top-1/2 -translate-y-1/2 z-20 p-1 text-white/50 hover:text-white/80 transition-colors"
           aria-label="Previous city"
         >
@@ -129,7 +130,7 @@ export function WeatherWidget() {
 
         {/* Right chevron */}
         <button
-          onClick={goNext}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); goNext() }}
           className="absolute right-1.5 top-1/2 -translate-y-1/2 z-20 p-1 text-white/50 hover:text-white/80 transition-colors"
           aria-label="Next city"
         >
@@ -148,12 +149,9 @@ export function WeatherWidget() {
             <span className="font-serif text-base font-semibold text-white/90 tracking-wide">
               {city.flag} {city.name}
             </span>
-            <Link
-              href="/trip/weather"
-              className="flex items-center gap-1 text-xs text-white/90 font-medium hover:text-white transition-colors"
-            >
+            <span className="flex items-center gap-1 text-xs text-white/90 font-medium">
               Full forecast <ChevronRight className="h-3 w-3" />
-            </Link>
+            </span>
           </div>
 
           {loading ? (
@@ -215,7 +213,7 @@ export function WeatherWidget() {
             {SWIPE_CITIES.map((_, i) => (
               <button
                 key={i}
-                onClick={() => { if (i !== cityIndex) switchCity(i) }}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); if (i !== cityIndex) switchCity(i) }}
                 className={cn(
                   "rounded-full transition-all duration-200",
                   i === cityIndex
@@ -233,6 +231,7 @@ export function WeatherWidget() {
           )}
         </div>
       </div>
+      </Link>
     </div>
   )
 }

@@ -15,7 +15,7 @@ const actions = [
   },
   {
     icon: Edit3,
-    label: "Add Moment",
+    label: "Moment",
     href: "/trip/moments",
     bgColor: "bg-purple-50",
     iconColor: "text-purple-600",
