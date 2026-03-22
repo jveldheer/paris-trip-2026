@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 // ── Categories ──────────────────────────────────────────────────────────────
 
-export type Category = 'michelin' | 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic';
+export type Category = 'michelin' | 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets';
 
 export interface CategoryDef {
   key: Category;
@@ -26,6 +26,8 @@ export const CATEGORIES: CategoryDef[] = [
   { key: 'wine',      emoji: '\u{1F377}', label: 'Wine',     color: '#7c3aed', colorBg: '#7c3aed20' },
   { key: 'specialty', emoji: '\u{1FAD9}', label: 'Shop',     color: '#0d9488', colorBg: '#0d948820' },
   { key: 'iconic',    emoji: '\u{1F36E}', label: 'Iconic',   color: '#ea580c', colorBg: '#ea580c20' },
+  { key: 'chocolate', emoji: '\u{1F36B}', label: 'Chocolate', color: '#5c3317', colorBg: '#5c331720' },
+  { key: 'sweets',    emoji: '\u{1F368}', label: 'Sweets',    color: '#db2777', colorBg: '#db277720' },
 ];
 
 export const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c])) as Record<Category, CategoryDef>;
@@ -74,7 +76,7 @@ function googleMapsUrl(venue: Venue): string {
 
 function venueSortRank(v: Venue): number {
   if (v.category === 'michelin') return 100 + (v.stars ?? 0) * 10 + (v.bibGourmand ? 1 : 0);
-  const catOrder: Record<Category, number> = { michelin: 0, bakery: 80, iconic: 70, coffee: 60, market: 50, wine: 40, specialty: 30 };
+  const catOrder: Record<Category, number> = { michelin: 0, bakery: 80, iconic: 70, chocolate: 65, sweets: 63, coffee: 60, market: 50, wine: 40, specialty: 30 };
   return catOrder[v.category] ?? 0;
 }
 
@@ -100,11 +102,15 @@ const CITIES: CityData[] = [
       { name: 'La Parisienne', lat: 48.8765, lon: 2.3570, category: 'bakery', award: '\u{1F947} Grand Prix de la Baguette 2025', tagline: "Supplies baguettes to the \u00C9lys\u00E9e Palace.", desc: "Micka\u00EBl Reydellet won Paris's most prestigious baguette competition in 2025. For one year, this bakery in the 10th arrondissement supplies baguettes to the President of France. The crust crackle is extraordinary." },
       { name: 'Boulangerie Utopie', lat: 48.8618, lon: 2.3744, category: 'bakery', award: '\u{1F947} Grand Prix de la Baguette 2024 + Best Croissant', tagline: "Double winner: best baguette and best croissant.", desc: "Xavier Netry won the 2024 Grand Prix de la Baguette and is also rated one of Paris's best croissants. 20 Rue Jean-Pierre Timbaud in the 11th. If you only visit one bakery in Paris, make it this one." },
       { name: 'Du Pain et des Id\u00E9es', lat: 48.8718, lon: 2.3572, category: 'bakery', award: '\u{1F3C5} France\'s Most Beautiful Bakery', tagline: "Christophe Vasseur's Canal Saint-Martin masterpiece.", desc: "The escargot pastry and praline croissant are unmissable. The bakery itself \u2014 with original 19th-century painted ceilings \u2014 is a monument. Often has a queue, worth every minute. Closed weekends.", kidFriendly: true },
+      { name: 'Stohrer', lat: 48.8641, lon: 2.3478, category: 'bakery', award: 'Paris\u2019s oldest p\u00E2tisserie (1730)', tagline: "Founded by Louis XV\u2019s royal pastry chef.", desc: "Founded by Louis XV\u2019s royal pastry chef. Still making baba au rhum the same way since 1730. On Rue Montorgueil.", kidFriendly: true },
+      { name: 'Pain de Sucre', lat: 48.8578, lon: 2.3528, category: 'bakery', award: 'Top-rated Paris p\u00E2tisserie', tagline: "Didier Mathray\u2019s extraordinary pastries in the Marais.", desc: "Didier Mathray\u2019s extraordinary pastries in the Marais. The guimauve (marshmallows) come in 40 flavors. A candy store for adults and kids alike.", kidFriendly: true },
 
       // COFFEE
       { name: 'T\u00E9lescope', lat: 48.8637, lon: 2.3386, category: 'coffee', award: 'Pioneer of Paris specialty coffee', tagline: "The caf\u00E9 that started Paris's third-wave revolution.", desc: "Nicolas Clerc's tiny, perfect caf\u00E9 near Palais Royal changed everything. Before T\u00E9lescope, Paris coffee was an afterthought. 5 Rue Vill\u00E9do in the 1st arrondissement. Simple, focused, exceptional." },
       { name: 'Coutume Caf\u00E9', lat: 48.8510, lon: 2.3272, category: 'coffee', award: 'Flagship of Paris coffee culture', tagline: "Kickstarted the Paris coffee revolution in 2011.", desc: "Opened in 2011 on Rue de Babylone in Saint-Germain, Coutume was the flagship that proved Parisians cared about great coffee. Still one of the best. Beautiful space, excellent pastries too." },
       { name: 'Lomi', lat: 48.8893, lon: 2.3504, category: 'coffee', award: 'Top-rated Paris roaster', tagline: "18th arr roastery. One of France's most respected.", desc: "Worth the trip to the 18th arrondissement. Lomi is a roastery, training lab, and caf\u00E9 all in one. One of the most respected specialty roasters in France. The space is industrial-cool and the coffee is perfect." },
+      { name: 'KB Caf\u00E9Shop', lat: 48.8834, lon: 2.3399, category: 'coffee', award: 'OG Paris specialty coffee pioneer', tagline: "One of the original third-wave coffee shops in Paris.", desc: "One of the original specialty coffee shops that launched Paris\u2019s third-wave scene. South Pigalle (SoPi), neighborhood itself worth exploring." },
+      { name: 'Ten Belles', lat: 48.8684, lon: 2.3587, category: 'coffee', award: 'Time Out Paris top coffee 2024', tagline: "Canal Saint-Martin institution.", desc: "Canal Saint-Martin institution. Perfect coffee, great pastries, beautiful outdoor terrace by the canal.", kidFriendly: true },
 
       // MARKETS
       { name: "March\u00E9 d'Aligre", lat: 48.8499, lon: 2.3752, category: 'market', tagline: "Paris's most authentic daily market.", desc: "Best prices in Paris, strong North African influence, local butchers and fishmongers who know your name. Covered hall (March\u00E9 Beauvau) plus outdoor stalls. Tuesday through Sunday. The real Paris.", kidFriendly: true },
@@ -117,7 +123,13 @@ const CITIES: CityData[] = [
 
       // SPECIALTY
       { name: 'Maison Plisson', lat: 48.8575, lon: 2.3663, category: 'specialty', tagline: "The ultimate Parisian \u00E9picerie fine.", desc: "Best selection of French cheeses, charcuterie, and pantry goods in the Marais. Also a beautiful caf\u00E9 for lunch. Think of it as the Whole Foods of Paris, but actually good. Everything is curated with care." },
-      { name: 'Fromagerie Laurent Dubois', lat: 48.8483, lon: 2.3527, category: 'specialty', award: 'Meilleur Ouvrier de France (MOF)', tagline: "Holds France's highest craftsman honor.", desc: "Laurent Dubois holds the Meilleur Ouvrier de France distinction \u2014 the highest honor for a French artisan. The cheese selection at 47 Boulevard Saint-Germain is extraordinary. Ask for recommendations; the staff live for this." },
+      { name: 'Fromagerie Laurent Dubois', lat: 48.8483, lon: 2.3527, category: 'specialty', award: 'Meilleur Ouvrier de France (MOF) \u2014 highest craftsman honor', tagline: "Holds France's highest craftsman honor. Affinage cave on-site.", desc: "Laurent Dubois holds the MOF, France\u2019s ultimate craft honor. The selection is extraordinary \u2014 affinage cave on-site. 47 Blvd Saint-Germain, 5th arr." },
+      { name: 'Paroles de Fromagers', lat: 48.8608, lon: 2.3494, category: 'specialty', award: 'BBC-featured best fromagerie Paris 2024', tagline: "Alpine chalet design, exceptional selection.", desc: "Romain Ricciardi and Pierre Brisson \u2014 alpine chalet design, exceptional selection. Also runs Le Mus\u00E9e du Fromage (opened 2024). 5 Rue Rambuteau, 3rd arr." },
+
+      // CHOCOLATE
+      { name: 'Jacques Genin', lat: 48.8628, lon: 2.3598, category: 'chocolate', award: 'World\u2019s Best Chocolatier (multiple)', tagline: "The reclusive genius. Caramels, \u00E9clairs, and mille-feuille.", desc: "The reclusive genius. His caramels, eclairs, and mille-feuille are so good chefs eat here. 133 Rue de Turenne, Marais. Closed Mondays.", kidFriendly: true },
+      { name: 'Pierre Herm\u00E9', lat: 48.8515, lon: 2.3332, category: 'chocolate', award: 'World\u2019s Best Pastry Chef \u2014 Le Monde', tagline: "The Picasso of pastry. Ispahan is world-famous.", desc: "The Picasso of pastry. First chocolate boutique opened 2024 near Op\u00E9ra. His Ispahan (rose-lychee-raspberry macaron) is one of the most famous pastries in the world.", kidFriendly: true },
+      { name: 'La Manufacture de Chocolat (Alain Ducasse)', lat: 48.8549, lon: 2.3725, category: 'chocolate', award: 'First bean-to-bar chocolate by a 3-star chef', tagline: "Alain Ducasse\u2019s revolutionary bean-to-bar atelier.", desc: "Alain Ducasse\u2019s revolutionary bean-to-bar atelier. All chocolate made on-site. Transparent factory you can watch. Unique in the world. 40 Rue de la Roquette, 11th." },
     ],
   },
   {
@@ -140,6 +152,16 @@ const CITIES: CityData[] = [
 
       // SPECIALTY
       { name: "L'Olivier de Saint-Tropez", lat: 43.2731, lon: 6.6398, category: 'specialty', tagline: "Best local olive oil in Saint-Tropez.", desc: "AOC Provence oils, fresh tapenade, artisan products. A C\u00F4te d'Azur essential. The staff will let you taste everything. Makes an incredible gift to bring home." },
+
+      // BAKERY
+      { name: 'Gorini Boulangerie', lat: 43.2728, lon: 6.6402, category: 'bakery', award: 'Best bakery Saint-Tropez', tagline: "Exceptional croissants with pine nuts and florentines.", desc: "Known for exceptional croissants with pine nuts, florentines, and perfect baguettes. Fresh, local ingredients. One of the Riviera\u2019s finest." },
+
+      // MARKETS
+      { name: 'March\u00E9 de Fr\u00E9jus', lat: 43.4327, lon: 6.7374, category: 'market', award: 'Best Proven\u00E7al market near Saint-Rapha\u00EBl', tagline: "Excellent daily morning market, less touristy.", desc: "Fr\u00E9jus (10 min from Saint-Rapha\u00EBl) has an excellent daily morning market. Better selection and less touristy than the Saint-Rapha\u00EBl market. Tues/Sat best days." },
+
+      // SWEETS
+      { name: 'La Tarte Trop\u00E9zienne (original)', lat: 43.2732, lon: 6.6407, category: 'sweets', award: 'Invented here in 1955 \u2014 original recipe', tagline: "The original brioche-cream pastry. Brigitte Bardot named it.", desc: "The original Tarte Trop\u00E9zienne was created by Polish baker Alexandre Micka in 1955. Brigitte Bardot named it during filming. The brioche-cream pastry is a Riviera institution. Place des Lices, Saint-Tropez.", kidFriendly: true },
+      { name: 'Barbarac Ice Cream', lat: 43.2695, lon: 6.6368, category: 'sweets', award: 'Saint-Tropez\u2019s most famous ice cream since 1988', tagline: "Artisanal gelato on the port. Celebrity magnet.", desc: "Attracts celebrities from around the world. On the port. Artisanal gelato and sorbet including vegan options. Their mojito sorbet is legendary.", kidFriendly: true },
     ],
   },
   {
@@ -172,6 +194,20 @@ const CITIES: CityData[] = [
       // SPECIALTY
       { name: 'Conserveira de Lisboa', lat: 38.7097, lon: -9.1378, category: 'specialty', award: 'Lisbon institution since 1930', tagline: "The definitive tinned fish shop.", desc: "Sardines, mackerel, tuna in every conceivable preparation. The iconic retro packaging is gorgeous. Everyone leaves with a bag. This is Lisbon's most beloved food souvenir shop, and the quality is extraordinary." },
       { name: 'Mercearia Assessoria', lat: 38.7155, lon: -9.1388, category: 'specialty', tagline: "Best curated Portuguese pantry.", desc: "Wines, olive oils, preserves, honey \u2014 everything you wish you could bring home. A must for gifts. The selection is curated with impeccable taste, and the staff are passionate about every product." },
+      { name: 'Garrafeira Nacional', lat: 38.7133, lon: -9.1376, category: 'specialty', award: 'Lisbon\u2019s oldest and most respected wine shop (since 1927)', tagline: "The definitive Portuguese wine cellar.", desc: "The definitive Portuguese wine cellar. Vintage ports going back decades, every major producer. Staff are experts. Baixa neighborhood." },
+      { name: 'A Vida Portuguesa', lat: 38.7136, lon: -9.1394, category: 'specialty', award: 'Best Portuguese design + food gifts', tagline: "Beautifully curated Portuguese products.", desc: "Beautifully curated store: sardines, ceramics, soaps, traditional Portuguese products. The best souvenir shopping in the city.", kidFriendly: true },
+
+      // WINE
+      { name: 'Prado Mercearia', lat: 38.7155, lon: -9.1368, category: 'wine', award: 'Best natural wine bar Lisbon \u2014 Reddit/sommelier consensus', tagline: "Half wine shop, half bar. Portuguese natural wines only.", desc: "Half wine shop, half bar. Portuguese natural and low-intervention wines only. Standing room, great snacks. Alfama edge." },
+      { name: 'Black Sheep Wine', lat: 38.7131, lon: -9.1428, category: 'wine', award: 'Expanded 2024 \u2014 Culinary Backstreets top pick', tagline: "Crash course in Portuguese wine from passionate staff.", desc: "Once \u2018Lisbon\u2019s smallest wine bar,\u2019 expanded in 2024. Crash course in Portuguese wine from genuinely passionate staff. Chiado." },
+      { name: 'Bom Bom Bom', lat: 38.7182, lon: -9.1461, category: 'wine', award: 'Hidden gem \u2014 natural wine + vinyl records', tagline: "Natural wine bar AND record shop.", desc: "Natural wine bar AND record shop. Eclectic, cozy, beloved by in-the-know locals. Bairro Alto." },
+
+      // COFFEE
+      { name: 'Wish Slow Coffee House', lat: 38.7097, lon: -9.1376, category: 'coffee', award: 'Top-rated Lisbon specialty coffee', tagline: "Beautifully designed space near the waterfront.", desc: "Beautifully designed space near the waterfront. Single origin focus, exceptional baristas. One of Lisbon\u2019s most peaceful coffee stops." },
+
+      // ICONIC
+      { name: 'A Cevicheria', lat: 38.7213, lon: -9.1502, category: 'iconic', award: 'Time Out Lisbon #1 restaurant multiple years', tagline: "Chef Kiko\u2019s octopus ceviche is THE dish of modern Lisbon.", desc: "Chef Kiko\u2019s octopus ceviche is THE dish of modern Lisbon. Perpetual queue, no reservations. Pr\u00EDncipe Real. Come at opening.", kidFriendly: true },
+      { name: 'Solar dos Presuntos', lat: 38.7174, lon: -9.1415, category: 'iconic', award: 'Lisbon institution since 1974', tagline: "The definitive bacalhau (salt cod) experience.", desc: "The definitive bacalhau (salt cod) experience. 50+ preparations. A living museum of Portuguese cuisine. Family-run for 50 years.", kidFriendly: true },
     ],
   },
 ];
@@ -259,7 +295,7 @@ export default function FoodMapPage() {
                   }`}
                 >
                   <span className="text-sm">{c.flag}</span>
-                  <span>{c.city.split('-')[0]}</span>
+                  <span>{c.city.split('-')[0]} ({c.venues.length})</span>
                 </button>
               );
             })}
