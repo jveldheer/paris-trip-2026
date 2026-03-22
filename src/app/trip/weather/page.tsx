@@ -1,31 +1,41 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { PageHeader } from "@/components/layout/page-header"
-import { CloudRain, Sun, Thermometer, Wind, Droplets, Eye, Loader2, RefreshCw } from "lucide-react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { cn } from "@/lib/utils"
 import { format, parseISO } from "date-fns"
+import { motion, AnimatePresence } from "framer-motion"
+import { Wind, Droplets, Sun, Sunrise, Sunset, ChevronDown, RefreshCw } from "lucide-react"
+import { WeatherIcon, getWeatherLabel, getWeatherGradient, getWeatherType, isLightText } from "@/components/weather/weather-icons"
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// -- Null-safe temperature conversion ----------------------------------------
+
+const toF = (c: number | null | undefined): string =>
+  c == null ? "--" : `${Math.round(c * 9 / 5 + 32)}`
+
+const toFNum = (c: number | null | undefined): number | null =>
+  c == null ? null : Math.round(c * 9 / 5 + 32)
+
+// -- Types -------------------------------------------------------------------
 
 interface DailyData {
   date: string
-  tempMax: number
-  tempMin: number
-  precipProb: number
+  tempMax: number | null
+  tempMin: number | null
+  precipProb: number | null
   weatherCode: number
-  windMax: number
-  uvMax: number
+  windMax: number | null
+  uvMax: number | null
   sunrise: string
   sunset: string
 }
 
 interface HourlyData {
   time: string
-  temp: number
-  precipProb: number
+  temp: number | null
+  precipProb: number | null
   weatherCode: number
-  windSpeed: number
+  windSpeed: number | null
+  apparentTemp: number | null
 }
 
 interface CityForecast {
@@ -34,103 +44,24 @@ interface CityForecast {
   hourly: HourlyData[]
 }
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// -- Constants ---------------------------------------------------------------
 
 const CITIES = [
-  { name: "Paris", lat: 48.8566, lon: 2.3522, dates: ["2026-04-03", "2026-04-04", "2026-04-05", "2026-04-06"] },
-  { name: "Saint-Raphael", lat: 43.4252, lon: 6.7673, dates: ["2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11"] },
-  { name: "Lisbon", lat: 38.7167, lon: -9.1333, dates: ["2026-04-11", "2026-04-12", "2026-04-13", "2026-04-14", "2026-04-15"] },
+  { name: "Paris", lat: 48.8566, lon: 2.3522, flag: "\uD83C\uDDEB\uD83C\uDDF7", icon: "\uD83D\uDDFC", dates: ["2026-04-03", "2026-04-04", "2026-04-05", "2026-04-06"] },
+  { name: "Saint-Rapha\u00EBl", lat: 43.4252, lon: 6.7673, flag: "\uD83C\uDDEB\uD83C\uDDF7", icon: "\uD83C\uDF0A", dates: ["2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11"] },
+  { name: "Lisbon", lat: 38.7167, lon: -9.1333, flag: "\uD83C\uDDF5\uD83C\uDDF9", icon: "\uD83C\uDDF5\uD83C\uDDF9", dates: ["2026-04-11", "2026-04-12", "2026-04-13", "2026-04-14", "2026-04-15"] },
 ] as const
 
-const CITY_THEME: Record<string, { gradient: string; bg: string; text: string; ring: string; badge: string }> = {
-  Paris: { gradient: "from-blue-600 to-blue-900", bg: "bg-blue-50 dark:bg-blue-950/30", text: "text-blue-700 dark:text-blue-300", ring: "ring-blue-200 dark:ring-blue-800", badge: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200" },
-  "Saint-Raphael": { gradient: "from-amber-500 to-orange-800", bg: "bg-amber-50 dark:bg-amber-950/30", text: "text-amber-700 dark:text-amber-300", ring: "ring-amber-200 dark:ring-amber-800", badge: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200" },
-  Lisbon: { gradient: "from-teal-500 to-teal-800", bg: "bg-teal-50 dark:bg-teal-950/30", text: "text-teal-700 dark:text-teal-300", ring: "ring-teal-200 dark:ring-teal-800", badge: "bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-200" },
+const CITY_CLIMATE: Record<string, { tagline: string; description: string }> = {
+  "Paris": { tagline: "Cool spring days, occasional showers", description: "April in Paris brings mild days around 55-65\u00B0F with a chance of rain. Layers are your best friend." },
+  "Saint-Rapha\u00EBl": { tagline: "Mediterranean warmth, sunny", description: "The Riviera warms up beautifully in April. Expect 65-72\u00B0F with lots of sunshine and gentle sea breezes." },
+  "Lisbon": { tagline: "Warm and bright, most summer-like", description: "Lisbon is the warmest stop on the trip. Expect 65-75\u00B0F with abundant sunshine and clear skies." },
 }
 
-// ── WMO Weather Codes ────────────────────────────────────────────────────────
-
-function getWeatherInfo(code: number): { emoji: string; label: string; type: "clear" | "cloudy" | "fog" | "drizzle" | "rain" | "snow" | "storm" } {
-  if (code === 0) return { emoji: "\u2600\uFE0F", label: "Clear sky", type: "clear" }
-  if (code <= 3) return { emoji: "\uD83C\uDF24", label: "Partly cloudy", type: "cloudy" }
-  if (code <= 48) return { emoji: "\uD83C\uDF2B", label: "Foggy", type: "fog" }
-  if (code <= 55) return { emoji: "\uD83C\uDF26", label: "Drizzle", type: "drizzle" }
-  if (code <= 65) return { emoji: "\uD83C\uDF27", label: "Rain", type: "rain" }
-  if (code <= 75) return { emoji: "\u2744\uFE0F", label: "Snow", type: "snow" }
-  if (code <= 82) return { emoji: "\uD83C\uDF26", label: "Rain showers", type: "rain" }
-  if (code >= 95) return { emoji: "\u26C8", label: "Thunderstorm", type: "storm" }
-  return { emoji: "\uD83C\uDF24", label: "Partly cloudy", type: "cloudy" }
-}
-
-function weatherBgClass(type: string): string {
-  switch (type) {
-    case "clear": return "bg-gradient-to-br from-amber-100 to-yellow-50 dark:from-amber-900/30 dark:to-yellow-900/20"
-    case "cloudy": return "bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-800/30 dark:to-blue-900/20"
-    case "rain": case "drizzle": return "bg-gradient-to-br from-blue-100 to-slate-100 dark:from-blue-900/30 dark:to-slate-800/30"
-    case "snow": return "bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-slate-900/30"
-    case "storm": return "bg-gradient-to-br from-purple-100 to-slate-200 dark:from-purple-900/30 dark:to-slate-800/30"
-    case "fog": return "bg-gradient-to-br from-gray-100 to-slate-50 dark:from-gray-800/30 dark:to-slate-900/30"
-    default: return "bg-muted/40"
-  }
-}
-
-// ── Temperature helpers ──────────────────────────────────────────────────────
-
-function toF(c: number): number {
-  return Math.round(c * 9 / 5 + 32)
-}
-
-function tempStr(c: number, useFahrenheit: boolean): string {
-  return useFahrenheit ? `${toF(c)}\u00B0F` : `${Math.round(c)}\u00B0C`
-}
-
-// ── Clothing suggestions ─────────────────────────────────────────────────────
-
-function getClothingSuggestion(temp: number, weatherType: string): { emoji: string; text: string; kidsNote: string } {
-  const isRainy = weatherType === "rain" || weatherType === "drizzle" || weatherType === "storm"
-
-  if (isRainy && temp < 15) {
-    return { emoji: "\uD83E\uDDE5\uD83C\uDF02\uD83D\uDC62", text: "Rain jacket, waterproof boots, layers", kidsNote: "Kids: waterproof jacket + sturdy walking shoes" }
-  }
-  if (temp < 15) {
-    return { emoji: "\uD83E\uDDE5\uD83E\uDDE3\uD83D\uDC5F", text: "Warm jacket, scarf, comfortable shoes", kidsNote: "Kids: warm layers + comfortable walking shoes" }
-  }
-  if (isRainy && temp < 20) {
-    return { emoji: "\uD83D\uDC5F\uD83C\uDF02\uD83D\uDC55", text: "Light rain jacket, comfortable shoes", kidsNote: "Kids: rain jacket + extra layers + walking shoes" }
-  }
-  if (temp < 20) {
-    return { emoji: "\uD83D\uDC5F\uD83E\uDDE3\uD83D\uDC55", text: "Light jacket, comfortable shoes", kidsNote: "Kids: layers + comfortable walking shoes" }
-  }
-  if (temp < 25) {
-    return { emoji: "\uD83D\uDC57\uD83D\uDD76\uFE0F\uD83D\uDC5F", text: "Light layers, sunglasses, comfy shoes", kidsNote: "Kids: light layers + comfy walking shoes + sun hat" }
-  }
-  return { emoji: "\uD83E\uDE73\uD83D\uDC52\uD83D\uDD76\uFE0F", text: "Shorts, hat, sunscreen \u2014 stay hydrated!", kidsNote: "Kids: light clothes + hat + sunscreen + water bottle" }
-}
-
-// ── City climate cards ───────────────────────────────────────────────────────
-
-const CITY_CLIMATE = [
-  { city: "Paris", tagline: "City of Light", description: "April brings mild 14\u201318\u00B0C days, occasional showers. Pack layers.", emoji: "\uD83D\uDDFC" },
-  { city: "Saint-Raphael", tagline: "French Riviera", description: "Warm 18\u201322\u00B0C, perfect beach weather. Lighter clothes!", emoji: "\uD83C\uDFD6\uFE0F" },
-  { city: "Lisbon", tagline: "Lisboa", description: "Sunny and warm 18\u201323\u00B0C. The most summer-like of the trip.", emoji: "\u2600\uFE0F" },
-]
-
-// ── Get city for a date ──────────────────────────────────────────────────────
-
-function getCityForDate(dateStr: string): string {
-  for (const city of CITIES) {
-    if ((city.dates as readonly string[]).includes(dateStr)) return city.name
-  }
-  return "Paris"
-}
-
-// ── API fetching ─────────────────────────────────────────────────────────────
+// -- API Fetching ------------------------------------------------------------
 
 async function fetchCityForecast(city: typeof CITIES[number]): Promise<CityForecast> {
-  // Request from today + 16 days to capture as much trip data as possible
-  // Open-Meteo returns climatological averages for dates beyond the 16-day window
-  const today = new Date().toISOString().split("T")[0]
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,windspeed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m&timezone=auto&forecast_days=16`
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${city.lat}&longitude=${city.lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,weathercode,windspeed_10m_max,uv_index_max,sunrise,sunset&hourly=temperature_2m,precipitation_probability,weathercode,windspeed_10m,apparent_temperature&timezone=auto&forecast_days=16`
 
   const res = await fetch(url)
   if (!res.ok) throw new Error(`Failed to fetch weather for ${city.name}`)
@@ -138,35 +69,80 @@ async function fetchCityForecast(city: typeof CITIES[number]): Promise<CityForec
 
   const daily: DailyData[] = data.daily.time.map((t: string, i: number) => ({
     date: t,
-    tempMax: data.daily.temperature_2m_max[i],
-    tempMin: data.daily.temperature_2m_min[i],
-    precipProb: data.daily.precipitation_probability_max[i],
-    weatherCode: data.daily.weathercode[i],
-    windMax: data.daily.windspeed_10m_max[i],
-    uvMax: data.daily.uv_index_max[i],
-    sunrise: data.daily.sunrise[i],
-    sunset: data.daily.sunset[i],
+    tempMax: data.daily.temperature_2m_max[i] ?? null,
+    tempMin: data.daily.temperature_2m_min[i] ?? null,
+    precipProb: data.daily.precipitation_probability_max[i] ?? null,
+    weatherCode: data.daily.weathercode[i] ?? 0,
+    windMax: data.daily.windspeed_10m_max[i] ?? null,
+    uvMax: data.daily.uv_index_max[i] ?? null,
+    sunrise: data.daily.sunrise[i] ?? "",
+    sunset: data.daily.sunset[i] ?? "",
   }))
 
   const hourly: HourlyData[] = data.hourly.time.map((t: string, i: number) => ({
     time: t,
-    temp: data.hourly.temperature_2m[i],
-    precipProb: data.hourly.precipitation_probability[i],
-    weatherCode: data.hourly.weathercode[i],
-    windSpeed: data.hourly.windspeed_10m[i],
+    temp: data.hourly.temperature_2m[i] ?? null,
+    precipProb: data.hourly.precipitation_probability[i] ?? null,
+    weatherCode: data.hourly.weathercode[i] ?? 0,
+    windSpeed: data.hourly.windspeed_10m[i] ?? null,
+    apparentTemp: data.hourly.apparent_temperature?.[i] ?? null,
   }))
 
   return { city: city.name, daily, hourly }
 }
 
-// ── Main Page ────────────────────────────────────────────────────────────────
+// -- Helpers -----------------------------------------------------------------
+
+function getCityForDate(dateStr: string): typeof CITIES[number] | undefined {
+  return CITIES.find(c => (c.dates as readonly string[]).includes(dateStr))
+}
+
+function formatSunTime(isoStr: string): string {
+  try { return format(parseISO(isoStr), "h:mm a") } catch { return "--" }
+}
+
+function getClothingSuggestion(tempF: number | null): { emoji: string; text: string; kidsNote: string | null } {
+  if (tempF == null) return { emoji: "\uD83D\uDC55", text: "Check back closer to the trip for suggestions", kidsNote: null }
+  if (tempF > 75) return { emoji: "\uD83E\uDE73\uD83D\uDC52\uD83D\uDD76\uFE0F", text: "Shorts, hat, sunscreen", kidsNote: "Kids: extra sunscreen!" }
+  if (tempF >= 60) return { emoji: "\uD83D\uDC57\uD83E\uDDE5", text: "Light layers, comfortable shoes", kidsNote: null }
+  if (tempF >= 50) return { emoji: "\uD83E\uDDE5\uD83E\uDDE3\uD83D\uDC5F", text: "Light jacket and layers", kidsNote: "Kids: extra layer!" }
+  return { emoji: "\uD83E\uDDE4\uD83E\uDDE5\uD83C\uDF02", text: "Warm jacket, consider umbrella", kidsNote: "Kids: extra layer!" }
+}
+
+// -- Loading Skeleton --------------------------------------------------------
+
+function WeatherSkeleton() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-sky-400 via-sky-300 to-blue-200">
+      <div className="pt-16 pb-8 px-6 text-center">
+        <div className="h-8 w-40 mx-auto bg-white/20 rounded-full animate-pulse mb-4" />
+        <div className="h-24 w-32 mx-auto bg-white/20 rounded-2xl animate-pulse mb-3" />
+        <div className="h-6 w-48 mx-auto bg-white/20 rounded-full animate-pulse mb-6" />
+        <div className="flex justify-center gap-3">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-8 w-20 bg-white/10 rounded-full animate-pulse" />
+          ))}
+        </div>
+      </div>
+      <div className="px-4 space-y-4 pb-24">
+        <div className="h-24 bg-white/10 rounded-2xl animate-pulse" />
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-16 bg-white/10 rounded-2xl animate-pulse" />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// -- Main Page ---------------------------------------------------------------
 
 export default function WeatherPage() {
   const [forecasts, setForecasts] = useState<CityForecast[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedDate, setSelectedDate] = useState("2026-04-03")
-  const [useFahrenheit, setUseFahrenheit] = useState(true)
+  const [selectedCityIdx, setSelectedCityIdx] = useState(0)
+  const [expandedDay, setExpandedDay] = useState<string | null>(null)
+  const hourlyRef = useRef<HTMLDivElement>(null)
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -175,7 +151,7 @@ export default function WeatherPage() {
       const results = await Promise.all(CITIES.map(fetchCityForecast))
       setForecasts(results)
     } catch {
-      setError("Weather data unavailable. Open-Meteo may not have forecast data this far out yet.")
+      setError("Weather data unavailable. Try again shortly.")
     } finally {
       setLoading(false)
     }
@@ -183,310 +159,360 @@ export default function WeatherPage() {
 
   useEffect(() => { loadData() }, [loadData])
 
-  // Build merged daily view: for each date, pick the city's forecast
-  const tripDays = buildTripDays(forecasts)
-  const selectedDay = tripDays.find(d => d.date === selectedDate) ?? tripDays[0]
-  const selectedCity = getCityForDate(selectedDate)
-  const selectedHourly = getHourlyForDate(forecasts, selectedDate, selectedCity)
-  const alerts = buildAlerts(tripDays)
+  if (loading) return <WeatherSkeleton />
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-sky-400 via-sky-300 to-blue-200 flex items-center justify-center px-6">
+        <div className="glass rounded-3xl p-8 text-center max-w-sm">
+          <WeatherIcon code={3} size={64} className="mx-auto mb-4" />
+          <p className="text-white font-medium mb-4">{error}</p>
+          <button onClick={loadData} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 text-white font-medium hover:bg-white/30 transition-colors">
+            <RefreshCw className="h-4 w-4" /> Try again
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  const city = CITIES[selectedCityIdx]
+  const forecast = forecasts.find(f => f.city === city.name)
+  const cityDays = city.dates
+    .map(d => forecast?.daily.find(day => day.date === d))
+    .filter((d): d is DailyData => d != null)
+
+  // Today's data = first day of the selected city that has data
+  const todayData = cityDays[0]
+  const weatherCode = todayData?.weatherCode ?? 2
+  const gradient = getWeatherGradient(weatherCode)
+  const lightText = isLightText(weatherCode)
+
+  // Hourly data for first day
+  const todayHourly = forecast?.hourly.filter(h => {
+    if (!todayData) return false
+    if (!h.time.startsWith(todayData.date)) return false
+    const hour = parseInt(h.time.slice(11, 13), 10)
+    return hour >= 6 && hour <= 22
+  }) ?? []
+
+  // Feels like from noon hourly
+  const noonHourly = forecast?.hourly.find(h =>
+    todayData && h.time.startsWith(todayData.date) && h.time.includes("T12:")
+  )
 
   return (
-    <div className="min-h-screen bg-background">
-      <PageHeader title="Weather" subtitle="Apr 3\u201315 forecast">
-        <button
-          onClick={() => setUseFahrenheit(!useFahrenheit)}
-          className="px-2.5 py-1 text-xs font-medium rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+    <div className="min-h-screen pb-24">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedCityIdx}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
         >
-          {useFahrenheit ? "\u00B0F" : "\u00B0C"}
-        </button>
-      </PageHeader>
+          {/* ── Hero Section ── */}
+          <div className={cn("bg-gradient-to-b", gradient, "pt-12 pb-6 px-6 text-center relative overflow-hidden")}>
+            {/* Subtle animated overlay circles */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <div className={cn("absolute -top-20 -right-20 w-64 h-64 rounded-full opacity-10", lightText ? "bg-white" : "bg-white")} style={{ animation: "float 6s ease-in-out infinite" }} />
+              <div className={cn("absolute -bottom-16 -left-16 w-48 h-48 rounded-full opacity-10", lightText ? "bg-white" : "bg-white")} style={{ animation: "float 8s ease-in-out infinite 1s" }} />
+            </div>
 
-      <div className="p-4 max-w-lg mx-auto pb-24 space-y-6">
-        {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <p className="text-sm">Loading forecast...</p>
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-3 text-muted-foreground">
-            <CloudRain className="h-8 w-8" />
-            <p className="text-sm">{error}</p>
-            <button onClick={loadData} className="flex items-center gap-1.5 text-sm text-primary hover:underline">
-              <RefreshCw className="h-3.5 w-3.5" /> Try again
-            </button>
-          </div>
-        ) : (
-          <>
-            {/* ── Alerts Banner ── */}
-            {alerts.length > 0 && (
-              <div className="space-y-2">
-                {alerts.map((alert, i) => (
-                  <div key={i} className={cn(
-                    "rounded-xl px-3 py-2.5 text-sm font-medium",
-                    alert.type === "rain"
-                      ? "bg-blue-50 dark:bg-blue-950/30 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800"
-                      : "bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800"
-                  )}>
-                    {alert.message}
+            <div className="relative z-10">
+              {/* City name + flag */}
+              <motion.div
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h1 className={cn("text-2xl font-bold mb-1", lightText ? "text-white" : "text-gray-900")}>
+                  {city.icon} {city.name}
+                </h1>
+                <p className={cn("text-sm font-medium", lightText ? "text-white/70" : "text-gray-700/70")}>
+                  {format(parseISO(city.dates[0]), "MMM d")} - {format(parseISO(city.dates[city.dates.length - 1]), "MMM d, yyyy")}
+                </p>
+              </motion.div>
+
+              {/* MASSIVE temperature */}
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="my-6"
+              >
+                <WeatherIcon code={weatherCode} size={72} className="mx-auto mb-2" />
+                <div className={cn("text-8xl font-extralight tracking-tighter", lightText ? "text-white" : "text-gray-900")}>
+                  {toF(todayData?.tempMax)}<span className="text-4xl align-top">{todayData?.tempMax != null ? "\u00B0F" : ""}</span>
+                </div>
+                <p className={cn("text-lg font-medium mt-1", lightText ? "text-white/90" : "text-gray-800/90")}>
+                  {getWeatherLabel(weatherCode)}
+                </p>
+              </motion.div>
+
+              {/* Pill badges: feels like, humidity, wind */}
+              <motion.div
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.35 }}
+                className="flex flex-wrap justify-center gap-2 mb-6"
+              >
+                {noonHourly?.apparentTemp != null && (
+                  <span className="glass rounded-full px-3 py-1.5 text-xs font-medium text-white">
+                    Feels {toF(noonHourly.apparentTemp)}{"\u00B0F"}
+                  </span>
+                )}
+                {todayData?.windMax != null && (
+                  <span className="glass rounded-full px-3 py-1.5 text-xs font-medium text-white flex items-center gap-1">
+                    <Wind className="h-3 w-3" /> {Math.round(todayData.windMax)} km/h
+                  </span>
+                )}
+                {todayData?.precipProb != null && todayData.precipProb > 0 && (
+                  <span className="glass rounded-full px-3 py-1.5 text-xs font-medium text-white flex items-center gap-1">
+                    <Droplets className="h-3 w-3" /> {todayData.precipProb}%
+                  </span>
+                )}
+                {todayData?.uvMax != null && (
+                  <span className="glass rounded-full px-3 py-1.5 text-xs font-medium text-white flex items-center gap-1">
+                    <Sun className="h-3 w-3" /> UV {Math.round(todayData.uvMax)}
+                  </span>
+                )}
+              </motion.div>
+
+              {/* Sunrise / Sunset bar */}
+              {todayData?.sunrise && todayData?.sunset && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.45 }}
+                  className="glass rounded-2xl px-4 py-3 max-w-xs mx-auto"
+                >
+                  <div className="flex items-center justify-between text-white text-xs mb-2">
+                    <span className="flex items-center gap-1"><Sunrise className="h-3 w-3" /> {formatSunTime(todayData.sunrise)}</span>
+                    <span className="flex items-center gap-1"><Sunset className="h-3 w-3" /> {formatSunTime(todayData.sunset)}</span>
                   </div>
+                  <div className="h-1 rounded-full bg-white/20 overflow-hidden">
+                    <div className="h-full rounded-full bg-amber-300/80" style={{ width: `${getSunPosition(todayData.sunrise, todayData.sunset)}%` }} />
+                  </div>
+                </motion.div>
+              )}
+
+              {/* City tabs */}
+              <div className="flex justify-center gap-2 mt-6">
+                {CITIES.map((c, i) => (
+                  <button
+                    key={c.name}
+                    onClick={() => { setSelectedCityIdx(i); setExpandedDay(null) }}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                      i === selectedCityIdx
+                        ? "bg-white/30 text-white shadow-lg scale-105"
+                        : "bg-white/10 text-white/70 hover:bg-white/20 hover:text-white"
+                    )}
+                  >
+                    {c.icon} {c.name.split("-")[0]}
+                  </button>
                 ))}
               </div>
-            )}
+            </div>
+          </div>
 
-            {/* ── Trip Overview Forecast ── */}
-            <section>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">13-Day Overview</h2>
-              <div className="space-y-4">
-                {CITIES.map(city => (
-                  <div key={city.name}>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", CITY_THEME[city.name].badge)}>
-                        {city.name === "Saint-Raphael" ? "Saint-Rapha\u00EBl" : city.name}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {format(parseISO(city.dates[0]), "MMM d")}\u2013{format(parseISO(city.dates[city.dates.length - 1]), "d")}
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-5">
-                      {city.dates.map(date => {
-                        const day = tripDays.find(d => d.date === date)
-                        if (!day) return null
-                        const weather = getWeatherInfo(day.weatherCode)
-                        const isSelected = date === selectedDate
-                        return (
-                          <button
-                            key={date}
-                            onClick={() => setSelectedDate(date)}
-                            className={cn(
-                              "flex flex-col items-center gap-0.5 p-2 rounded-xl transition-all text-center",
-                              weatherBgClass(weather.type),
-                              isSelected ? "ring-2 ring-primary shadow-md scale-105" : "hover:scale-102 hover:shadow-sm",
-                            )}
-                          >
-                            <span className="text-[10px] font-medium text-muted-foreground">
-                              {format(parseISO(date), "EEE")}
-                            </span>
-                            <span className="text-[10px] font-semibold">{format(parseISO(date), "d")}</span>
-                            <span className="text-lg leading-none weather-icon" data-type={weather.type}>{weather.emoji}</span>
-                            <span className="text-[10px] font-semibold">
-                              {tempStr(day.tempMax, useFahrenheit)}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground">
-                              {tempStr(day.tempMin, useFahrenheit)}
-                            </span>
-                          </button>
-                        )
-                      })}
-                    </div>
-                  </div>
-                ))}
+          {/* ── Hourly Strip ── */}
+          {todayHourly.length > 0 && (
+            <div className="bg-white dark:bg-gray-950 border-b border-border">
+              <div className="px-4 pt-4 pb-1">
+                <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hourly Forecast</h2>
               </div>
-            </section>
+              <div ref={hourlyRef} className="flex gap-1 overflow-x-auto no-scrollbar px-4 pb-4 pt-2">
+                {todayHourly.map((h, i) => {
+                  const hour = parseInt(h.time.slice(11, 13), 10)
+                  const isNow = hour === new Date().getHours()
+                  return (
+                    <div
+                      key={i}
+                      className={cn(
+                        "flex flex-col items-center gap-1.5 min-w-[58px] py-3 px-2 rounded-2xl transition-colors shrink-0",
+                        isNow ? "bg-primary/10 ring-1 ring-primary/30" : "bg-muted/40"
+                      )}
+                    >
+                      <span className={cn("text-[11px] font-medium", isNow ? "text-primary font-bold" : "text-muted-foreground")}>
+                        {isNow ? "Now" : format(parseISO(h.time), "ha")}
+                      </span>
+                      <WeatherIcon code={h.weatherCode} size={28} />
+                      <span className="text-sm font-semibold">{toF(h.temp)}{h.temp != null ? "\u00B0" : ""}</span>
+                      {(h.precipProb ?? 0) > 0 && (
+                        <div className="flex items-center gap-0.5">
+                          <Droplets className="h-2.5 w-2.5 text-blue-500" />
+                          <span className="text-[10px] text-blue-600 dark:text-blue-400">{h.precipProb}%</span>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
-            {/* ── Daily Detail Card ── */}
-            {selectedDay && (
-              <section>
-                <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-                  {format(parseISO(selectedDay.date), "EEEE, MMMM d")}
-                </h2>
-                <DailyDetailCard day={selectedDay} hourly={selectedHourly} city={selectedCity} useFahrenheit={useFahrenheit} />
-              </section>
-            )}
+          {/* ── Daily Forecast Cards ── */}
+          <div className="bg-background px-4 pt-6 pb-2">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              {cityDays.length}-Day Forecast
+            </h2>
+            <div className="space-y-2">
+              {cityDays.map((day) => {
+                const isExpanded = expandedDay === day.date
+                const dayHourly = forecast?.hourly.filter(h => {
+                  if (!h.time.startsWith(day.date)) return false
+                  const hour = parseInt(h.time.slice(11, 13), 10)
+                  return [6, 9, 12, 15, 18, 21].includes(hour)
+                }) ?? []
 
-            {/* ── Clothing Suggestion ── */}
-            {selectedDay && (
-              <ClothingSuggestionCard temp={(selectedDay.tempMax + selectedDay.tempMin) / 2} weatherType={getWeatherInfo(selectedDay.weatherCode).type} />
-            )}
-
-            {/* ── City Climate Cards ── */}
-            <section>
-              <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">City Climate Guide</h2>
-              <div className="space-y-3">
-                {CITY_CLIMATE.map(c => (
-                  <div key={c.city} className={cn("rounded-2xl p-4 border", CITY_THEME[c.city].bg, CITY_THEME[c.city].ring)}>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xl">{c.emoji}</span>
-                      <div>
-                        <h3 className={cn("font-semibold text-sm", CITY_THEME[c.city].text)}>{c.tagline}</h3>
-                        <span className="text-xs text-muted-foreground">{c.city === "Saint-Raphael" ? "Saint-Rapha\u00EBl" : c.city}</span>
+                return (
+                  <div key={day.date}>
+                    <button
+                      onClick={() => setExpandedDay(isExpanded ? null : day.date)}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-card hover:bg-muted/50 transition-colors border border-border group"
+                    >
+                      {/* Day name */}
+                      <div className="w-16 text-left shrink-0">
+                        <span className="text-sm font-semibold">{format(parseISO(day.date), "EEE")}</span>
+                        <span className="block text-[11px] text-muted-foreground">{format(parseISO(day.date), "MMM d")}</span>
                       </div>
-                    </div>
-                    <p className="text-sm text-foreground/80 leading-relaxed">{c.description}</p>
+
+                      {/* Rain probability bar */}
+                      <div className="w-10 shrink-0">
+                        {(day.precipProb ?? 0) > 0 && (
+                          <div className="flex items-center gap-0.5">
+                            <Droplets className="h-3 w-3 text-blue-500" />
+                            <span className="text-[11px] text-blue-600 dark:text-blue-400 font-medium">{day.precipProb}%</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Weather icon */}
+                      <div className="flex-1 flex justify-center">
+                        <WeatherIcon code={day.weatherCode} size={32} />
+                      </div>
+
+                      {/* High / Low */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-sm font-bold w-10 text-right">{toF(day.tempMax)}{day.tempMax != null ? "\u00B0" : ""}</span>
+                        <span className="text-sm text-muted-foreground w-10 text-right">{toF(day.tempMin)}{day.tempMin != null ? "\u00B0" : ""}</span>
+                      </div>
+
+                      <ChevronDown className={cn("h-4 w-4 text-muted-foreground transition-transform shrink-0", isExpanded && "rotate-180")} />
+                    </button>
+
+                    {/* Expanded hourly detail */}
+                    <AnimatePresence>
+                      {isExpanded && dayHourly.length > 0 && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 py-3">
+                            {dayHourly.map((h, i) => (
+                              <div key={i} className="flex flex-col items-center gap-1 min-w-[52px] py-2 px-1.5 rounded-xl bg-muted/40 shrink-0">
+                                <span className="text-[10px] font-medium text-muted-foreground">{format(parseISO(h.time), "ha")}</span>
+                                <WeatherIcon code={h.weatherCode} size={24} />
+                                <span className="text-xs font-semibold">{toF(h.temp)}{h.temp != null ? "\u00B0" : ""}</span>
+                                {(h.precipProb ?? 0) > 0 && (
+                                  <span className="text-[10px] text-blue-500">{h.precipProb}%</span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-      </div>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* ── Clothing Suggestion ── */}
+          {todayData && (
+            <div className="bg-background px-4 pt-4 pb-2">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">What to Wear</h2>
+              <ClothingCard tempMax={todayData.tempMax} tempMin={todayData.tempMin} />
+            </div>
+          )}
+
+          {/* ── City Climate Cards ── */}
+          <div className="bg-background px-4 pt-4 pb-8">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">City Climate Guide</h2>
+            <div className="space-y-3">
+              {CITIES.map((c) => {
+                const climate = CITY_CLIMATE[c.name]
+                const cityForecast = forecasts.find(f => f.city === c.name)
+                const firstDay = c.dates[0]
+                const dayData = cityForecast?.daily.find(d => d.date === firstDay)
+                const code = dayData?.weatherCode ?? 2
+                const grad = getWeatherGradient(code)
+
+                return (
+                  <div
+                    key={c.name}
+                    className={cn("rounded-2xl overflow-hidden bg-gradient-to-r", grad, "p-4 relative")}
+                  >
+                    <div className="absolute top-3 right-3 opacity-30">
+                      <WeatherIcon code={code} size={48} />
+                    </div>
+                    <div className="relative z-10">
+                      <h3 className="text-white font-bold text-lg">{c.icon} {c.name}</h3>
+                      <p className="text-white/80 text-sm font-medium mt-0.5">{climate?.tagline}</p>
+                      <p className="text-white/60 text-xs mt-2 max-w-[260px]">{climate?.description}</p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </motion.div>
+      </AnimatePresence>
     </div>
   )
 }
 
-// ── Daily Detail Card component ──────────────────────────────────────────────
+// -- Clothing Card -----------------------------------------------------------
 
-function DailyDetailCard({ day, hourly, city, useFahrenheit }: { day: DailyData; hourly: HourlyData[]; city: string; useFahrenheit: boolean }) {
-  const weather = getWeatherInfo(day.weatherCode)
-  const theme = CITY_THEME[city]
+function ClothingCard({ tempMax, tempMin }: { tempMax: number | null; tempMin: number | null }) {
+  const avgTempF = tempMax != null && tempMin != null
+    ? toFNum((tempMax + tempMin) / 2)
+    : null
+  const suggestion = getClothingSuggestion(avgTempF)
 
   return (
-    <div className={cn("rounded-2xl overflow-hidden border", theme.ring)}>
-      {/* Header */}
-      <div className={cn("bg-gradient-to-r text-white px-4 py-4", theme.gradient)}>
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-3xl weather-icon" data-type={weather.type}>{weather.emoji}</span>
-            <p className="text-sm opacity-90 mt-1">{weather.label}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-bold">{tempStr(day.tempMax, useFahrenheit)}</p>
-            <p className="text-sm opacity-80">Low {tempStr(day.tempMin, useFahrenheit)}</p>
-          </div>
-        </div>
+    <div className="rounded-2xl bg-card border border-border p-4">
+      <div className="flex items-center gap-3">
+        <span className="text-2xl">{suggestion.emoji}</span>
+        <p className="text-sm font-medium text-foreground">{suggestion.text}</p>
       </div>
-
-      {/* Stats row */}
-      <div className="grid grid-cols-4 gap-1 px-3 py-3 bg-card">
-        <StatItem icon={<Wind className="h-3.5 w-3.5" />} label="Wind" value={`${Math.round(day.windMax)} km/h`} />
-        <StatItem icon={<Droplets className="h-3.5 w-3.5" />} label="Rain" value={`${day.precipProb}%`} />
-        <StatItem icon={<Eye className="h-3.5 w-3.5" />} label="UV" value={`${Math.round(day.uvMax)}`} />
-        <StatItem icon={<Sun className="h-3.5 w-3.5" />} label="Sun" value={formatSunTime(day.sunrise)} />
-      </div>
-
-      {/* Sunrise/Sunset */}
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/30 text-xs text-muted-foreground border-t border-border">
-        <span>Sunrise {formatSunTime(day.sunrise)}</span>
-        <span>Sunset {formatSunTime(day.sunset)}</span>
-      </div>
-
-      {/* Hourly breakdown */}
-      {hourly.length > 0 && (
-        <div className="px-3 py-3 border-t border-border">
-          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">Hourly</h4>
-          <div className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1">
-            {hourly.map((h, i) => {
-              const hw = getWeatherInfo(h.weatherCode)
-              return (
-                <div key={i} className="flex flex-col items-center gap-1 min-w-[52px] py-1.5 px-1 rounded-lg bg-muted/40">
-                  <span className="text-[10px] font-medium text-muted-foreground">
-                    {format(parseISO(h.time), "ha")}
-                  </span>
-                  <span className="text-base">{hw.emoji}</span>
-                  <span className="text-xs font-semibold">{tempStr(h.temp, useFahrenheit)}</span>
-                  {h.precipProb > 0 && (
-                    <div className="flex items-center gap-0.5">
-                      <Droplets className="h-2.5 w-2.5 text-blue-500" />
-                      <span className="text-[10px] text-blue-600 dark:text-blue-400">{h.precipProb}%</span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+      {suggestion.kidsNote && (
+        <div className="flex items-start gap-2 bg-muted/50 rounded-xl px-3 py-2 mt-3">
+          <span className="text-sm shrink-0">{"\uD83E\uDDD2"}</span>
+          <p className="text-xs text-muted-foreground">{suggestion.kidsNote}</p>
         </div>
       )}
     </div>
   )
 }
 
-function StatItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="flex flex-col items-center gap-0.5 text-center">
-      <span className="text-muted-foreground">{icon}</span>
-      <span className="text-xs font-semibold">{value}</span>
-      <span className="text-[10px] text-muted-foreground">{label}</span>
-    </div>
-  )
-}
+// -- Sun position helper -----------------------------------------------------
 
-// ── Clothing Suggestion Card ─────────────────────────────────────────────────
-
-function ClothingSuggestionCard({ temp, weatherType }: { temp: number; weatherType: string }) {
-  const suggestion = getClothingSuggestion(temp, weatherType)
-
-  return (
-    <section>
-      <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">What to Wear</h2>
-      <div className="rounded-2xl bg-card border border-border p-4 space-y-2">
-        <div className="flex items-center gap-3">
-          <span className="text-2xl">{suggestion.emoji}</span>
-          <p className="text-sm font-medium text-foreground">{suggestion.text}</p>
-        </div>
-        <div className="flex items-start gap-2 bg-muted/50 rounded-xl px-3 py-2">
-          <span className="text-sm shrink-0">&#x1F9D2;</span>
-          <p className="text-xs text-muted-foreground">{suggestion.kidsNote}</p>
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatSunTime(isoStr: string): string {
+function getSunPosition(sunrise: string, sunset: string): number {
   try {
-    return format(parseISO(isoStr), "h:mm a")
+    const now = new Date()
+    const rise = parseISO(sunrise)
+    const set = parseISO(sunset)
+    const total = set.getTime() - rise.getTime()
+    if (total <= 0) return 50
+    const elapsed = now.getTime() - rise.getTime()
+    return Math.max(0, Math.min(100, (elapsed / total) * 100))
   } catch {
-    return ""
+    return 50
   }
-}
-
-function buildTripDays(forecasts: CityForecast[]): DailyData[] {
-  const allDates = [
-    "2026-04-03", "2026-04-04", "2026-04-05", "2026-04-06",
-    "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10",
-    "2026-04-11", "2026-04-12", "2026-04-13", "2026-04-14", "2026-04-15",
-  ]
-
-  return allDates.map(date => {
-    const city = getCityForDate(date)
-    const forecast = forecasts.find(f => f.city === city)
-    const dayData = forecast?.daily.find(d => d.date === date)
-
-    if (dayData) return dayData
-
-    // Fallback if no data
-    return {
-      date,
-      tempMax: 18,
-      tempMin: 10,
-      precipProb: 0,
-      weatherCode: 0,
-      windMax: 0,
-      uvMax: 0,
-      sunrise: "",
-      sunset: "",
-    }
-  })
-}
-
-function getHourlyForDate(forecasts: CityForecast[], date: string, city: string): HourlyData[] {
-  const forecast = forecasts.find(f => f.city === city)
-  if (!forecast) return []
-
-  // Filter hourly data for this date, every 3 hours from 6 AM to midnight
-  const targetHours = [6, 9, 12, 15, 18, 21]
-  return forecast.hourly.filter(h => {
-    if (!h.time.startsWith(date)) return false
-    const hour = parseInt(h.time.slice(11, 13), 10)
-    return targetHours.includes(hour)
-  })
-}
-
-function buildAlerts(tripDays: DailyData[]): { type: "rain" | "heat"; message: string }[] {
-  const alerts: { type: "rain" | "heat"; message: string }[] = []
-
-  for (const day of tripDays) {
-    const city = getCityForDate(day.date)
-    const dateLabel = format(parseISO(day.date), "MMM d")
-
-    if (day.precipProb > 60) {
-      alerts.push({ type: "rain", message: `\uD83C\uDF27 Rain likely on ${dateLabel} in ${city === "Saint-Raphael" ? "Saint-Rapha\u00EBl" : city} \u2014 pack an umbrella` })
-    }
-    if (day.tempMax > 28) {
-      alerts.push({ type: "heat", message: `\u2600\uFE0F Hot day on ${dateLabel} \u2014 sunscreen and hats for the kids` })
-    }
-  }
-
-  return alerts
 }

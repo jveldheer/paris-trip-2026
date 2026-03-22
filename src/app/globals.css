@@ -186,3 +186,41 @@
 .weather-icon[data-type="fog"] { animation: cloud-drift 4s ease-in-out infinite; display: inline-block; }
 .weather-icon[data-type="snow"] { animation: snow-fall 2s ease-in-out infinite; display: inline-block; }
 .weather-icon[data-type="storm"] { animation: storm-flash 2s ease-in-out infinite; display: inline-block; }
+
+/* Animated SVG weather icon keyframes */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes rainDrop {
+  0% { opacity: 0; transform: translateY(-4px); }
+  50% { opacity: 0.9; }
+  100% { opacity: 0; transform: translateY(8px); }
+}
+
+@keyframes flash {
+  0%, 85%, 100% { opacity: 1; }
+  90% { opacity: 0.3; }
+  92% { opacity: 1; }
+  94% { opacity: 0.2; }
+}
+
+/* Glass morphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hide scrollbar for horizontal scroll */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
