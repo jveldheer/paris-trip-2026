@@ -1,10 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
-import { ChevronLeft, Search, X, MapPin, ExternalLink } from 'lucide-react';
+import { useState, useRef, useMemo } from 'react';
+import { ChevronLeft, Search, X, MapPin, ExternalLink, List } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { AnimatePresence, motion } from 'framer-motion';
 
 // ── Categories ──────────────────────────────────────────────────────────────
 
@@ -240,7 +239,7 @@ export default function FoodMapPage() {
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [activeFilter, setActiveFilter] = useState<Category | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const listRef = useRef<HTMLDivElement>(null);
+  const [showList, setShowList] = useState(false);
   const filterScrollRef = useRef<HTMLDivElement>(null);
 
   const city = CITIES[selectedCityIdx];
@@ -261,22 +260,14 @@ export default function FoodMapPage() {
     return [...venues].sort((a, b) => venueSortRank(b) - venueSortRank(a));
   }, [city, activeFilter, searchQuery]);
 
-  // Scroll selected venue into view
-  useEffect(() => {
-    if (selectedVenue && listRef.current) {
-      const el = listRef.current.querySelector(`[data-venue="${selectedVenue.name}"]`);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [selectedVenue]);
-
   const handleSelectVenue = (venue: Venue | null) => {
     setSelectedVenue(prev => prev?.name === venue?.name ? null : venue);
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-[#FFFBF0]">
-      {/* Header */}
-      <div className="bg-[#1a1a3e] pt-safe">
+    <div className="h-[100dvh] flex flex-col bg-[#FFFBF0] overflow-hidden">
+      {/* Header — fixed at top */}
+      <div className="shrink-0 bg-[#1a1a3e] pt-safe">
         <div className="flex items-center px-4 pt-4 pb-3">
           <button
             onClick={() => router.back()}
@@ -351,179 +342,203 @@ export default function FoodMapPage() {
         </div>
       </div>
 
-      {/* Map */}
-      <div className="relative" style={{ height: '50vh' }}>
+      {/* Map — fills remaining viewport minus nav bar */}
+      <div className="relative flex-1 min-h-0" style={{ marginBottom: '64px' }}>
         <FoodMap
           city={city}
           venues={filteredVenues}
           selectedVenue={selectedVenue}
           onSelectVenue={handleSelectVenue}
         />
+
+        {/* Floating List toggle button */}
+        <button
+          onClick={() => setShowList(true)}
+          className="absolute bottom-4 right-4 z-[50] flex items-center gap-1.5 px-3.5 py-2.5 rounded-full bg-[#1a1a3e] text-white text-sm font-medium shadow-lg hover:bg-[#2a2a5e] transition-colors"
+        >
+          <List className="h-4 w-4" />
+          List
+        </button>
       </div>
 
-      {/* Bottom sheet for selected venue */}
-      <AnimatePresence>
+      {/* ── Venue detail bottom sheet (pin tap) ────────────────────────────── */}
+      {/* Backdrop — tap to dismiss */}
+      {selectedVenue && (
+        <div
+          className="fixed inset-0 z-[99]"
+          onClick={() => setSelectedVenue(null)}
+        />
+      )}
+      <div
+        className={`fixed bottom-0 left-0 right-0 z-[100] bg-[#FFFBF0] rounded-t-2xl shadow-[0_-4px_30px_rgba(0,0,0,0.15)] border-t border-[#1a1a3e]/10 max-h-[45vh] overflow-y-auto transition-transform duration-300 ease-out ${
+          selectedVenue ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
         {selectedVenue && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-[2000] bg-[#FFFBF0] rounded-t-2xl shadow-[0_-4px_30px_rgba(0,0,0,0.15)] border-t border-[#1a1a3e]/10 max-h-[45vh] overflow-y-auto"
-          >
-            <div className="p-4 pb-safe">
-              {/* Drag handle */}
-              <div className="flex justify-center mb-3">
-                <div className="w-10 h-1 rounded-full bg-[#1a1a3e]/15" />
-              </div>
-
-              {/* Close button */}
-              <button
-                onClick={() => setSelectedVenue(null)}
-                className="absolute top-4 right-4 p-1.5 rounded-full bg-[#1a1a3e]/5 hover:bg-[#1a1a3e]/10 transition-colors"
-              >
-                <X className="h-4 w-4 text-[#1a1a3e]/60" />
-              </button>
-
-              {/* Name */}
-              <h3 className="font-serif text-2xl font-medium text-foreground mb-1">{selectedVenue.name}</h3>
-
-              {/* Category + Award on one line */}
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{CATEGORY_MAP[selectedVenue.category].emoji} {CATEGORY_MAP[selectedVenue.category].label}</span>
-                {selectedVenue.award && (
-                  <span>&middot; {selectedVenue.award}</span>
-                )}
-              </div>
-
-              {/* Divider */}
-              <div className="h-px bg-border my-3" />
-
-              {/* Description */}
-              <p className="text-sm leading-relaxed text-foreground/80 mb-2">{selectedVenue.desc}</p>
-
-              {/* Reservations note if applicable */}
-              {selectedVenue.desc.includes('Reservations essential') && (
-                <span className="text-xs text-amber-700 bg-amber-50 rounded px-2 py-1 inline-block mt-2">Reservations essential</span>
-              )}
-
-              {/* Tags */}
-              <div className="flex items-center gap-2 mt-3 mb-4">
-                {selectedVenue.kidFriendly && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200">
-                    {'\u{1F9D2}'} Kid-friendly
-                  </span>
-                )}
-                {selectedVenue.category === 'michelin' && selectedVenue.stars && selectedVenue.stars > 0 && (
-                  <span className="inline-flex items-center gap-0.5 text-amber-600 text-sm">
-                    {Array.from({ length: selectedVenue.stars }).map((_, i) => (
-                      <span key={i}>{'\u2B50'}</span>
-                    ))}
-                  </span>
-                )}
-                {selectedVenue.bibGourmand && (
-                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">Bib Gourmand</span>
-                )}
-              </div>
-
-              {/* Google Maps button — outlined */}
-              <a
-                href={googleMapsUrl(selectedVenue)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-primary text-primary text-sm px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors"
-              >
-                <MapPin className="h-4 w-4" />
-                Open in Google Maps
-                <ExternalLink className="h-3 w-3 opacity-50" />
-              </a>
+          <div className="p-4 pb-safe">
+            {/* Drag handle */}
+            <div className="flex justify-center">
+              <div className="w-10 h-1 bg-border rounded-full mx-auto mt-3 mb-2" />
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Venue list */}
-      <div className="px-4 pt-4 pb-4">
-        {/* Search */}
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1a1a3e]/30" />
-          <input
-            type="text"
-            placeholder="Search venues..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2.5 bg-white rounded-xl border border-[#1a1a3e]/10 text-sm text-[#1a1a3e] placeholder:text-[#1a1a3e]/30 focus:outline-none focus:border-[#1a1a3e]/25 focus:ring-2 focus:ring-[#1a1a3e]/5"
-          />
-          {searchQuery && (
+            {/* Close button */}
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2"
+              onClick={() => setSelectedVenue(null)}
+              className="absolute top-4 right-4 p-1.5 rounded-full bg-[#1a1a3e]/5 hover:bg-[#1a1a3e]/10 transition-colors"
             >
-              <X className="h-4 w-4 text-[#1a1a3e]/30" />
+              <X className="h-4 w-4 text-[#1a1a3e]/60" />
             </button>
-          )}
-        </div>
 
-        <h2 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#1a1a3e]/40 px-1 mb-2">
-          {city.city} &middot; {filteredVenues.length} {activeFilter === 'all' ? 'spots' : CATEGORY_MAP[activeFilter]?.label.toLowerCase() + ' spots'}
-        </h2>
-
-        <div ref={listRef} className="divide-y divide-border/50">
-          {filteredVenues.map((venue) => {
-            const cat = CATEGORY_MAP[venue.category];
-            const isSelected = selectedVenue?.name === venue.name;
-            return (
-              <button
-                key={venue.name}
-                data-venue={venue.name}
-                onClick={() => handleSelectVenue(venue)}
-                className={`w-full text-left py-3.5 px-1 transition-all ${
-                  isSelected
-                    ? 'bg-primary/5'
-                    : 'hover:bg-primary/[0.02]'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="flex items-center justify-center w-9 h-9 rounded-full shrink-0 text-base"
-                    style={{ backgroundColor: cat.colorBg }}
-                  >
-                    {cat.emoji}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{cat.label}</span>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="font-serif text-base font-medium text-foreground">{venue.name}</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                      {venue.award && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-amber-50 text-amber-800 border border-amber-200">{venue.award}</span>
-                      )}
-                      {venue.kidFriendly && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200">{'\u{1F9D2}'} Kid-friendly</span>
-                      )}
-                      {venue.category === 'michelin' && venue.stars && venue.stars > 0 && (
-                        <span className="text-amber-600 text-sm">
-                          {Array.from({ length: venue.stars }).map((_, i) => '\u2B50').join('')}
-                        </span>
-                      )}
-                      {venue.bibGourmand && (
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">Bib Gourmand</span>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{venue.tagline}</p>
-                  </div>
-                </div>
-              </button>
-            );
-          })}
-          {filteredVenues.length === 0 && (
-            <div className="text-center py-8 text-[#1a1a3e]/40 text-sm">
-              No venues found
+            {/* Category emoji + award badge */}
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-base">{CATEGORY_MAP[selectedVenue.category].emoji}</span>
+              {selectedVenue.award && (
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-amber-50 text-amber-800 border border-amber-200">
+                  {selectedVenue.award}
+                </span>
+              )}
             </div>
-          )}
-        </div>
+
+            {/* Name */}
+            <h3 className="font-serif text-2xl font-medium text-foreground mb-1">{selectedVenue.name}</h3>
+
+            {/* Divider */}
+            <div className="h-px bg-border my-3" />
+
+            {/* Description */}
+            <p className="text-sm leading-relaxed text-foreground/80 mb-2">{selectedVenue.desc}</p>
+
+            {/* Kid-friendly badge */}
+            {selectedVenue.kidFriendly && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200 mr-2">
+                {'\u{1F9D2}'} Kid-friendly
+              </span>
+            )}
+
+            {/* Reservations note */}
+            {selectedVenue.desc.includes('Reservations essential') && (
+              <span className="text-xs text-amber-700 bg-amber-50 rounded px-2 py-1 inline-block">Reservations essential</span>
+            )}
+
+            {/* Google Maps button — full width outlined */}
+            <a
+              href={googleMapsUrl(selectedVenue)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full border border-primary text-primary text-sm px-4 py-2.5 rounded-lg hover:bg-primary/5 transition-colors mt-4"
+            >
+              <MapPin className="h-4 w-4" />
+              Open in Google Maps
+              <ExternalLink className="h-3 w-3 opacity-50" />
+            </a>
+          </div>
+        )}
       </div>
+
+      {/* ── Full-screen venue list modal ───────────────────────────────────── */}
+      {showList && (
+        <div className="fixed inset-0 z-[200] bg-[#FFFBF0] flex flex-col">
+          {/* List header */}
+          <div className="shrink-0 flex items-center justify-between px-4 pt-safe pb-3 border-b border-border bg-[#FFFBF0]">
+            <div className="pt-4">
+              <h2 className="font-serif text-lg font-medium text-foreground">{city.city} Venues</h2>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#1a1a3e]/40">
+                {filteredVenues.length} {activeFilter === 'all' ? 'spots' : CATEGORY_MAP[activeFilter]?.label.toLowerCase() + ' spots'}
+              </p>
+            </div>
+            <button
+              onClick={() => setShowList(false)}
+              className="p-2 rounded-full bg-[#1a1a3e]/5 hover:bg-[#1a1a3e]/10 transition-colors mt-4"
+            >
+              <X className="h-5 w-5 text-[#1a1a3e]/60" />
+            </button>
+          </div>
+
+          {/* Search */}
+          <div className="shrink-0 px-4 pt-3 pb-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#1a1a3e]/30" />
+              <input
+                type="text"
+                placeholder="Search venues..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 bg-white rounded-xl border border-[#1a1a3e]/10 text-sm text-[#1a1a3e] placeholder:text-[#1a1a3e]/30 focus:outline-none focus:border-[#1a1a3e]/25 focus:ring-2 focus:ring-[#1a1a3e]/5"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                >
+                  <X className="h-4 w-4 text-[#1a1a3e]/30" />
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Scrollable venue list */}
+          <div className="flex-1 overflow-y-auto px-4 pb-safe">
+            <div className="divide-y divide-border/50">
+              {filteredVenues.map((venue) => {
+                const cat = CATEGORY_MAP[venue.category];
+                const isSelected = selectedVenue?.name === venue.name;
+                return (
+                  <button
+                    key={venue.name}
+                    data-venue={venue.name}
+                    onClick={() => {
+                      handleSelectVenue(venue);
+                      setShowList(false);
+                    }}
+                    className={`w-full text-left py-3.5 px-1 transition-all ${
+                      isSelected
+                        ? 'bg-primary/5'
+                        : 'hover:bg-primary/[0.02]'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="flex items-center justify-center w-9 h-9 rounded-full shrink-0 text-base"
+                        style={{ backgroundColor: cat.colorBg }}
+                      >
+                        {cat.emoji}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <span className="text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{cat.label}</span>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="font-serif text-base font-medium text-foreground">{venue.name}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                          {venue.award && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-amber-50 text-amber-800 border border-amber-200">{venue.award}</span>
+                          )}
+                          {venue.kidFriendly && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200">{'\u{1F9D2}'} Kid-friendly</span>
+                          )}
+                          {venue.category === 'michelin' && venue.stars && venue.stars > 0 && (
+                            <span className="text-amber-600 text-sm">
+                              {Array.from({ length: venue.stars }).map((_, i) => '\u2B50').join('')}
+                            </span>
+                          )}
+                          {venue.bibGourmand && (
+                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">Bib Gourmand</span>
+                          )}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{venue.tagline}</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+              {filteredVenues.length === 0 && (
+                <div className="text-center py-8 text-[#1a1a3e]/40 text-sm">
+                  No venues found
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
