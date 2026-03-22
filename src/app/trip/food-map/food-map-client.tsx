@@ -1,10 +1,47 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap } from 'react-leaflet';
+import { useEffect, useRef, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import type { CityData, Venue } from './page';
-import { getMarkerColor } from './page';
+import { CATEGORY_MAP, getMarkerColor, getMarkerSize } from './page';
 import 'leaflet/dist/leaflet.css';
+
+// ── Custom SVG marker factory ───────────────────────────────────────────────
+
+function createSvgIcon(venue: Venue, isSelected: boolean): L.DivIcon {
+  const cat = CATEGORY_MAP[venue.category];
+  const size = getMarkerSize(venue);
+  const px = isSelected ? size * 2.8 : size * 2.4;
+  const color = getMarkerColor(venue);
+  const emoji = cat.emoji;
+  const fontSize = venue.category === 'michelin' && (venue.stars ?? 0) >= 3 ? 14 : 11;
+
+  return L.divIcon({
+    className: 'food-map-marker',
+    iconSize: [px, px],
+    iconAnchor: [px / 2, px / 2],
+    html: `
+      <div style="
+        width: ${px}px;
+        height: ${px}px;
+        border-radius: 50%;
+        background: ${color};
+        border: ${isSelected ? '3px' : '2px'} solid ${isSelected ? '#1a1a3e' : 'white'};
+        box-shadow: ${isSelected ? '0 0 0 3px rgba(26,26,62,0.3), 0 2px 8px rgba(0,0,0,0.3)' : '0 1px 4px rgba(0,0,0,0.3)'};
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: ${fontSize}px;
+        line-height: 1;
+        transition: transform 0.15s ease;
+        transform: ${isSelected ? 'scale(1.15)' : 'scale(1)'};
+        cursor: pointer;
+        z-index: ${isSelected ? 1000 : 1};
+      ">${emoji}</div>
+    `,
+  });
+}
 
 // ── Recenter on city change ──────────────────────────────────────────────────
 
@@ -16,7 +53,19 @@ function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }
   return null;
 }
 
-// ── Open popup for selected venue ────────────────────────────────────────────
+// ── Pan to selected venue ────────────────────────────────────────────────────
+
+function SelectedPanner({ venue }: { venue: Venue | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (venue) {
+      map.panTo([venue.lat, venue.lon], { animate: true, duration: 0.4 });
+    }
+  }, [map, venue]);
+  return null;
+}
+
+// ── Venue marker ─────────────────────────────────────────────────────────────
 
 function VenueMarker({
   venue,
@@ -25,45 +74,19 @@ function VenueMarker({
 }: {
   venue: Venue;
   isSelected: boolean;
-  onSelect: (name: string) => void;
+  onSelect: (venue: Venue) => void;
 }) {
-  const markerRef = useRef<L.CircleMarker>(null);
-  const color = getMarkerColor(venue);
-  const is3Star = (venue.stars ?? 0) === 3;
-
-  useEffect(() => {
-    if (isSelected && markerRef.current) {
-      markerRef.current.openPopup();
-    }
-  }, [isSelected]);
+  const icon = createSvgIcon(venue, isSelected);
 
   return (
-    <CircleMarker
-      ref={markerRef}
-      center={[venue.lat, venue.lon]}
-      radius={is3Star ? 10 : 7}
-      pathOptions={{
-        fillColor: color,
-        fillOpacity: 0.9,
-        color: '#1a1a3e',
-        weight: is3Star ? 2 : 1.5,
-        opacity: 0.7,
-      }}
+    <Marker
+      position={[venue.lat, venue.lon]}
+      icon={icon}
+      zIndexOffset={isSelected ? 1000 : 0}
       eventHandlers={{
-        click: () => onSelect(venue.name),
+        click: () => onSelect(venue),
       }}
-    >
-      <Popup>
-        <div className="text-[#1a1a3e] min-w-[180px]">
-          <div className="font-bold text-sm">{venue.name}</div>
-          <div className="text-xs font-medium mt-0.5" style={{ color }}>
-            {venue.award}
-          </div>
-          <div className="text-[11px] text-gray-500 mt-0.5">{venue.cuisine}</div>
-          <p className="text-[11px] text-gray-600 mt-1 leading-snug">{venue.desc}</p>
-        </div>
-      </Popup>
-    </CircleMarker>
+    />
   );
 }
 
@@ -71,13 +94,22 @@ function VenueMarker({
 
 export default function FoodMapClient({
   city,
+  venues,
   selectedVenue,
   onSelectVenue,
 }: {
   city: CityData;
-  selectedVenue: string | null;
-  onSelectVenue: (name: string | null) => void;
+  venues: Venue[];
+  selectedVenue: Venue | null;
+  onSelectVenue: (venue: Venue | null) => void;
 }) {
+  const handleSelect = useCallback(
+    (venue: Venue) => {
+      onSelectVenue(selectedVenue?.name === venue.name ? null : venue);
+    },
+    [onSelectVenue, selectedVenue],
+  );
+
   return (
     <MapContainer
       center={city.center}
@@ -86,14 +118,15 @@ export default function FoodMapClient({
       zoomControl={false}
       attributionControl={false}
     >
-      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+      <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
       <MapUpdater center={city.center} zoom={city.zoom} />
-      {city.venues.map((venue) => (
+      <SelectedPanner venue={selectedVenue} />
+      {venues.map((venue) => (
         <VenueMarker
           key={venue.name}
           venue={venue}
-          isSelected={selectedVenue === venue.name}
-          onSelect={(name) => onSelectVenue(selectedVenue === name ? null : name)}
+          isSelected={selectedVenue?.name === venue.name}
+          onSelect={handleSelect}
         />
       ))}
     </MapContainer>
