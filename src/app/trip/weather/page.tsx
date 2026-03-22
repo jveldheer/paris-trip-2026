@@ -67,12 +67,12 @@ const WMO_DESC: Record<number, string> = {
 }
 
 function getGradient(code: number): string {
-  if (code === 0) return "from-amber-500 via-rose-400 to-sky-500"       // golden clear
-  if (code <= 2) return "from-blue-600 via-sky-400 to-cyan-300"          // partly cloudy
-  if (code === 3) return "from-slate-600 via-slate-400 to-gray-300"      // overcast
-  if (code <= 55) return "from-indigo-700 via-blue-500 to-slate-400"     // drizzle
-  if (code <= 82) return "from-slate-800 via-blue-700 to-indigo-500"     // rain
-  return "from-gray-900 via-slate-800 to-purple-900"                     // storm
+  if (code === 0) return "from-[#FF6B35] via-[#F7C59F] to-[#2980B9]"   // dramatic golden-to-sky
+  if (code <= 2) return "from-[#1565C0] via-[#42A5F5] to-[#90CAF9]"    // vibrant blue
+  if (code === 3) return "from-[#455A64] via-[#607D8B] to-[#90A4AE]"   // steel overcast
+  if (code <= 55) return "from-[#1A237E] via-[#1565C0] to-[#546E7A]"   // deep rainy indigo
+  if (code <= 82) return "from-[#0D47A1] via-[#1565C0] to-[#37474F]"   // stormy blue
+  return "from-[#212121] via-[#37474F] to-[#4A148C]"                    // dramatic storm
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -211,7 +211,7 @@ function HourlyStrip({ hours }: { hours: HourForecast[] }) {
           <div
             key={h.time}
             className={`flex flex-col items-center gap-1 px-3 py-3 rounded-2xl shrink-0 min-w-[56px] ${
-              isNow ? "bg-white/25 border border-white/40" : "bg-white/10"
+              isNow ? "bg-white/30 border border-white/60 shadow-lg backdrop-blur-sm" : "bg-white/15 border border-white/20"
             }`}
           >
             <span className="text-xs text-white/70 font-medium">{label}</span>
@@ -243,8 +243,8 @@ function DayCard({ day, isSelected, onClick }: {
       onClick={onClick}
       className={`w-full text-left rounded-2xl p-4 transition-all ${
         isSelected
-          ? "bg-white/20 border border-white/40 shadow-lg scale-[1.01]"
-          : "bg-white/10 border border-white/10 hover:bg-white/15"
+          ? "bg-white/25 border border-white/50 shadow-xl scale-[1.01] backdrop-blur-sm"
+          : "bg-white/12 border border-white/20 hover:bg-white/18 backdrop-blur-sm"
       }`}
     >
       <div className="flex items-center justify-between">
@@ -396,9 +396,9 @@ export default function WeatherPage() {
             {/* Big temp display */}
             <div className="px-6 pb-4">
               <div className="flex items-start gap-4">
-                <WeatherIcon code={heroDay.code} size={64} />
+                <WeatherIcon code={heroDay.code} size={80} />
                 <div>
-                  <div className="text-7xl font-thin text-white leading-none">
+                  <div className="text-7xl font-thin text-white leading-none drop-shadow-xl">
                     {toF(heroDay.max)}
                   </div>
                   <div className="text-white/80 text-lg mt-1">{WMO_DESC[heroDay.code] ?? "Mixed"}</div>
@@ -456,9 +456,9 @@ export default function WeatherPage() {
             City Climates
           </h2>
           {[
-            { city: "Paris", flag: "🗼", desc: "Cool spring days, 50–63°F. Occasional showers — pack a light rain jacket.", gradient: "from-blue-600 to-blue-400" },
-            { city: "Saint-Raphaël", flag: "🌊", desc: "Mediterranean warmth, 63–72°F. Perfect beach weather, lighter clothes!", gradient: "from-amber-500 to-orange-400" },
-            { city: "Lisbon", flag: "🇵🇹", desc: "Sunny and warm, 64–73°F. Most summer-like of the trip.", gradient: "from-teal-600 to-emerald-400" },
+            { city: "Paris", flag: "🗼", desc: "Cool spring days, 50–63°F. Occasional showers — pack a light rain jacket and layers.", gradient: "from-[#1565C0] to-[#1E88E5]" },
+            { city: "Saint-Raphaël", flag: "🌊", desc: "Mediterranean warmth, 63–72°F. Sunshine and sea breeze — this is what the trip is for.", gradient: "from-[#E65100] to-[#FB8C00]" },
+            { city: "Lisbon", flag: "🇵🇹", desc: "Warm and bright, 64–73°F. The most summer-like stop. Lightest packing needed.", gradient: "from-[#00695C] to-[#26A69A]" },
           ].map(c => (
             <div key={c.city} className={`bg-gradient-to-r ${c.gradient} rounded-2xl p-4 text-white`}>
               <div className="flex items-center gap-2 mb-1">
