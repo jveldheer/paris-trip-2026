@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef, useMemo, useEffect } from 'react';
 import { ChevronLeft, Search, X, MapPin, ExternalLink, List } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -267,25 +267,25 @@ export default function FoodMapPage() {
   return (
     <div className="h-[100dvh] flex flex-col bg-[#FFFBF0] overflow-hidden">
       {/* Header — fixed at top */}
-      <div className="shrink-0 bg-[#1a1a3e] pt-safe">
-        <div className="flex items-center px-4 pt-4 pb-3">
+      <div className="shrink-0 bg-[#1a1a3e] pt-safe" style={{ boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+        {/* Title row — compact single line */}
+        <div className="flex items-center px-4 pt-3 pb-2">
           <button
             onClick={() => router.back()}
-            className="p-2 -ml-2 rounded-xl bg-white/10 backdrop-blur-sm text-white border border-white/10"
+            className="p-1.5 -ml-1.5 rounded-lg bg-white/10 backdrop-blur-sm text-white border border-white/10"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
-          <div className="ml-3">
-            <h1 className="text-white font-serif text-lg font-medium leading-tight">Food Map</h1>
-            <p className="text-white/40 text-[10px] uppercase tracking-widest">Award-Winning Eats & Drinks</p>
-          </div>
+          <h1 className="ml-2.5 text-white font-serif text-base font-medium leading-tight">Food Map</h1>
         </div>
 
         {/* City tab bar */}
-        <div className="flex gap-2 px-4 pb-3">
+        <div className="flex items-center gap-2 px-4 pb-2">
           <div className="flex gap-1.5 bg-black/20 backdrop-blur-md rounded-full p-1 border border-white/10">
             {CITIES.map((c, i) => {
               const isActive = i === selectedCityIdx;
+              const shortLabels: Record<string, string> = { 'Paris': 'Paris', 'Saint-Raphaël': 'St-Raphaël', 'Lisbon': 'Lisbon' };
+              const cityColors: Record<string, string> = { 'Paris': '#60a5fa', 'Saint-Raphaël': '#fb923c', 'Lisbon': '#2dd4bf' };
               return (
                 <button
                   key={c.city}
@@ -295,52 +295,76 @@ export default function FoodMapPage() {
                     setActiveFilter('all');
                     setSearchQuery('');
                   }}
-                  className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-all ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
                     isActive
-                      ? 'bg-primary text-primary-foreground shadow-lg'
-                      : 'border border-border text-foreground/70 bg-transparent hover:text-foreground hover:bg-white/10'
+                      ? 'bg-white/15 text-white shadow-lg'
+                      : 'text-white/50 bg-transparent hover:text-white/70'
                   }`}
                 >
-                  <span className="text-sm">{c.flag}</span>
-                  <span>{c.city.split('-')[0]} ({c.venues.length})</span>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: cityColors[c.city] }} />
+                  )}
+                  <span className="text-xs">{c.flag}</span>
+                  <span>{shortLabels[c.city] ?? c.city}</span>
+                  <span className="text-[10px] opacity-60">({c.venues.length})</span>
                 </button>
               );
             })}
           </div>
+          <p className="text-white/25 text-[8px] uppercase tracking-[0.15em] ml-auto hidden min-[400px]:block">Award-Winning Eats</p>
         </div>
 
-        {/* Filter pills */}
-        <div
-          ref={filterScrollRef}
-          className="flex gap-2 px-4 pb-4 overflow-x-auto scrollbar-hide"
-          style={{ WebkitOverflowScrolling: 'touch' }}
-        >
-          <button
-            onClick={() => setActiveFilter('all')}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all tracking-[0.12em] border ${
-              activeFilter === 'all'
-                ? 'bg-primary text-primary-foreground border-primary'
-                : 'bg-transparent text-foreground/60 border-border/60 hover:border-border'
-            }`}
+        {/* Separator */}
+        <div className="mx-4 h-px bg-white/10" />
+
+        {/* Filter pills with fade affordance */}
+        <div className="relative">
+          <div
+            ref={filterScrollRef}
+            className="flex gap-1.5 px-4 py-2 overflow-x-auto scrollbar-hide food-map-filter-scroll"
+            style={{ WebkitOverflowScrolling: 'touch' }}
           >
-            All
-          </button>
-          {CATEGORIES.map(cat => (
             <button
-              key={cat.key}
-              onClick={() => setActiveFilter(activeFilter === cat.key ? 'all' : cat.key)}
-              className={`shrink-0 flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium transition-all tracking-[0.12em] border ${
-                activeFilter === cat.key
+              onClick={() => setActiveFilter('all')}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                activeFilter === 'all'
                   ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-transparent text-foreground/60 border-border/60 hover:border-border'
+                  : 'bg-transparent text-white/40 border-white/15 hover:border-white/30'
               }`}
             >
-              <span>{cat.emoji}</span>
-              <span>{cat.label}</span>
+              ✦ All
             </button>
-          ))}
+            {CATEGORIES.map(cat => (
+              <button
+                key={cat.key}
+                onClick={() => setActiveFilter(activeFilter === cat.key ? 'all' : cat.key)}
+                className={`shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all border ${
+                  activeFilter === cat.key
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-transparent text-white/40 border-white/15 hover:border-white/30'
+                }`}
+              >
+                <span className="text-[11px]">{cat.emoji}</span>
+                <span>{cat.label}</span>
+              </button>
+            ))}
+          </div>
+          {/* Right fade gradient for scroll affordance */}
+          <div className="absolute right-0 top-0 bottom-0 w-12 pointer-events-none" style={{ maskImage: 'none', background: 'linear-gradient(to right, transparent, #1a1a3e)' }} />
         </div>
       </div>
+
+      {/* Scroll hint animation — CSS keyframes */}
+      <style jsx global>{`
+        @keyframes filterScrollHint {
+          0% { transform: translateX(0); }
+          40% { transform: translateX(-20px); }
+          100% { transform: translateX(0); }
+        }
+        .food-map-filter-scroll {
+          animation: filterScrollHint 0.6s ease-in-out 1s 1;
+        }
+      `}</style>
 
       {/* Map — fills remaining viewport minus nav bar */}
       <div className="relative flex-1 min-h-0" style={{ marginBottom: '64px' }}>
