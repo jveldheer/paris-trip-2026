@@ -136,3 +136,80 @@ All variables are validated at app startup (`src/lib/env.ts`). Missing or placeh
 - No Supabase Auth — the cookie model is simple but not cryptographically signed. A determined user could set `trip_auth=1` manually, but they'd also need the Supabase URL/key (which are client-bundled) to do anything useful.
 - Dev and prod share one Supabase database — no staging isolation
 - Rate limit is in-memory, so it resets on each deploy/restart. Sufficient for this use case.
+
+---
+
+## 8. Debugging Deployments
+
+### Quick status check
+
+Run the dev status script for a snapshot:
+```bash
+./scripts/dev-status.sh
+```
+
+Or run these commands individually at the start of a session:
+```bash
+# Last commit + branch state
+git log --oneline -3 && git status --short
+
+# Open GitHub issues
+gh issue list --repo jveldheer/paris-trip-2026
+
+# Latest Vercel deployment status
+vercel ls | head -5
+
+# CI / GitHub Actions status (if configured)
+gh run list --repo jveldheer/paris-trip-2026 --limit 5
+```
+
+### Vercel build logs
+
+**Dashboard**: Vercel dashboard > Deployments > click any deployment > "Building" or "Build Logs" tab.
+
+**CLI commands**:
+```bash
+# List recent deployments
+vercel ls
+
+# Inspect a specific deployment (get URL from vercel ls)
+vercel inspect <deployment-url>
+
+# Tail runtime logs for a deployment
+vercel logs <deployment-url>
+
+# Check environment variables configured in Vercel
+vercel env ls
+```
+
+### GitHub Actions / CI status
+
+```bash
+# List recent workflow runs
+gh run list --repo jveldheer/paris-trip-2026 --limit 5
+
+# View details of a specific run
+gh run view <run-id> --repo jveldheer/paris-trip-2026
+
+# View logs for a failed run
+gh run view <run-id> --repo jveldheer/paris-trip-2026 --log-failed
+
+# Check deployment status via GitHub API
+gh api repos/jveldheer/paris-trip-2026/deployments --jq '.[0] | {env: .environment, status: .statuses_url, created: .created_at}'
+```
+
+### GitHub issues & PRs
+
+```bash
+# List open issues
+gh issue list --repo jveldheer/paris-trip-2026
+
+# Create an issue
+gh issue create --repo jveldheer/paris-trip-2026 --title "Bug: ..." --label bug
+
+# List PRs
+gh pr list --repo jveldheer/paris-trip-2026
+
+# View PR checks / CI status
+gh pr checks <pr-number> --repo jveldheer/paris-trip-2026
+```
