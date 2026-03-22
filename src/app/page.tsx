@@ -3,40 +3,42 @@
 import { useState, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 
-const CORRECT_PASSWORD = "Paris!"
-const COOKIE_NAME = "trip_auth"
-
-function setAuthCookie() {
-  const expires = new Date(Date.now() + 90 * 864e5).toUTCString()
-  document.cookie = `${COOKIE_NAME}=1; expires=${expires}; path=/; SameSite=Lax`
-}
-
-function hasAuthCookie(): boolean {
-  if (typeof document === "undefined") return false
-  return document.cookie.includes(`${COOKIE_NAME}=1`)
-}
-
 export default function PasswordPage() {
   const router = useRouter()
   const [password, setPassword] = useState("")
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<string | false>(false)
   const [checking, setChecking] = useState(false)
 
   // If already authed, redirect immediately
   useState(() => {
-    if (typeof window !== "undefined" && hasAuthCookie()) {
+    if (typeof window !== "undefined" && document.cookie.includes("trip_auth=")) {
       router.replace("/trip")
     }
   })
 
-  function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setChecking(true)
-    if (password === CORRECT_PASSWORD) {
-      setAuthCookie()
-      router.replace("/trip")
-    } else {
-      setError(true)
+    setError(false)
+
+    try {
+      const res = await fetch("/api/auth/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: password }),
+      })
+
+      if (res.ok) {
+        router.replace("/trip")
+      } else if (res.status === 429) {
+        setError("Too many attempts. Please try again in 15 minutes.")
+        setChecking(false)
+      } else {
+        setError("Incorrect password. Try again.")
+        setChecking(false)
+      }
+    } catch {
+      setError("Network error. Please try again.")
       setChecking(false)
     }
   }
@@ -70,7 +72,7 @@ export default function PasswordPage() {
             />
             {error && (
               <p className="text-red-500 text-xs text-center mt-2">
-                Incorrect password. Try again.
+                {error}
               </p>
             )}
           </div>

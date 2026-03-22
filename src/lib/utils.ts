@@ -7,6 +7,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function sanitize(input: string, maxLength: number): string {
+  return input.trim().slice(0, maxLength)
+}
+
 /**
  * Format a time portion from an ISO date string, e.g. "14:30" -> "2:30 PM"
  */

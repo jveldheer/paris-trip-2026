@@ -15,6 +15,7 @@ import { getSupabaseClient } from '@/lib/supabase/client'
 import { generateId } from '@/lib/offline-storage'
 import { WishlistCategory, WishlistItem } from '@/types'
 import { WISHLIST_CATEGORY_LABELS } from '@/lib/constants'
+import { sanitize } from '@/lib/utils'
 
 interface AddWishlistItemProps {
   tripId: string
@@ -32,7 +33,7 @@ export function AddWishlistItem({ tripId, memberId, category, onAdd, isOffline }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const trimmed = title.trim()
+    const trimmed = sanitize(title, 200)
     if (!trimmed) return
 
     setSubmitting(true)

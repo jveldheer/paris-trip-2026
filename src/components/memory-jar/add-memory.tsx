@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { addLocalItem, generateId } from "@/lib/offline-storage"
+import { sanitize } from "@/lib/utils"
 
 interface AddMemoryProps {
   tripId: string
@@ -24,7 +25,7 @@ export function AddMemory({ tripId, memberId, onAdded, isOffline }: AddMemoryPro
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const text = content.trim()
+    const text = sanitize(content, 500)
     if (!text) return
     setSubmitting(true)
     setError(null)

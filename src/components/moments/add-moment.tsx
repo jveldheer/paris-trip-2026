@@ -22,6 +22,7 @@ import { getSupabaseClient } from '@/lib/supabase/client'
 import { generateId } from '@/lib/offline-storage'
 import { Moment, MomentType, TripDay } from '@/types'
 import { MOMENT_TYPES } from '@/lib/constants'
+import { sanitize } from '@/lib/utils'
 
 interface AddMomentProps {
   tripId: string
@@ -48,7 +49,7 @@ export function AddMoment({ tripId, memberId, tripDays, onAdd, isOffline }: AddM
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const trimmed = content.trim()
+    const trimmed = sanitize(content, 1000)
     if (!trimmed) return
 
     setSubmitting(true)

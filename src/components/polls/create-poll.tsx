@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { getSupabaseClient } from "@/lib/supabase/client"
 import { generateId } from "@/lib/offline-storage"
+import { sanitize } from "@/lib/utils"
 
 interface CreatePollProps {
   tripId: string
@@ -56,8 +57,8 @@ export function CreatePoll({ tripId, memberId, onCreated, isOffline }: CreatePol
     e.preventDefault()
     setError(null)
 
-    const q = question.trim()
-    const validOptions = options.map((o) => o.trim()).filter(Boolean)
+    const q = sanitize(question, 200)
+    const validOptions = options.map((o) => sanitize(o, 120)).filter(Boolean)
 
     if (!q) { setError("Please enter a question."); return }
     if (validOptions.length < 2) { setError("Need at least 2 options."); return }

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next"
 import { Geist } from "next/font/google"
+import { validateEnv } from "@/lib/env"
 import "./globals.css"
+
+validateEnv()
 
 const geist = Geist({ variable: "--font-sans", subsets: ["latin"] })
 
