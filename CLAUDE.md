@@ -40,6 +40,10 @@ Always use claude-opus-4-6. This project runs on Jared's Max plan.
 ## App Philosophy
 This is a focused family trip companion. Every feature should earn its place. No social features (polls, photo sharing) — just the essentials: countdown, itinerary, weather, food map (with integrated wish list), and trip info.
 
+## Workflow Rules
+- **PLAN BEFORE CODING** — Always output a detailed plan first, then execute. Never write code without a plan.
+- After every task: `git add -A && git commit -m "feat/fix: description" && git push origin main`
+
 ## DO NOT
 - Touch Supabase schema without being careful (dev + prod share one DB)
 - Use hardcoded color values — always use CSS custom properties
