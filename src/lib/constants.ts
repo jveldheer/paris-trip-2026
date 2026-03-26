@@ -118,7 +118,7 @@ export const STATIC_MEMBERS: Member[] = MEMBERS_SEED.map((m, i) => ({
 }));
 
 export const TRIP_DAYS_SEED = [
-  { day_number: -1, date: '2026-04-01', city: 'NYC' as const, title: 'Travel Day ✈️ GRR → NYC', summary: 'Fly GRR→EWR, Go Airlink shuttle to Hyatt Grand Central NYC' },
+  { day_number: -1, date: '2026-04-01', city: 'NYC' as const, title: 'Travel Day ✈️ GRR → NYC + Aaron\'s Birthday 🎂', summary: 'Fly GRR→EWR, Go Airlink shuttle to Hyatt Grand Central NYC. Dinner at Giulietta (200 Park Ave) 6:15 PM — Aaron\'s birthday! Table of 4 + table of 6. Confirmation #10319.' },
   { day_number: 0, date: '2026-04-02', city: 'NYC' as const, title: 'Fly to Paris 🇫🇷✈️', summary: 'Go Airlink to EWR, Air France A350 to CDG — au revoir America!' },
   { day_number: 1, date: '2026-04-03', city: 'Paris' as const, title: 'Arrival in Paris 🗼', summary: 'Fly in, check in to Maison Galante, Louvre + Orsay!' },
   { day_number: 2, date: '2026-04-04', city: 'Paris' as const, title: 'Paris — Brasserie Bellanger 🍽', summary: 'Dinner for 10 at Brasserie Bellanger, 7 PM' },
