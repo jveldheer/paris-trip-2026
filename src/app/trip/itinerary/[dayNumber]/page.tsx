@@ -45,13 +45,20 @@ export default function DayDetailPage({
       .eq("trip_day_id", day.id)
       .order("sort_order")
       .then(({ data, error }) => {
+        const sortByTime = (a: ItineraryItem, b: ItineraryItem) => {
+          // Items without a time go first (all-day markers like birthdays)
+          if (!a.start_time && !b.start_time) return a.sort_order - b.sort_order
+          if (!a.start_time) return -1
+          if (!b.start_time) return 1
+          return a.start_time.localeCompare(b.start_time)
+        }
         if (error || !data || data.length === 0) {
           // Fall back to static itinerary data
-          const staticItems = STATIC_ITINERARY[day.date] ?? []
+          const staticItems = (STATIC_ITINERARY[day.date] ?? []).slice().sort(sortByTime)
           setItems(staticItems)
           setItemsError(false)
         } else {
-          setItems(data)
+          setItems(data.slice().sort(sortByTime))
         }
         setItemsLoading(false)
       })
