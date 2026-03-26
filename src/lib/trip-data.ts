@@ -60,6 +60,15 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       notes: "Steps from Grand Central Terminal. Checkout Apr 2 by 12 PM.",
       sort_order: 3,
     }),
+    item("restaurant", "🎂 Birthday Dinner — Giulietta", {
+      start_time: "2026-04-01T18:15:00",
+      location_name: "Giulietta",
+      address: "200 Park Ave, New York, NY 10017",
+      description: "Aaron's birthday dinner! Two tables — party of 4 + party of 6.",
+      booking_ref: "Confirmation #10319 · (212) 597-2424 · Reservation: Jared Veldheer",
+      notes: "Table of 4 + table of 6 split. Booked via OpenTable.",
+      sort_order: 4,
+    }),
   ],
   "2026-04-02": [
     item("transport", "Go Airlink Shuttle — NYC \u2192 EWR", {
