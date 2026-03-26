@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 
 // ── Categories ──────────────────────────────────────────────────────────────
 
-export type Category = 'michelin' | 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets' | 'experience' | 'playground';
+export type Category = 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets' | 'experience' | 'playground';
 
 export interface CategoryDef {
   key: Category;
@@ -18,7 +18,6 @@ export interface CategoryDef {
 }
 
 export const CATEGORIES: CategoryDef[] = [
-  { key: 'michelin',  emoji: '\u2B50', label: 'Michelin',  color: '#d97706', colorBg: '#d9770620' },
   { key: 'bakery',    emoji: '\u{1F950}', label: 'Bakery',   color: '#e11d48', colorBg: '#e11d4820' },
   { key: 'coffee',    emoji: '\u2615', label: 'Coffee',   color: '#78350f', colorBg: '#78350f20' },
   { key: 'market',    emoji: '\u{1F6D2}', label: 'Market',   color: '#16a34a', colorBg: '#16a34a20' },
@@ -63,11 +62,6 @@ export function getMarkerColor(venue: Venue): string {
 }
 
 export function getMarkerSize(venue: Venue): number {
-  if (venue.category === 'michelin') {
-    if (venue.stars === 3) return 14;
-    if (venue.stars === 2) return 11;
-    return 9;
-  }
   return 8;
 }
 
@@ -76,8 +70,7 @@ function googleMapsUrl(venue: Venue): string {
 }
 
 function venueSortRank(v: Venue): number {
-  if (v.category === 'michelin') return 100 + (v.stars ?? 0) * 10 + (v.bibGourmand ? 1 : 0);
-  const catOrder: Record<Category, number> = { michelin: 0, bakery: 80, iconic: 70, chocolate: 65, sweets: 63, experience: 62, coffee: 60, market: 50, wine: 40, specialty: 30 };
+  const catOrder: Record<Category, number> = { bakery: 80, iconic: 70, chocolate: 65, sweets: 63, experience: 62, coffee: 60, market: 50, wine: 40, specialty: 30, playground: 55 };
   return catOrder[v.category] ?? 0;
 }
 
@@ -90,14 +83,6 @@ const CITIES: CityData[] = [
     center: [48.8566, 2.3522],
     zoom: 13,
     venues: [
-      // MICHELIN
-      { name: 'Guy Savoy', lat: 48.8612, lon: 2.3365, category: 'michelin', stars: 3, award: '3 Michelin Stars', tagline: "Paris's greatest chef. Monnaie de Paris setting.", desc: "The artichoke soup with black truffle is legendary. Guy Savoy consistently holds his place as one of the world's greatest chefs, and the Monnaie de Paris setting along the Seine is breathtaking. A once-in-a-lifetime meal." },
-      { name: 'Le Cinq', lat: 48.8718, lon: 2.3072, category: 'michelin', stars: 3, award: '3 Michelin Stars', tagline: "Four Seasons George V. Christian Le Squer's masterpiece.", desc: "Non-negotiable if budget allows. Christian Le Squer's cooking at the Four Seasons George V is technically flawless and deeply soulful. The dining room itself is one of the most beautiful in Paris." },
-      { name: 'Epicure at Le Bristol', lat: 48.8742, lon: 2.3128, category: 'michelin', stars: 3, award: '3 Michelin Stars', tagline: "Eric Frechon's famous black truffle macaroni.", desc: "One of the most copied dishes in French culinary history. Eric Frechon's stuffed macaroni with black truffle, artichoke, and duck foie gras is reason enough to visit. The garden terrace is magical." },
-      { name: 'Septime', lat: 48.8527, lon: 2.3741, category: 'michelin', stars: 1, award: '1 Michelin Star', tagline: "Natural wine, market-driven, genuinely exciting.", desc: "Bertrand Gr\u00E9baut runs the hardest reservation in Paris. The wine list is all-natural, the cooking is market-driven and genuinely thrilling. Book well in advance or try the walk-in wine bar next door, Septime La Cave." },
-      { name: 'Frenchie', lat: 48.8627, lon: 2.3469, category: 'michelin', stars: 1, award: '1 Michelin Star', tagline: "Gregory Marchand's Rue du Nil. Inventive, ingredient-obsessed.", desc: "Gregory Marchand built an empire on Rue du Nil \u2014 the restaurant, wine bar, and to-go shop form a triangle of deliciousness. Inventive, ingredient-obsessed cooking that never tries too hard. Beloved." },
-      { name: 'Datil', lat: 48.8571, lon: 2.3497, category: 'michelin', stars: 1, award: '1 Michelin Star (2024)', tagline: "Chef Manon Fleury. Sustainable, plant-forward fine dining.", desc: "One of 2024's most exciting new stars. Manon Fleury's commitment to sustainability is genuine \u2014 every vegetable is treated with the reverence usually reserved for truffles. A statement about the future of French cuisine." },
-      { name: 'Le Comptoir du Relais', lat: 48.8528, lon: 2.3396, category: 'michelin', bibGourmand: true, award: 'Bib Gourmand', tagline: "Yves Camdeborde's legendary Saint-Germain bistro.", desc: "No reservations at dinner \u2014 worth the queue. Yves Camdeborde is the godfather of the bistronomy movement, and this is where it all happens. The prix fixe lunch is one of Paris's best deals." },
 
       // BAKERY
       { name: 'La Parisienne', lat: 48.8765, lon: 2.3570, category: 'bakery', award: '\u{1F947} Grand Prix de la Baguette 2025', tagline: "Supplies baguettes to the \u00C9lys\u00E9e Palace.", desc: "Micka\u00EBl Reydellet won Paris's most prestigious baguette competition in 2025. For one year, this bakery in the 10th arrondissement supplies baguettes to the President of France. The crust crackle is extraordinary." },
@@ -153,10 +138,6 @@ const CITIES: CityData[] = [
     center: [43.4252, 6.7673],
     zoom: 10,
     venues: [
-      // MICHELIN
-      { name: "La Vague d'Or", lat: 43.2682, lon: 6.6408, category: 'michelin', stars: 3, award: '3 Michelin Stars', tagline: "Possibly the greatest restaurant in the south of France.", desc: "Arnaud Donckele at Cheval Blanc Saint-Tropez. Mediterranean ingredients at their absolute peak. The sea bass with citrus is transcendent. If you splurge on one meal in the south, this is it." },
-      { name: 'R\u00E9sidence de la Pin\u00E8de', lat: 43.2720, lon: 6.6391, category: 'michelin', stars: 2, award: '2 Michelin Stars', tagline: "Also Donckele's, Saint-Tropez seafront.", desc: "Equally extraordinary, slightly more accessible than La Vague d'Or. The seafront terrace at sunset is one of the most romantic dining settings on the C\u00F4te d'Azur." },
-      { name: 'Le Mas Candille', lat: 43.6412, lon: 6.9894, category: 'michelin', stars: 1, award: '1 Michelin Star', tagline: "Mougins village. Stunning panoramic views.", desc: "Refined Proven\u00E7al cuisine in a beautiful mas setting above Cannes. The panoramic views of the Esterel mountains are breathtaking. Perfect for a long, lazy lunch on the terrace." },
 
       // MARKETS
       { name: 'March\u00E9 Proven\u00E7al de Saint-Rapha\u00EBl', lat: 43.4249, lon: 6.7649, category: 'market', tagline: "Daily Proven\u00E7al market. The real deal.", desc: "Best local olives, lavender honey, tapenade, fresh fish straight from the Mediterranean, and C\u00F4tes de Provence ros\u00E9. A perfect morning ritual. Open daily in summer." },
@@ -179,8 +160,6 @@ const CITIES: CityData[] = [
       { name: 'Barbarac Ice Cream', lat: 43.2695, lon: 6.6368, category: 'sweets', award: 'Saint-Tropez\u2019s most famous ice cream since 1988', tagline: "Artisanal gelato on the port. Celebrity magnet.", desc: "Attracts celebrities from around the world. On the port. Artisanal gelato and sorbet including vegan options. Their mojito sorbet is legendary.", kidFriendly: true },
 
       // SAINT-RAPHAËL — BIB GOURMAND
-      { name: "L'Amandier", lat: 43.4251, lon: 6.7680, category: 'michelin', bibGourmand: true, award: 'Bib Gourmand — Michelin Guide', tagline: "16th-century vaulted dining room. South of France flavors.", desc: "Awarded a Bib Gourmand by the Michelin Guide. Local produce showcased in traditional cuisine with a southern accent. The 16th-century vaulted stone dining room is one of the most atmospheric settings on the Riviera. Great value fine dining.", kidFriendly: false },
-      { name: 'Clos Séméria', lat: 43.4248, lon: 6.7654, category: 'michelin', bibGourmand: true, award: 'Bib Gourmand — Michelin Guide', tagline: "Inventive seasonal cuisine under a glass roof.", desc: "Gourmet bistronomic restaurant in central Saint-Raphaël. Glass roof floods the room with Riviera light. The menu changes with the seasons — local producers, fresh ingredients, creative execution. The red berry/white chocolate/lime dessert is perfection. Reservations essential.", kidFriendly: false },
 
       // SAINT-RAPHAËL — EXPERIENCES
       { name: 'Plage du Débarquement (Cap Dramont)', lat: 43.3881, lon: 6.8444, category: 'experience', award: 'WWII D-Day landing site — Provence, August 15 1944', tagline: "Where Allied troops landed to liberate Southern France.", desc: "Cap Dramont is where the American 36th Infantry Division landed on August 15, 1944 — the start of Operation Dragoon to liberate Southern France. Small monument marks the site. Combine with a hike along the red volcanic rock coastal trail and views of Île d'Or. A deeply moving and historically significant site just 10 minutes from Saint-Raphaël.", kidFriendly: true },
@@ -188,7 +167,6 @@ const CITIES: CityData[] = [
 
       // FRÉJUS (10 min from Saint-Raphaël)
       { name: 'Fréjus Roman Amphitheater', lat: 43.4319, lon: 6.7368, category: 'experience', award: 'Roman ruin — 1st century BC, founded by Julius Caesar', tagline: "One of the largest Roman amphitheaters in Gaul. 10,000 spectators.", desc: "Founded as Forum Julii by Julius Caesar in 49 BC, Fréjus has some of the best-preserved Roman ruins in France. The amphitheater held 10,000 spectators for gladiator fights — it still hosts concerts today. Also see: the Roman aqueduct arches, the 5th-century baptistery (one of the oldest in France), and the Saint-Léonce Cathedral. A half-day of Roman history just 10 minutes from Saint-Raphaël.", kidFriendly: true },
-      { name: 'La Table de Guillôme (Fréjus)', lat: 43.4332, lon: 6.7341, category: 'michelin', bibGourmand: true, award: 'Bib Gourmand — Michelin Guide', tagline: "Creative Provençal cuisine. Pool terrace in a gorgeous hotel garden.", desc: "Restaurant inside the charming Hôtel l'Aréna in Fréjus. Authentic Provençal cuisine by creative chefs — aioli, bourride, zucchini flowers, petits farcis. All ingredients sourced within 100 km. The pool terrace surrounded by trees is beautiful. Great value for the quality.", kidFriendly: true },
 
       // SAINT-TROPEZ AREA
       { name: 'Port-Grimaud', lat: 43.2726, lon: 6.5887, category: 'experience', award: "The 'Venice of Provence' — built 1966", tagline: "A stunning car-free village built on a lagoon.", desc: "Port-Grimaud is a private car-free village built in 1966 on a network of canals — the 'Venice of Provence.' Every house has its own dock. Stroll the canals, take a water taxi, or sip rosé at a harborside café. About 10km from Saint-Tropez. Much less crowded than Saint-Tropez and genuinely magical. A 30-minute stop that punches way above its weight.", kidFriendly: true },
@@ -196,15 +174,12 @@ const CITIES: CityData[] = [
       { name: 'Château de la Moutte', lat: 43.2756, lon: 6.6523, category: 'experience', award: 'Beautifully preserved 19th-century estate', tagline: "The private property that defined Saint-Tropez glamour.", desc: "The historic estate belonging to the Suffren family sits on a pine-covered hillside above Saint-Tropez. While the main estate is private, the surrounding forests and coastal paths offer incredible walking with views of the bay. Combine with the coastal path to the Plage des Graniers beach for a spectacular half-day." },
 
       // CANNES (38 min by train)
-      { name: "La Palme d'Or", lat: 43.5502, lon: 7.0174, category: 'michelin', stars: 2, award: '2 Michelin Stars — Hotel Martinez', tagline: "Cannes' greatest restaurant. Named after the Film Festival award.", desc: "Chef Christian Sinicropi has been perfecting his craft at Hotel Martinez for over 20 years. Born in Cannes, his cuisine celebrates the local flavors of the region. Crispy langoustine, munosa caviar, chocolate with smoked wood. The only restaurant to share its name with the world's most prestigious film award. A true Riviera institution.", kidFriendly: false },
-      { name: 'Table 22 by Noël Mantel', lat: 43.5519, lon: 7.0164, category: 'michelin', stars: 1, award: '1 Michelin Star', tagline: "Classic French cuisine mastery in the heart of Cannes.", desc: "Noël Mantel's temple to classic French cooking. Lobster ravioli with creamy shellfish sauce, roasted rack of lamb, raspberry tart with mascarpone sorbet. 22 Rue Saint-Antoine. Intimate, perfectly executed, beloved by locals and visitors alike. One of the Riviera's most reliable Michelin experiences.", kidFriendly: false },
       { name: 'Marché Forville', lat: 43.5518, lon: 7.0142, category: 'market', award: "Cannes' central covered market — daily except Monday", tagline: "The best food market on the western Riviera.", desc: "Cannes' beautiful covered market is the heartbeat of local gastronomy. Provençal vegetables, fresh fish straight from the boats, local cheeses, olives, charcuterie, and flowers. Open every morning except Monday. Go early. Then have coffee at a nearby café and take the 38-minute train back full of everything you want to cook.", kidFriendly: true },
       { name: 'La Croisette', lat: 43.5499, lon: 7.0205, category: 'experience', award: "The world's most famous seaside promenade", tagline: "Walk the boulevard of dreams. Film Festival epicenter.", desc: "The legendary 2km promenade along the sea is the spine of Cannes. Lined with luxury hotels (Carlton, Martinez, Majestic), designer boutiques, and spectacular Mediterranean views. In April, the Cannes Film Festival turns this into the most glamorous sidewalk on Earth. Walk it at golden hour. It's free.", kidFriendly: true },
 
       // ANTIBES (32 min by train)
       { name: 'Musée Picasso Antibes', lat: 43.5840, lon: 7.1261, category: 'experience', award: 'Picasso lived and worked here 1946 — donated his entire collection', tagline: "Where Picasso painted in a medieval castle above the sea.", desc: "Pablo Picasso spent the autumn of 1946 in the Château Grimaldi in Antibes. He was so inspired by the Mediterranean light and the sea that he donated his entire output from those months to the city. Now the Musée Picasso. The building itself — a 12th-century castle perched on the ramparts above the water — is as extraordinary as the art inside.", kidFriendly: true },
       { name: "Marché Provençal d'Antibes", lat: 43.5814, lon: 7.1245, category: 'market', award: 'One of the most authentic daily markets on the Riviera', tagline: "Old Town Antibes. Flowers, cheese, socca, the works.", desc: "Under the covered Cours Masséna in Antibes Old Town, this daily morning market (closed Monday) is exceptional. Local Provençal vegetables, incredible cheeses, socca (chickpea flatbread), tapenade, fresh flowers. Far less touristy than Nice's market and just as good. Grab socca from a vendor and eat it standing — this is how the locals do it.", kidFriendly: true },
-      { name: 'Le Bacon', lat: 43.5698, lon: 7.1153, category: 'michelin', stars: 1, award: '1 Michelin Star — legendary bouillabaisse since 1948', tagline: "The definitive bouillabaisse restaurant. Cap d'Antibes seafront.", desc: "Since 1948, Le Bacon has served what many consider the finest bouillabaisse in France. The restaurant sits on the rocky Cap d'Antibes with the sea visible from every table. Celebrities make pilgrimages during Cannes Film Festival. The bouillabaisse is a ceremony — thick, saffron-scented, extraordinary. Book well ahead. One of the great seafood experiences of the Mediterranean.", kidFriendly: false },
 
       // GRASSE (55 min by car/bus)
       { name: 'Parfumerie Fragonard (Grasse)', lat: 43.6584, lon: 6.9223, category: 'experience', award: 'Perfume capital of the world — UNESCO listed craft', tagline: "Create your own perfume in the world's fragrance capital.", desc: "Grasse is the world's perfume capital — Chanel No. 5's jasmine and rose comes from here. The historic Parfumerie Fragonard (named after the local painter) offers free factory tours and a museum of 18th-century distillation. The real experience: a 2-hour perfume creation workshop where you blend your own scent from Grasse flowers. Unforgettable, deeply personal. Book ahead.", kidFriendly: true },
@@ -246,14 +221,6 @@ const CITIES: CityData[] = [
     center: [38.7167, -9.1333],
     zoom: 13,
     venues: [
-      // MICHELIN
-      { name: 'Belcanto', lat: 38.7113, lon: -9.1423, category: 'michelin', stars: 2, award: "2 Michelin Stars + World's 50 Best", tagline: "Portugal's most acclaimed restaurant.", desc: "Jos\u00E9 Avillez's masterpiece in Chiado. Creative reinvention of Portuguese classics that will make you rethink everything you thought you knew about Portuguese cuisine. The pig's ear appetizer is legendary." },
-      { name: 'Alma', lat: 38.7118, lon: -9.1429, category: 'michelin', stars: 2, award: '2 Michelin Stars', tagline: "Henrique S\u00E1 Pessoa. Celebrated seafood tasting menu.", desc: "Two Michelin stars in Chiado. The carne de porco \u00E0 Alentejana is celebrated, and the seafood tasting menu is extraordinary. Henrique S\u00E1 Pessoa cooks with deep respect for Portuguese tradition." },
-      { name: '100 Maneiras', lat: 38.7134, lon: -9.1461, category: 'michelin', stars: 1, award: '1 Michelin Star', tagline: "Theatrical 17-course storytelling menus.", desc: "Ljubomir Stanisic in Bairro Alto creates truly unforgettable experiences. Each of the 17 courses tells a story. The dark, theatrical atmosphere is part of the magic. Truly one of a kind." },
-      { name: 'Arkhe', lat: 38.7138, lon: -9.1388, category: 'michelin', stars: 1, award: '1 Michelin Star (2025)', tagline: "Lisbon's best vegetarian fine dining.", desc: "New star in 2025. Proves that plant-based cooking can be elite. Every dish is a revelation of what vegetables can become in the hands of a great chef. A bold, beautiful statement." },
-      { name: 'Marlene', lat: 38.7189, lon: -9.1369, category: 'michelin', stars: 1, award: '1 Michelin Star (2025)', tagline: "Chef Marlene Vieira. New star 2025.", desc: "Marlene Vieira is one of Portugal's most celebrated chefs. Her outpost is also at Time Out Market for a more casual taste. The main restaurant earned its first star in 2025 \u2014 well deserved." },
-      { name: 'Taberna da Rua das Flores', lat: 38.7128, lon: -9.1405, category: 'michelin', bibGourmand: true, award: 'Bib Gourmand', tagline: "The best tasca in Lisbon.", desc: "Daily changing petiscos menu. Packed with locals who know better. No reservations, no menu \u2014 the waiter tells you what's good today. Trust them completely. This is Lisbon at its purest." },
-      { name: 'Canalha', lat: 38.7142, lon: -9.1472, category: 'michelin', bibGourmand: true, award: 'Bib Gourmand (2025)', tagline: "Natural wines + creative small plates.", desc: "New Bib Gourmand 2025. The coolest room in Lisbon right now. Natural wines are exceptional, the small plates are creative without being pretentious. Bairro Alto. Go with an open mind." },
 
       // ICONIC
       { name: 'Past\u00E9is de Bel\u00E9m', lat: 38.6971, lon: -9.2021, category: 'iconic', award: 'Original pastel de nata since 1837', tagline: "THE original. The recipe is a secret held by a handful of people.", desc: "Worth the 30-minute tram ride. The recipe has been a closely guarded secret since 1837. Get them warm with cinnamon and powdered sugar. Kids will go insane. Nothing else compares to eating one fresh from the oven here.", kidFriendly: true },
@@ -666,14 +633,6 @@ export default function FoodMapPage() {
                           )}
                           {venue.kidFriendly && (
                             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-rose-50 text-rose-700 border border-rose-200">{'\u{1F9D2}'} Kid-friendly</span>
-                          )}
-                          {venue.category === 'michelin' && venue.stars && venue.stars > 0 && (
-                            <span className="text-amber-600 text-sm">
-                              {Array.from({ length: venue.stars }).map((_, i) => '\u2B50').join('')}
-                            </span>
-                          )}
-                          {venue.bibGourmand && (
-                            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700 border border-emerald-200">Bib Gourmand</span>
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-2">{venue.tagline}</p>

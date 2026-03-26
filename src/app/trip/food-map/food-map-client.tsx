@@ -15,7 +15,7 @@ function createSvgIcon(venue: Venue, isSelected: boolean, isSaved: boolean): L.D
   const px = isSelected ? size * 2.8 : size * 2.4;
   const color = getMarkerColor(venue);
   const emoji = cat.emoji;
-  const fontSize = venue.category === 'michelin' && (venue.stars ?? 0) >= 3 ? 14 : 11;
+  const fontSize = 11;
 
   const savedBadge = isSaved
     ? `<div style="position:absolute;top:-4px;right:-4px;width:14px;height:14px;border-radius:50%;background:#f59e0b;border:1.5px solid white;display:flex;align-items:center;justify-content:center;font-size:8px;line-height:1;">&#11088;</div>`
