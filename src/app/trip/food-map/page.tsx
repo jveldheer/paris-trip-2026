@@ -373,7 +373,7 @@ export default function FoodMapPage() {
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <h1 className="ml-2.5 text-white font-serif text-base font-medium leading-tight">Food Map</h1>
+          <h1 className="ml-2.5 text-white font-serif text-base font-medium leading-tight">Map Dots</h1>
         </div>
 
         {/* City tab bar */}
@@ -408,7 +408,7 @@ export default function FoodMapPage() {
               );
             })}
           </div>
-          <p className="text-white/25 text-[8px] uppercase tracking-[0.15em] ml-auto hidden min-[400px]:block">Award-Winning Eats</p>
+          <p className="text-white/25 text-[8px] uppercase tracking-[0.15em] ml-auto hidden min-[400px]:block">Every Dot Worth Finding</p>
         </div>
 
         {/* Separator */}

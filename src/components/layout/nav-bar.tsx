@@ -25,7 +25,7 @@ import { Separator } from '@/components/ui/separator';
 const tabs = [
   { icon: House, label: 'Home', href: '/trip' },
   { icon: Calendar, label: 'Itinerary', href: '/trip/itinerary' },
-  { icon: MapPin, label: 'Food Map', href: '/trip/food-map' },
+  { icon: MapPin, label: 'Map Dots', href: '/trip/food-map' },
 ];
 
 const moreItems = [

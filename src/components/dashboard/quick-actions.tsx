@@ -15,7 +15,7 @@ const actions = [
   },
   {
     icon: MapPin,
-    label: "Food Map",
+    label: "Map Dots",
     href: "/trip/food-map",
     bgColor: "bg-amber-50",
     iconColor: "text-amber-700",
