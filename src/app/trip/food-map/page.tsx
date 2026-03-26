@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 
 // ── Categories ──────────────────────────────────────────────────────────────
 
-export type Category = 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets' | 'experience' | 'playground';
+export type Category = 'bakery' | 'coffee' | 'market' | 'wine' | 'specialty' | 'iconic' | 'chocolate' | 'sweets' | 'experience' | 'playground' | 'home';
 
 export interface CategoryDef {
   key: Category;
@@ -70,7 +70,7 @@ function googleMapsUrl(venue: Venue): string {
 }
 
 function venueSortRank(v: Venue): number {
-  const catOrder: Record<Category, number> = { bakery: 80, iconic: 70, chocolate: 65, sweets: 63, experience: 62, coffee: 60, market: 50, wine: 40, specialty: 30, playground: 55 };
+  const catOrder: Record<Category, number> = { bakery: 80, iconic: 70, chocolate: 65, sweets: 63, experience: 62, coffee: 60, market: 50, wine: 40, specialty: 30, playground: 55, home: 999 };
   return catOrder[v.category] ?? 0;
 }
 
@@ -83,6 +83,9 @@ const CITIES: CityData[] = [
     center: [48.8566, 2.3522],
     zoom: 13,
     venues: [
+
+      // HOME BASE
+      { name: '\u{1F3E0} Maison Galante', lat: 48.8743, lon: 2.3205, category: 'home', tagline: "Your Paris home. Apr 3–6.", desc: "Your Paris accommodation. 8 Rue de l\u2019Arcade, 75008 Paris. Check-in Apr 3 at 3 PM, checkout Apr 6 by 11 AM. 🗺️ https://maps.google.com/?q=8+Rue+de+l'Arcade+75008+Paris" },
 
       // BAKERY
       { name: 'La Parisienne', lat: 48.8765, lon: 2.3570, category: 'bakery', award: '\u{1F947} Grand Prix de la Baguette 2025', tagline: "Supplies baguettes to the \u00C9lys\u00E9e Palace.", desc: "Micka\u00EBl Reydellet won Paris's most prestigious baguette competition in 2025. For one year, this bakery in the 10th arrondissement supplies baguettes to the President of France. The crust crackle is extraordinary." },
@@ -142,6 +145,10 @@ const CITIES: CityData[] = [
     center: [43.4252, 6.7673],
     zoom: 10,
     venues: [
+
+      // HOME BASE
+      { name: '\u{1F3E0} Villa Eleanor', lat: 43.4178, lon: 6.7621, category: 'home', tagline: "Your Saint-Rapha\u00EBl home. Apr 6–11.", desc: "Your Saint-Rapha\u00EBl accommodation. 135 Avenue du Ch\u00E2teau d\u2019Eau, Saint-Rapha\u00EBl 83700. Host: Laurence. Check-in Apr 6 at 5 PM, checkout Apr 11 at 10 AM. 🗺️ https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France" },
+      { name: '\u{1F3E8} Hyatt Grand Central NYC', lat: 40.7527, lon: -73.9772, category: 'home', tagline: "NYC overnight. Apr 1.", desc: "One night in NYC before the Paris flight. 109 E 42nd St, New York, NY 10017. Check-in Apr 1, checkout Apr 2 by 12 PM. 🗺️ https://maps.google.com/?q=Hyatt+Grand+Central+New+York+109+E+42nd+St" },
 
       // MARKETS
       { name: 'March\u00E9 Proven\u00E7al de Saint-Rapha\u00EBl', lat: 43.4249, lon: 6.7649, category: 'market', tagline: "Daily Proven\u00E7al market. The real deal.", desc: "Best local olives, lavender honey, tapenade, fresh fish straight from the Mediterranean, and C\u00F4tes de Provence ros\u00E9. A perfect morning ritual. Open daily in summer." },
@@ -225,6 +232,9 @@ const CITIES: CityData[] = [
     center: [38.7167, -9.1333],
     zoom: 13,
     venues: [
+
+      // HOME BASE
+      { name: '\u{1F3E0} Jo\u00E3o\u2019s Apartment', lat: 38.7102, lon: -9.1364, category: 'home', tagline: "Your Lisbon home. Apr 11–15.", desc: "Your Lisbon accommodation. Cal\u00E7ada de Salvador Correia de S\u00E1 4, Lisbon, Portugal. Host: Jo\u00E3o. Check-in Apr 11 at 4 PM, checkout Apr 15 by 11 AM. 🗺️ https://maps.google.com/?q=Calcada+de+Salvador+Correia+de+Sa+4+Lisbon+Portugal" },
 
       // ICONIC
       { name: 'Past\u00E9is de Bel\u00E9m', lat: 38.6971, lon: -9.2021, category: 'iconic', award: 'Original pastel de nata since 1837', tagline: "THE original. The recipe is a secret held by a handful of people.", desc: "Worth the 30-minute tram ride. The recipe has been a closely guarded secret since 1837. Get them warm with cinnamon and powdered sugar. Kids will go insane. Nothing else compares to eating one fresh from the oven here.", kidFriendly: true },
@@ -311,7 +321,8 @@ export default function FoodMapPage() {
   const city = CITIES[selectedCityIdx];
 
   const filteredVenues = useMemo(() => {
-    let venues = city.venues;
+    const homeVenues = city.venues.filter(v => v.category === 'home');
+    let venues = city.venues.filter(v => v.category !== 'home');
     if (activeFilter === 'saved') {
       venues = venues.filter(v => savedVenues.includes(v.name));
     } else if (activeFilter !== 'all') {
@@ -325,7 +336,8 @@ export default function FoodMapPage() {
         (v.award ?? '').toLowerCase().includes(q)
       );
     }
-    return [...venues].sort((a, b) => venueSortRank(b) - venueSortRank(a));
+    // Home base pins always render on top, regardless of filter
+    return [...homeVenues, ...venues].sort((a, b) => venueSortRank(b) - venueSortRank(a));
   }, [city, activeFilter, searchQuery, savedVenues]);
 
   const handleSelectVenue = (venue: Venue | null) => {
@@ -416,7 +428,7 @@ export default function FoodMapPage() {
                 <span className="text-[10px] opacity-60">({savedVenues.filter(n => city.venues.some(v => v.name === n)).length})</span>
               )}
             </button>
-            {CATEGORIES.map(cat => (
+            {CATEGORIES.filter(cat => cat.key !== 'home').map(cat => (
               <button
                 key={cat.key}
                 onClick={() => setActiveFilter(activeFilter === cat.key ? 'all' : cat.key)}
