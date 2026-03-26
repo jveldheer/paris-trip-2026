@@ -108,19 +108,23 @@ function ExpandedDetails({ item }: { item: ItineraryItem }) {
           </div>
         )}
 
-        {/* Address → map link */}
+        {/* Address + Google Maps link */}
         {item.address && (
           <div className="flex items-start gap-2">
             <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.5 text-muted-foreground" />
-            <a
-              href={getMapUrl(item.address)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline underline-offset-2 hover:text-blue-800 leading-snug"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.address}
-            </a>
+            <div className="flex-1 min-w-0">
+              <p className="text-muted-foreground leading-snug text-sm">{item.address}</p>
+              <a
+                href={item.url ?? getMapUrl(item.address)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 mt-1 text-xs font-medium text-blue-600 hover:text-blue-800"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink className="h-3 w-3" />
+                Open in Google Maps
+              </a>
+            </div>
           </div>
         )}
 
@@ -132,22 +136,6 @@ function ExpandedDetails({ item }: { item: ItineraryItem }) {
               {item.booking_ref}
             </span>
             <CopyButton text={item.booking_ref} label="Copy ref" />
-          </div>
-        )}
-
-        {/* External URL */}
-        {item.url && (
-          <div className="flex items-center gap-2">
-            <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-            <a
-              href={item.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline underline-offset-2 hover:text-blue-800 text-xs truncate flex-1"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.url.replace(/^https?:\/\/(www\.)?/, "")}
-            </a>
           </div>
         )}
 

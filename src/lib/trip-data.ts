@@ -38,6 +38,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "5500 44th St SE, Grand Rapids, MI 49512",
       description: "United Airlines UA3639. Departs 1:39 PM.",
       notes: "Arrive at airport by 11:30 AM. Check bags.",
+      url: "https://maps.google.com/?q=Gerald+R+Ford+International+Airport+Grand+Rapids+MI",
       sort_order: 1,
     }),
     item("transport", "Go Airlink Shuttle — EWR \u2192 NYC", {
@@ -45,6 +46,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "Newark Liberty International Airport",
       description: "Go Airlink shuttle from EWR to Hyatt Grand Central New York.",
       notes: "Book or confirm Go Airlink reservation. ~45 min ride.",
+      url: "https://maps.google.com/?q=Newark+Liberty+International+Airport",
       sort_order: 2,
     }),
     item("activity", "\ud83c\udf82 Aaron's Birthday!", {
@@ -58,6 +60,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "109 E 42nd St, New York, NY 10017",
       description: "One night in NYC before the Paris flight. Check-in 3 PM.",
       notes: "Steps from Grand Central Terminal. Checkout Apr 2 by 12 PM.",
+      url: "https://maps.google.com/?q=Hyatt+Grand+Central+New+York+109+E+42nd+St",
       sort_order: 3,
     }),
     item("restaurant", "🎂 Birthday Dinner — Giulietta", {
@@ -67,6 +70,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       description: "Aaron's birthday dinner! Two tables — party of 4 + party of 6.",
       booking_ref: "Confirmation #10319 · (212) 597-2424 · Reservation: Jared Veldheer",
       notes: "Table of 4 + table of 6 split. Booked via OpenTable.",
+      url: "https://maps.google.com/?q=Giulietta+200+Park+Ave+New+York+NY",
       sort_order: 4,
     }),
   ],
@@ -77,6 +81,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "109 E 42nd St, New York, NY 10017",
       description: "Go Airlink shuttle back to Newark. Allow 1.5 hrs + arrive 3 hrs early.",
       notes: "Depart hotel ~1:30 PM for 5 PM flight. International check-in requires 3 hours.",
+      url: "https://maps.google.com/?q=Hyatt+Grand+Central+New+York+109+E+42nd+St",
       sort_order: 1,
     }),
     item("flight", "DL8758 \u2014 EWR \u2192 CDG (Air France A350)", {
@@ -85,6 +90,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "Newark Liberty International Airport, Newark, NJ",
       description: "Delta/Air France A350 Premium Economy. EWR \u2192 Paris Charles de Gaulle. Overnight flight.",
       notes: "Arrive CDG early morning Apr 3. Premium Economy \u2014 enjoy the flight!",
+      url: "https://maps.google.com/?q=Newark+Liberty+International+Airport",
       sort_order: 2,
     }),
   ],
@@ -95,6 +101,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       start_time: "2026-04-03T15:00:00",
       description: "Host: Maison Galante. Check-in: 3:00 PM. Checkout: Mon Apr 6 at 11:00 AM.",
       notes: "3 nights in Paris. Checkout Apr 6 by 11:00 AM — TGV departs 11:22 AM!",
+      url: "https://maps.google.com/?q=8+Rue+de+l'Arcade+75008+Paris",
       sort_order: 1,
     }),
     item("activity", "Louvre Museum", {
@@ -103,6 +110,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "Mus\u00e9e du Louvre, Rue de Rivoli, 75001 Paris",
       booking_ref: "V26078476101 (adults) / V26078476163 (kids)",
       notes: "Enter via the Pyramid entrance. Adults: V26078476101. Kids: V26078476163.",
+      url: "https://maps.google.com/?q=Louvre+Museum+Rue+de+Rivoli+75001+Paris",
       sort_order: 2,
     }),
     item("activity", "Mus\u00e9e d\u2019Orsay", {
@@ -112,6 +120,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       booking_ref: "194197039",
       description: "4 tickets (full price) \u2014 \u20ac64 total. Home of Van Gogh, Monet, Renoir.",
       notes: "Tickets are non-refundable. Show PDF on phone at entrance. Arrive at 1:30 PM sharp.",
+      url: "https://maps.google.com/?q=Mus%C3%A9e+d'Orsay+1+Rue+de+la+L%C3%A9gion+d'Honneur+75007+Paris",
       sort_order: 3,
     }),
     item("restaurant", "La Bastide \u2014 Dinner \ud83c\udf7d\ufe0f", {
@@ -120,7 +129,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "94 Boulevard des Batignolles, 75017 Paris",
       description: "Dinner for 10 \u2014 two tables booked (6 + 4). \u26a0\ufe0f Reservation request pending \u2014 watch for confirmation email/SMS.",
       notes: "Table of 6 (Jared's booking) + separate table of 4. Same restaurant, same time. Confirm both before the trip.",
-      url: "https://maps.google.com/?q=La+Bastide+94+Boulevard+des+Batignolles+Paris",
+      url: "https://maps.google.com/?q=La+Bastide+94+Boulevard+des+Batignolles+75017+Paris",
       sort_order: 4,
     }),
   ],
@@ -132,6 +141,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "140 Rue du Faubourg Saint-Martin, 75010 Paris",
       booking_ref: "3BEU2Y3BGMUC",
       notes: "Party of 10. Reservation confirmed.",
+      url: "https://maps.google.com/?q=Brasserie+Bellanger+140+Rue+du+Faubourg+Saint-Martin+75010+Paris",
       sort_order: 1,
     }),
   ],
@@ -143,6 +153,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       address: "Mus\u00e9e du Louvre, Rue de Rivoli, 75001 Paris",
       booking_ref: "V26078645148 (adults, \u20ac128) / V26078645174 (kids, FREE)",
       notes: "Enter via the Pyramid entrance. Adults: V26078645148 (\u20ac128). Kids: V26078645174 (FREE).",
+      url: "https://maps.google.com/?q=Louvre+Museum+Rue+de+Rivoli+75001+Paris",
       sort_order: 1,
     }),
   ],
@@ -161,6 +172,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       booking_ref: "ALDMK6 / 5HKT8H",
       description: "1st class. Booking 1: ALDMK6 (Aaron + James) \u2014 \u20ac282. Booking 2: 5HKT8H (Edwin, Morgan, Eden, Edwin II, Eva, Lennox, Beau, Jodi) \u2014 \u20ac771.55.",
       notes: "Kids aged 4\u201311 need passport on board. Departs 11:22 AM, arrives ~4:15 PM.",
+      url: "https://maps.google.com/?q=Paris+Gare+de+Lyon+75012+Paris",
       sort_order: 2,
     }),
     item("hotel", "Check in: Villa Eleanor", {
@@ -169,6 +181,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       start_time: "2026-04-06T17:00:00",
       description: "Host: Laurence. Check-in: 5:00 PM. Checkout: Sat Apr 11 at 10:00 AM.",
       notes: "Arriving after TGV ~4:15 PM. Check-in from 5:00 PM. 5 nights on the French Riviera.",
+      url: "https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France",
       sort_order: 3,
     }),
   ],
@@ -178,6 +191,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       description: "Enjoy the Riviera! Villa Eleanor is home base.",
       location_name: "Villa Eleanor",
       address: "135 Avenue du Ch\u00e2teau d\u2019Eau, Saint-Rapha\u00ebl, France",
+      url: "https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France",
       sort_order: 1,
     }),
   ],
@@ -186,6 +200,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       description: "Explore the coast, beaches, and town.",
       location_name: "Villa Eleanor",
       address: "135 Avenue du Ch\u00e2teau d\u2019Eau, Saint-Rapha\u00ebl, France",
+      url: "https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France",
       sort_order: 1,
     }),
   ],
@@ -194,6 +209,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       description: "Another beautiful day on the French Riviera.",
       location_name: "Villa Eleanor",
       address: "135 Avenue du Ch\u00e2teau d\u2019Eau, Saint-Rapha\u00ebl, France",
+      url: "https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France",
       sort_order: 1,
     }),
   ],
@@ -203,6 +219,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       location_name: "Villa Eleanor",
       address: "135 Avenue du Ch\u00e2teau d\u2019Eau, Saint-Rapha\u00ebl, France",
       notes: "Tomorrow: transfer to Marseille Airport for Lisbon flight (Jared\u2019s family). Aaron\u2019s family heads home.",
+      url: "https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France",
       sort_order: 1,
     }),
   ],
@@ -214,6 +231,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       location_name: "Marseille Provence Airport (MRS)",
       address: "Marseille Provence Airport, Marignane, France",
       notes: "Jared\u2019s family only. Aaron\u2019s family heads home from Saint-Rapha\u00ebl separately.",
+      url: "https://maps.google.com/?q=Marseille+Provence+Airport+Marignane+France",
       sort_order: 1,
     }),
     item("flight", "Ryanair FR486 \u2014 Marseille \u2192 Lisbon", {
@@ -223,6 +241,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       booking_ref: "M41TMN",
       description: "Jared\u2019s family only (5 people \u2014 Jared, Morgan, Eden, Edwin II + one more).",
       notes: "Confirmation: M41TMN. Aaron\u2019s family heads home from Saint-Rapha\u00ebl.",
+      url: "https://maps.google.com/?q=Marseille+Provence+Airport+Marignane+France",
       sort_order: 2,
     }),
     item("hotel", "Check in: Jo\u00e3o\u2019s Apartment", {
@@ -231,6 +250,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       start_time: "2026-04-11T16:00:00",
       description: "Host: Jo\u00e3o. Check-in: 4:00 PM. Checkout: Wed Apr 15 at 11:00 AM.",
       notes: "4 nights in Lisbon. Jared\u2019s family only (5 people). Checkout Apr 15 by 11:00 AM.",
+      url: "https://maps.google.com/?q=Cal%C3%A7ada+de+Salvador+Correia+de+S%C3%A1+4+Lisbon+Portugal",
       sort_order: 3,
     }),
   ],
@@ -240,6 +260,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       description: "Explore Lisbon \u2014 tiles, hills, and past\u00e9is de nata!",
       location_name: "Jo\u00e3o\u2019s Apartment",
       address: "Cal\u00e7ada de Salvador Correia de S\u00e1 4, Lisbon, Portugal",
+      url: "https://maps.google.com/?q=Cal%C3%A7ada+de+Salvador+Correia+de+S%C3%A1+4+Lisbon+Portugal",
       sort_order: 1,
     }),
   ],
@@ -248,6 +269,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       description: "Another day to explore the city of seven hills.",
       location_name: "Jo\u00e3o\u2019s Apartment",
       address: "Cal\u00e7ada de Salvador Correia de S\u00e1 4, Lisbon, Portugal",
+      url: "https://maps.google.com/?q=Cal%C3%A7ada+de+Salvador+Correia+de+S%C3%A1+4+Lisbon+Portugal",
       sort_order: 1,
     }),
   ],
@@ -257,6 +279,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       location_name: "Jo\u00e3o\u2019s Apartment",
       address: "Cal\u00e7ada de Salvador Correia de S\u00e1 4, Lisbon, Portugal",
       notes: "Tomorrow: AA259 LIS \u2192 PHL \u2192 GRR (home).",
+      url: "https://maps.google.com/?q=Cal%C3%A7ada+de+Salvador+Correia+de+S%C3%A1+4+Lisbon+Portugal",
       sort_order: 1,
     }),
   ],
@@ -266,6 +289,7 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       location_name: "LIS \u2192 PHL \u2192 GRR",
       address: "Lisbon Humberto Delgado Airport, Lisbon, Portugal",
       description: "Final flight home.",
+      url: "https://maps.google.com/?q=Lisbon+Humberto+Delgado+Airport+Lisbon+Portugal",
       sort_order: 1,
     }),
   ],
@@ -316,6 +340,7 @@ export const TRAIN = {
   arrives: "~4:15 PM",
   class: "1st class",
   stationAddress: "Paris Gare de Lyon, 75012 Paris",
+  mapsUrl: "https://maps.google.com/?q=Paris+Gare+de+Lyon+75012+Paris",
   bookings: [
     { ref: "ALDMK6", passengers: "Aaron Veldheer + James Veldheer", cost: "\u20ac282" },
     { ref: "5HKT8H", passengers: "Edwin, Morgan, Eden, Edwin II, Eva, Lennox, Beau, Jodi", cost: "\u20ac771.55" },
@@ -330,6 +355,7 @@ export const ACCOMMODATIONS = [
     address: "109 E 42nd St, New York, NY 10017",
     city: "NYC",
     notes: "Overnight before transatlantic flight",
+    mapsUrl: "https://maps.google.com/?q=Hyatt+Grand+Central+New+York+109+E+42nd+St",
   },
   {
     dates: "Apr 3\u20136",
@@ -337,6 +363,7 @@ export const ACCOMMODATIONS = [
     address: "8 Rue de l\u2019Arcade, 75008 Paris",
     city: "Paris",
     notes: null as string | null,
+    mapsUrl: "https://maps.google.com/?q=8+Rue+de+l'Arcade+75008+Paris",
   },
   {
     dates: "Apr 6\u201311",
@@ -344,6 +371,7 @@ export const ACCOMMODATIONS = [
     address: "135 Avenue du Ch\u00e2teau d\u2019Eau, Saint-Rapha\u00ebl, France",
     city: "Saint-Rapha\u00ebl",
     notes: null as string | null,
+    mapsUrl: "https://maps.google.com/?q=135+Avenue+du+Chateau+d'Eau+Saint-Raphael+France",
   },
   {
     dates: "Apr 11\u201315",
@@ -351,10 +379,29 @@ export const ACCOMMODATIONS = [
     address: "Cal\u00e7ada de Salvador Correia de S\u00e1 4, Lisbon, Portugal",
     city: "Lisbon",
     notes: null as string | null,
+    mapsUrl: "https://maps.google.com/?q=Cal%C3%A7ada+de+Salvador+Correia+de+S%C3%A1+4+Lisbon+Portugal",
   },
 ]
 
 export const RESTAURANTS = [
+  {
+    date: "Apr 1",
+    name: "Giulietta",
+    time: "6:15 PM",
+    address: "200 Park Ave, New York, NY 10017",
+    confirmation: "#10319 · (212) 597-2424",
+    notes: "Aaron's birthday dinner. Table of 4 + table of 6 split.",
+    mapsUrl: "https://maps.google.com/?q=Giulietta+200+Park+Ave+New+York+NY",
+  },
+  {
+    date: "Apr 3",
+    name: "La Bastide",
+    time: "6:00 PM",
+    address: "94 Boulevard des Batignolles, 75017 Paris",
+    confirmation: "Pending confirmation",
+    notes: "Dinner for 10 — table of 6 (Jared) + table of 4. Confirm before the trip.",
+    mapsUrl: "https://maps.google.com/?q=La+Bastide+94+Boulevard+des+Batignolles+75017+Paris",
+  },
   {
     date: "Apr 4",
     name: "Brasserie Bellanger",
@@ -362,6 +409,7 @@ export const RESTAURANTS = [
     address: "140 Rue du Faubourg Saint-Martin, 75010 Paris",
     confirmation: "3BEU2Y3BGMUC",
     notes: "Party of 10",
+    mapsUrl: "https://maps.google.com/?q=Brasserie+Bellanger+140+Rue+du+Faubourg+Saint-Martin+75010+Paris",
   },
 ]
 
@@ -372,9 +420,21 @@ export const ACTIVITIES = [
     time: "9:00 AM",
     address: "Mus\u00e9e du Louvre, Rue de Rivoli, 75001 Paris",
     entrance: "Pyramid entrance",
+    mapsUrl: "https://maps.google.com/?q=Louvre+Museum+Rue+de+Rivoli+75001+Paris",
     confirmations: [
       { ref: "V26078476101", label: "Adults" },
       { ref: "V26078476163", label: "Kids" },
+    ],
+  },
+  {
+    date: "Apr 3",
+    name: "Musée d'Orsay",
+    time: "1:30 PM",
+    address: "1 Rue de la Légion d'Honneur, 75007 Paris",
+    entrance: null,
+    mapsUrl: "https://maps.google.com/?q=Mus%C3%A9e+d'Orsay+1+Rue+de+la+L%C3%A9gion+d'Honneur+75007+Paris",
+    confirmations: [
+      { ref: "194197039", label: "4 tickets (€64)" },
     ],
   },
   {
@@ -383,6 +443,7 @@ export const ACTIVITIES = [
     time: "11:30 AM",
     address: "Mus\u00e9e du Louvre, Rue de Rivoli, 75001 Paris",
     entrance: "Pyramid entrance",
+    mapsUrl: "https://maps.google.com/?q=Louvre+Museum+Rue+de+Rivoli+75001+Paris",
     confirmations: [
       { ref: "V26078645148", label: "Adults (\u20ac128)" },
       { ref: "V26078645174", label: "Kids (FREE)" },
