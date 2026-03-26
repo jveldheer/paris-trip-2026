@@ -164,6 +164,14 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       notes: "TGV departs at 11:22 AM \u2014 plan morning accordingly!",
       sort_order: 1,
     }),
+    item("restaurant", "🎂 Birthday Dinner — Gran Caffè Amore Mio", {
+      start_time: "2026-04-06T19:00:00",
+      location_name: "Gran Caffè Ristorante Amore Mio",
+      address: "25 Place Sadi Carnot, Saint-Raphaël, France 83700",
+      description: "Edwin's birthday dinner! Traditional Italian — reservation for 10. Booked via Reserve with Google.",
+      url: "https://maps.google.com/?q=Gran+Caffe+Amore+Mio+25+Place+Sadi+Carnot+Saint-Raphael+France",
+      sort_order: 4,
+    }),
     item("train", "TGV INOUI 6165 \u2014 Paris \u2192 Saint-Rapha\u00ebl", {
       start_time: "2026-04-06T11:22:00",
       end_time: "2026-04-06T16:15:00",
@@ -401,6 +409,15 @@ export const RESTAURANTS = [
     confirmation: "Pending confirmation",
     notes: "Dinner for 10 — table of 6 (Jared) + table of 4. Confirm before the trip.",
     mapsUrl: "https://maps.google.com/?q=La+Bastide+94+Boulevard+des+Batignolles+75017+Paris",
+  },
+  {
+    date: "Apr 6",
+    name: "Gran Caffè Amore Mio",
+    time: "7:00 PM",
+    address: "25 Place Sadi Carnot, Saint-Raphaël, France 83700",
+    confirmation: "Confirmed via Reserve with Google",
+    notes: "Edwin's birthday dinner. Reservation for 10.",
+    mapsUrl: "https://maps.google.com/?q=Gran+Caffe+Amore+Mio+25+Place+Sadi+Carnot+Saint-Raphael+France",
   },
   {
     date: "Apr 4",
