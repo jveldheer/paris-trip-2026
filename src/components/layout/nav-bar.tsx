@@ -15,6 +15,7 @@ import {
   TrendingUp,
   CloudSun,
   MapPin,
+  Receipt,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -34,6 +35,7 @@ const moreItems = [
   { icon: Star, label: 'Highlights', href: '/trip/highlights' },
   { icon: Heart, label: 'Memory Jar', href: '/trip/memory-jar' },
   { icon: Smile, label: 'Kid Corner', href: '/trip/kids' },
+  { icon: Receipt, label: 'Expenses', href: '/trip/expenses' },
   { icon: TrendingUp, label: 'Stats', href: '/trip/stats' },
   { icon: Info, label: 'Info', href: '/trip/info' },
 ];
