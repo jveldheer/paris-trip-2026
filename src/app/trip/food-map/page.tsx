@@ -32,6 +32,9 @@ export const CATEGORIES: CategoryDef[] = [
 
 export const CATEGORY_MAP = Object.fromEntries(CATEGORIES.map(c => [c.key, c])) as Record<Category, CategoryDef>;
 
+// Home category: used for home-base pins but excluded from filter pills
+CATEGORY_MAP['home'] = { key: 'home', emoji: '🏠', label: 'Home', color: '#6366f1', colorBg: '#6366f120' };
+
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export interface Venue {
