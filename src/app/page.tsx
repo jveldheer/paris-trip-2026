@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, FormEvent } from "react"
+import { useState, FormEvent } from "react"
 import { useRouter } from "next/navigation"
 
 export default function PasswordPage() {
@@ -8,13 +8,6 @@ export default function PasswordPage() {
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | false>(false)
   const [checking, setChecking] = useState(false)
-
-  // If already authed, redirect immediately
-  useEffect(() => {
-    if (document.cookie.includes("trip_auth=")) {
-      router.replace("/trip")
-    }
-  }, [router])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -64,6 +57,7 @@ export default function PasswordPage() {
                 setError(false)
               }}
               placeholder="Password"
+              aria-label="Trip password"
               autoFocus
               autoComplete="off"
               className={`w-full px-4 py-3 rounded-xl border bg-card text-center text-lg font-medium

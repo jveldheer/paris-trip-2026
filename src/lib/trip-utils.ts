@@ -56,22 +56,6 @@ export function getCityForDay(dayNumber: number): City {
   return "Lisbon"
 }
 
-export async function resizeImage(file: File, maxWidth: number): Promise<Blob> {
-  return new Promise((resolve) => {
-    const img = new window.Image()
-    img.onload = () => {
-      const canvas = document.createElement("canvas")
-      const ratio = Math.min(maxWidth / img.width, 1)
-      canvas.width = img.width * ratio
-      canvas.height = img.height * ratio
-      const ctx = canvas.getContext("2d")!
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      canvas.toBlob((blob) => resolve(blob!), "image/jpeg", 0.85)
-    }
-    img.src = URL.createObjectURL(file)
-  })
-}
-
 export function getMapUrl(address: string): string {
   const encoded = encodeURIComponent(address)
   return `https://maps.apple.com/?q=${encoded}`

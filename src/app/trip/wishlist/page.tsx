@@ -8,7 +8,7 @@ import {
   ShoppingBag,
   type LucideIcon,
 } from 'lucide-react'
-import { PageHeader } from '@/components/shared/page-header'
+import { PageHeader } from '@/components/layout/page-header'
 import { WishlistList } from '@/components/wishlist/wishlist-list'
 import { AddWishlistItem } from '@/components/wishlist/add-wishlist-item'
 import { LoadingSkeleton } from '@/components/shared/loading-skeleton'

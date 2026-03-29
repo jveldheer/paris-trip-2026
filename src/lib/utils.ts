@@ -13,8 +13,9 @@ export function sanitize(input: string, maxLength: number): string {
 
 /**
  * Format a time portion from an ISO date string, e.g. "14:30" -> "2:30 PM"
+ * Also handles bare time strings like "14:30".
  */
-export function formatTime(dateStr: string): string {
+export function formatTimeSafe(dateStr: string): string {
   try {
     return format(parseISO(dateStr), "h:mm a")
   } catch {
@@ -27,9 +28,9 @@ export function formatTime(dateStr: string): string {
 }
 
 /**
- * Format a date string (ISO) into a human-readable date, e.g. "April 3, 2026"
+ * Format a date string (ISO) into a long human-readable date, e.g. "April 3, 2026"
  */
-export function formatDate(dateStr: string): string {
+export function formatDateLong(dateStr: string): string {
   return format(parseISO(dateStr), "MMMM d, yyyy")
 }
 
@@ -45,7 +46,7 @@ export function getCityForDate(date: Date): "Paris" | "Saint-Raphael" | "Lisbon"
 /**
  * Returns the trip status and current day number relative to now.
  */
-export function getTripStatus(now: Date): {
+export function getTripStatusDetailed(now: Date): {
   status: "before" | "during" | "after"
   dayNumber: number | null
 } {

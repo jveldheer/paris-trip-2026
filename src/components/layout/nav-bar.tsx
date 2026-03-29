@@ -17,6 +17,7 @@ import {
   CloudSun,
   MapPin,
   Receipt,
+  LogOut,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -75,6 +76,7 @@ export function NavBar() {
         <Sheet open={open} onOpenChange={setOpen}>
           <button
             onClick={() => setOpen(true)}
+            aria-label="More navigation options"
             className={cn(
               'flex flex-col items-center justify-center gap-0.5 flex-1 transition-colors',
               isMoreActive ? 'text-accent' : 'text-muted-foreground'
@@ -107,6 +109,18 @@ export function NavBar() {
                 );
               })}
             </div>
+            <Separator className="my-2" />
+            <button
+              onClick={async () => {
+                setOpen(false);
+                await fetch('/api/auth/logout', { method: 'POST' });
+                window.location.href = '/';
+              }}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors text-sm"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Log out</span>
+            </button>
           </SheetContent>
         </Sheet>
       </div>

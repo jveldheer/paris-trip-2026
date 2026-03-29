@@ -6,7 +6,17 @@ const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
 const MAX_ATTEMPTS = 5
 const WINDOW_MS = 15 * 60 * 1000 // 15 minutes
 
+function cleanupExpiredEntries() {
+  const now = Date.now()
+  for (const [ip, entry] of rateLimitMap) {
+    if (now > entry.resetAt) {
+      rateLimitMap.delete(ip)
+    }
+  }
+}
+
 function getRateLimitInfo(ip: string): { allowed: boolean; remaining: number } {
+  cleanupExpiredEntries()
   const now = Date.now()
   const entry = rateLimitMap.get(ip)
 
@@ -63,7 +73,7 @@ export async function POST(req: NextRequest) {
     `Path=/`,
     `HttpOnly`,
     `SameSite=Strict`,
-    `Max-Age=${90 * 24 * 60 * 60}`,
+    `Max-Age=${30 * 24 * 60 * 60}`,
     ...(isProduction ? ["Secure"] : []),
   ].join("; ")
 

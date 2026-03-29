@@ -4,7 +4,7 @@ import { TripDay, Moment, Photo } from "@/types"
 import { Trophy, MessageSquare, Image as ImageIcon } from "lucide-react"
 import { getStorageUrl } from "@/lib/supabase/client"
 import { CityBadge } from "@/components/shared/city-badge"
-import { formatDate } from "@/lib/utils"
+import { formatDateLong } from "@/lib/utils"
 import { cn } from "@/lib/utils"
 import Image from "next/image"
 
@@ -33,7 +33,7 @@ export function HighlightWinner({
             <span className="text-sm font-semibold">Day {tripDay.day_number}</span>
             <CityBadge city={tripDay.city} />
           </div>
-          <p className="text-xs text-muted-foreground">{formatDate(tripDay.date)}</p>
+          <p className="text-xs text-muted-foreground">{formatDateLong(tripDay.date)}</p>
         </div>
         {voteCount > 0 && (
           <span className="text-xs text-muted-foreground shrink-0">

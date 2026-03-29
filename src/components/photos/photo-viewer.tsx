@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useState } from 'react'
 import { Photo, Member } from '@/types'
 import { getStorageUrl } from '@/lib/supabase/client'
 import { MemberAvatar } from '@/components/shared/member-avatar'
@@ -15,6 +15,11 @@ interface PhotoViewerProps {
 }
 
 export function PhotoViewer({ photo, onClose, members }: PhotoViewerProps) {
+  const [imgError, setImgError] = useState(false)
+
+  // Reset error state when photo changes
+  useEffect(() => { setImgError(false) }, [photo?.id])
+
   // Close on Escape key
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -68,17 +73,25 @@ export function PhotoViewer({ photo, onClose, members }: PhotoViewerProps) {
             className="flex-1 flex items-center justify-center px-4 min-h-0"
             onClick={(e) => e.stopPropagation()}
           >
-            <motion.img
-              key={photo.id}
-              initial={{ scale: 0.92, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.92, opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              src={imageUrl}
-              alt={photo.caption ?? ''}
-              className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
-              draggable={false}
-            />
+            {imgError ? (
+              <div className="flex flex-col items-center gap-3 text-white/60">
+                <span className="text-4xl">🖼️</span>
+                <p className="text-sm">Could not load this photo</p>
+              </div>
+            ) : (
+              <motion.img
+                key={photo.id}
+                initial={{ scale: 0.92, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.92, opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                src={imageUrl}
+                alt={photo.caption ?? ''}
+                className="max-h-full max-w-full rounded-lg object-contain shadow-2xl"
+                draggable={false}
+                onError={() => setImgError(true)}
+              />
+            )}
           </div>
 
           {/* Caption + metadata */}

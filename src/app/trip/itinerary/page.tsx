@@ -1,6 +1,6 @@
 "use client"
 
-import { PageHeader } from "@/components/shared/page-header"
+import { PageHeader } from "@/components/layout/page-header"
 import { DayList } from "@/components/itinerary/day-list"
 
 export default function ItineraryPage() {

@@ -35,9 +35,20 @@ export function TripProvider({ children }: { children: ReactNode }) {
   const [currentMember, setCurrentMemberState] = useState<Member | null>(null)
   const [tripDays, setTripDays] = useState<TripDay[]>([])
   const [loading, setLoading] = useState(true)
-  const [isOffline, setIsOffline] = useState(false)
+  const [isOffline, setIsOffline] = useState(typeof navigator !== "undefined" ? !navigator.onLine : false)
 
   const supabase = getSupabaseClient()
+
+  useEffect(() => {
+    const goOffline = () => setIsOffline(true)
+    const goOnline = () => setIsOffline(false)
+    window.addEventListener("offline", goOffline)
+    window.addEventListener("online", goOnline)
+    return () => {
+      window.removeEventListener("offline", goOffline)
+      window.removeEventListener("online", goOnline)
+    }
+  }, [])
 
   useEffect(() => {
     async function loadTrip() {

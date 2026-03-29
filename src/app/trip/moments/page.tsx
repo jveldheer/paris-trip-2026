@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { MessageCircle } from 'lucide-react'
-import { PageHeader } from '@/components/shared/page-header'
+import { PageHeader } from '@/components/layout/page-header'
 import { MomentFeed } from '@/components/moments/moment-feed'
 import { AddMoment } from '@/components/moments/add-moment'
 import { LoadingSkeleton } from '@/components/shared/loading-skeleton'

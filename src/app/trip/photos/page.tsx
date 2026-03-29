@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { Images } from 'lucide-react'
-import { PageHeader } from '@/components/shared/page-header'
+import { PageHeader } from '@/components/layout/page-header'
 import { PhotoGrid } from '@/components/photos/photo-grid'
 import { PhotoViewer } from '@/components/photos/photo-viewer'
 import { PhotoUpload } from '@/components/photos/photo-upload'
@@ -129,7 +129,7 @@ export default function PhotosPage() {
                 title={m.name}
                 aria-label={`Filter by ${m.name}`}
                 className={cn(
-                  'shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-base transition-all',
+                  'shrink-0 h-8 w-8 rounded-full flex items-center justify-center text-base transition-all focus-visible:ring-2 focus-visible:ring-primary',
                   filter === m.value
                     ? 'ring-2 ring-primary ring-offset-1 bg-primary/10'
                     : 'bg-muted hover:bg-muted/80'

@@ -11,7 +11,7 @@ import { getSupabaseClient } from "@/lib/supabase/client"
 import { getLocalItems, setLocalItems } from "@/lib/offline-storage"
 import { TRIP_END } from "@/lib/constants"
 import type { MemoryJarItem } from "@/types"
-import { format } from "date-fns"
+import { format, addDays, parseISO } from "date-fns"
 
 const STORAGE_KEY = "offline_memory_jar"
 
@@ -85,7 +85,7 @@ export default function MemoryJarPage() {
                 </span>
               </div>
               <p className="text-xs text-amber-700 dark:text-amber-400">
-                Notes are hidden until after April 15, 2026
+                Notes are hidden until after {format(parseISO(TRIP_END), "MMMM d, yyyy")}
               </p>
             </div>
 
@@ -102,7 +102,7 @@ export default function MemoryJarPage() {
               <Archive className="h-4 w-4 text-muted-foreground shrink-0 mt-0.5" />
               <p className="text-xs text-muted-foreground leading-relaxed">
                 Memory jar notes are completely anonymous — nobody will know who wrote what until
-                the jar opens on April 16. Write freely!
+                the jar opens on {format(addDays(parseISO(TRIP_END), 1), "MMMM d")}. Write freely!
               </p>
             </div>
           </div>

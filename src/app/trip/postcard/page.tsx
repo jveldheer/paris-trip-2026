@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ImageIcon } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
-import { PageHeader } from '@/components/shared/page-header'
+import { PageHeader } from '@/components/layout/page-header'
 import { LoadingSkeleton } from '@/components/shared/loading-skeleton'
 import { EmptyState } from '@/components/shared/empty-state'
 import { PostcardEditor } from '@/components/postcard/postcard-editor'

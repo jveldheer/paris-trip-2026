@@ -6,7 +6,7 @@ import { MemberAvatar } from "@/components/shared/member-avatar"
 import { cn } from "@/lib/utils"
 import { Lock, CheckCircle2 } from "lucide-react"
 import { motion } from "framer-motion"
-import { formatDate } from "@/lib/utils"
+import { formatDateLong } from "@/lib/utils"
 
 interface PollCardProps {
   poll: Poll & {
@@ -43,7 +43,7 @@ export function PollCard({ poll, currentMemberId, onVote }: PollCardProps) {
               </span>
             )}
             <span className="text-xs text-muted-foreground">·</span>
-            <span className="text-xs text-muted-foreground">{formatDate(poll.created_at)}</span>
+            <span className="text-xs text-muted-foreground">{formatDateLong(poll.created_at)}</span>
           </div>
           <h3 className="text-base font-semibold leading-snug">{poll.question}</h3>
         </div>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { BarChart3, ChevronDown, ChevronUp } from "lucide-react"
 import { PageHeader } from "@/components/layout/page-header"
 import { PollCard } from "@/components/polls/poll-card"
@@ -60,11 +60,17 @@ export default function PollsPage() {
     fetchPolls()
   }, [fetchPolls])
 
+  const debouncedFetchRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const debouncedFetchPolls = useCallback(() => {
+    if (debouncedFetchRef.current) clearTimeout(debouncedFetchRef.current)
+    debouncedFetchRef.current = setTimeout(() => fetchPolls(), 300)
+  }, [fetchPolls])
+
   useRealtime<PollVote & { id: string }>(
     "poll_votes",
-    () => fetchPolls(),
-    () => fetchPolls(),
-    () => fetchPolls()
+    debouncedFetchPolls,
+    debouncedFetchPolls,
+    debouncedFetchPolls
   )
 
   async function handleVote(pollId: string, pollOptionId: string) {
