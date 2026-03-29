@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { CalendarDays, MapPin, CloudSun, Info } from "lucide-react"
+import { CalendarDays, MapPin, CloudSun, Info, ImageIcon } from "lucide-react"
 import { motion } from "framer-motion"
 
 const actions = [
@@ -28,6 +28,14 @@ const actions = [
     bgColor: "bg-sky-50",
     iconColor: "text-sky-600",
     ringColor: "ring-sky-200",
+  },
+  {
+    icon: ImageIcon,
+    label: "Postcard",
+    href: "/trip/postcard",
+    bgColor: "bg-violet-50",
+    iconColor: "text-violet-600",
+    ringColor: "ring-violet-200",
   },
   {
     icon: Info,

@@ -7,6 +7,7 @@ import {
   Camera,
   MessageCircle,
   Menu,
+  ImageIcon,
   BarChart3,
   Star,
   Heart,
@@ -30,6 +31,7 @@ const tabs = [
 
 const moreItems = [
   { icon: Camera, label: 'Photos', href: '/trip/photos' },
+  { icon: ImageIcon, label: 'Postcard', href: '/trip/postcard' },
   { icon: MessageCircle, label: 'Moments', href: '/trip/moments' },
   { icon: CloudSun, label: 'Weather', href: '/trip/weather' },
   { icon: Star, label: 'Highlights', href: '/trip/highlights' },
