@@ -157,11 +157,11 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
       sort_order: 1,
     }),
     item("restaurant", "🥩 Le Relais de l\u2019Entrecôte — Dinner", {
-      start_time: "2026-04-05T19:00:00",
+      start_time: "2026-04-05T18:30:00",
       location_name: "Le Relais de l\u2019Entrecôte Saint-Honoré",
       address: "12-14 Rue du Marché Saint-Honoré, 75001 Paris",
       description: "No reservations needed — walk-in only. Fixed menu: walnut salad + sliced entrecôte with secret herb butter sauce + unlimited fries. ~€30–40/person.",
-      notes: "Walk-in only (no reservations taken). Arrive early or expect a queue. Last Paris dinner before TGV to Saint-Raphaël tomorrow.",
+      notes: "Doors open 6:30 PM. Walk-in only (no reservations taken). Arrive at opening to beat the queue. Last Paris dinner before TGV to Saint-Raphaël tomorrow.",
       url: "https://maps.google.com/?q=12+Rue+du+Marché+Saint-Honoré+75001+Paris",
       sort_order: 2,
     }),
