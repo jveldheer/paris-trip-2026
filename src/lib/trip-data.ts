@@ -97,6 +97,16 @@ export const STATIC_ITINERARY: Record<string, ItineraryItem[]> = {
     }),
   ],
   "2026-04-03": [
+    item("transport", "🚐 CDGParisCab — CDG \u2192 Paris", {
+      start_time: "2026-04-03T06:40:00",
+      location_name: "Charles de Gaulle Airport \u2192 8 Rue de l\u2019Arcade",
+      address: "Charles de Gaulle Airport, Terminal 2E",
+      booking_ref: "Booking #2703",
+      description: "Private minivan transfer for 10 passengers + 10 bags. CDGParisCab meets at Terminal 2E arrivals with name board.",
+      notes: "Pickup 6:40 AM at Terminal 2E. \u20ac220 fixed price. WhatsApp driver: +33 6 52 03 99 15 if any delays.",
+      url: "https://maps.google.com/?q=Charles+de+Gaulle+Airport+Terminal+2E",
+      sort_order: 0,
+    }),
     item("hotel", "Check in: Maison Galante", {
       location_name: "Maison Galante",
       address: "8 Rue de l\u2019Arcade, 75008 Paris",
