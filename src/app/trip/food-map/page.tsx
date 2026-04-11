@@ -344,7 +344,12 @@ const FoodMap = dynamic(() => import('./food-map-client'), { ssr: false });
 
 export default function FoodMapPage() {
   const router = useRouter();
-  const [selectedCityIdx, setSelectedCityIdx] = useState(0);
+  const [selectedCityIdx, setSelectedCityIdx] = useState(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    if (today >= '2026-04-11') return 2; // Lisbon
+    if (today >= '2026-04-06') return 1; // Saint-Raphaël
+    return 0; // Paris
+  });
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
   const [activeFilter, setActiveFilter] = useState<Category | 'all' | 'saved'>('all');
   const [searchQuery, setSearchQuery] = useState('');

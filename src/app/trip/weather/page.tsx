@@ -428,7 +428,12 @@ export default function WeatherPage() {
   const [cityWeather, setCityWeather] = useState<CityWeather[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [selectedCityIdx, setSelectedCityIdx] = useState(0)
+  const [selectedCityIdx, setSelectedCityIdx] = useState(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    if (today >= '2026-04-11') return 2 // Lisbon
+    if (today >= '2026-04-06') return 1 // Saint-Raphaël
+    return 0 // Paris
+  })
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
 
   const loadWeather = useCallback(async () => {

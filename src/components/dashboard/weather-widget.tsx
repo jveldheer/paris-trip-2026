@@ -28,7 +28,12 @@ interface CityWeather {
 }
 
 export function WeatherWidget() {
-  const [cityIndex, setCityIndex] = useState(0)
+  const [cityIndex, setCityIndex] = useState(() => {
+    const today = new Date().toISOString().slice(0, 10)
+    if (today >= '2026-04-11') return 2 // Lisbon
+    if (today >= '2026-04-06') return 1 // Saint-Raphaël
+    return 0 // Paris
+  })
   const [weatherData, setWeatherData] = useState<CityWeather[]>(
     SWIPE_CITIES.map(() => ({ forecast: [], loaded: false }))
   )
